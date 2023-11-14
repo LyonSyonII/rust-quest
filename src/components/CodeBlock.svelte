@@ -4,9 +4,11 @@
   import { githubLight } from "../codemirror-themes/github-light";
   import { githubDark } from "../codemirror-themes/github-dark";
   import "../styles/custom.css";
+    import { shortcut } from "../utils/shortcut";
 
   export let value = "";
   let running = false;
+  let playground_response = "";
 
   const theme =
     document.documentElement.attributes.getNamedItem("data-theme")?.value ===
@@ -31,11 +33,9 @@
       body: JSON.stringify(params),
     })
       .then((response) => response.json())
-      .then((response) => console.log(response.result))
-      .catch((error) => console.log(error))
+      .then((response) => playground_response = response.result)
+      .catch((error) => playground_response = error.message)
       .finally(() => (running = false));
-    // .then(response => result_block.innerText = response.result)
-    //.catch(error => result_block.innerText = "Playground Communication: " + error.message);
   };
 </script>
 
@@ -46,10 +46,12 @@
     lang={rust()}
     {theme}
     basic={true}
+    editable={!running}
   />
-  <button disabled={running} on:click={handleRun}
-    >{running ? "Running..." : "Run"}</button
-  >
+  <button title="Run (Shift+Enter)" disabled={running} on:click={handleRun} use:shortcut={{shift: true, code: "Enter" }}>{running ? "Running..." : "Run"}</button>
+  {#if playground_response}
+    <div class="response">{playground_response}</div>
+  {/if}
 </div>
 
 <style>
@@ -70,5 +72,16 @@
     border: 1px solid rgba(27, 31, 35, 0.15);
     border-radius: 6px;
     padding: 0px 16px;
+  }
+  .response {
+    font-size: 1rem;
+    font-family: monospace;
+    border-width: 1px;
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--sl-color-white), transparent 90%);
+    border-radius: 6px;
+    padding: 1rem;
+    grid-column: span 2;
+    margin-top: 1rem;
   }
 </style>
