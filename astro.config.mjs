@@ -9,6 +9,10 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Rust Quest",
+      logo: {
+        src: "./src/assets/ferris.svg",
+        // replacesTitle: true,
+      },
       social: {
         github: "https://github.com/withastro/starlight",
       },
@@ -20,9 +24,7 @@ export default defineConfig({
           },
         },
       ],
-      customCss: [
-        "./src/styles/custom.css"
-      ]
+      customCss: ["./src/styles/custom.css"],
     }),
     svelte(),
   ],
