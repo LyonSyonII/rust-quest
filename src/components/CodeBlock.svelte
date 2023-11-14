@@ -4,9 +4,10 @@
   import { githubLight } from "../codemirror-themes/github-light";
   import { githubDark } from "../codemirror-themes/github-dark";
   import "../styles/custom.css";
-    import { shortcut } from "../utils/shortcut";
+  import { shortcut } from "../utils/shortcut";
 
   export let value = "";
+  export let setup = "__VALUE__";
   let running = false;
   let playground_response = "";
 
@@ -20,7 +21,7 @@
     const params = {
       version: "stable",
       optimize: "0",
-      code: `fn main() { ${value} }`,
+      code: `fn main() { ${setup.replace("__VALUE__", value)} }`,
       edition: "2021",
     };
 
@@ -35,7 +36,7 @@
       .then((response) => response.json())
       .then((response) => playground_response = response.result)
       .catch((error) => playground_response = error.message)
-      .finally(() => (running = false));
+      .finally(() => {running = false; console.log(playground_response)});
   };
 </script>
 
@@ -50,7 +51,9 @@
   />
   <button title="Run (Shift+Enter)" disabled={running} on:click={handleRun} use:shortcut={{shift: true, code: "Enter" }}>{running ? "Running..." : "Run"}</button>
   {#if playground_response}
-    <div class="response">{playground_response}</div>
+    <div class="response">
+      <p>{playground_response}</p>
+    </div>
   {/if}
 </div>
 
@@ -65,6 +68,8 @@
     display: grid;
     grid-template-columns: 1fr auto;
     font-size: 1rem;
+    border-radius: 6px;
+    margin: 1rem;
   }
   button {
     background-color: var(--accent);
@@ -72,6 +77,7 @@
     border: 1px solid rgba(27, 31, 35, 0.15);
     border-radius: 6px;
     padding: 0px 16px;
+    margin-left: 1rem;
   }
   .response {
     font-size: 1rem;
@@ -83,5 +89,6 @@
     padding: 1rem;
     grid-column: span 2;
     margin-top: 1rem;
+    white-space: pre-line;
   }
 </style>

@@ -6,7 +6,7 @@ import { tags as t } from "@lezer/highlight";
 export const config = {
   name: "githubDark",
   dark: true,
-  background: "#24292e",
+  background: "#302321",
   foreground: "#d1d5da",
   selection: "#3392FF44",
   cursor: "#c8e1ff",

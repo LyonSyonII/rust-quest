@@ -1,0 +1,83 @@
+---
+title: The Adventurer's Guild
+description: An introduction to RustQuest
+---
+
+Morning adventurer! 
+I see you're new on this town, welcome to Newlia, where new heroes are born!
+
+Oh, you want to register as a new adventurer? And you want to choose the "Programmer" class?
+Good choice! Programmers are a very versatile class, give them enough time and they can do anything!
+
+This class requires a small test, to ensure that you have the minimum problem solving skills. Don't worry, it'll be a moment.
+Please, fill up the gaps in the following statements, replace "?" with the correct answer.
+
+What's five plus five?
+```rust,editable
+#assert!(
+5 + 5 == ?
+#)
+#println!("5 + 5 == 10, good job!")
+```
+Well done! Let's continue.
+
+What's negative one minus one?
+```rust,editable
+#assert!(
+-1 - 1 == ?
+#)
+#println!("That's right, -2! I see you aren't fooled easily")
+```
+All right, let's up the challenge a bit.
+
+What's the number that multiplied by two equals sixteen divided by four?
+```rust,editable
+#assert!(
+16 / 4 == 2 * ?
+#)
+#println!("You now know how to make the computer do basic calculations for you, good job!")
+```
+
+Well well, Mr. Calculator knows his math! Just joking, I told you it would be pretty easy ;)
+
+Now we'll do some comparisons, simple stuff.
+
+Write any number higher than 200.
+```rust,editable
+#assert!(
+200 < ?
+#)
+```
+
+Okay... Now a number smaller than 200.
+```rust,editable
+#assert!(
+200 > ?
+#)
+```
+
+Now one that's smaller or equal than 0.
+```rust,editable
+#assert!(
+0 >= ?
+#)
+```
+
+And finally one that's greater or equal than 0.
+```rust,editable
+#assert!(
+0 <= ?
+#)
+```
+
+> See what we're doing here? 
+> Try writing the examples above exactly how the question is formulated.
+> For example, the first one is currently saying "two hundred is smaller than ?" instead of "? is greater than two hundred".
+
+Excellent!
+Now please sign here, and you'll be ready to take your first quest.
+```rust,editable
+let name = "?";
+#if name == "?" { println!("hint: just replace '?' with your name!") }
+#else { println!("Welcome {name} to the Adventurer's Guild!") }
+```
