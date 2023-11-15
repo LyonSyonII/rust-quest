@@ -19,8 +19,8 @@
   let focused = false;
   let playground_response = "";
 
-  const handleRun = async () => {
-    if (!focused) {
+  const handleRun = async (f = false) => {
+    if (!f && !focused) {
       return;
     }
 
@@ -63,7 +63,7 @@
 
 <svelte:window
   use:shortcut={{
-    trigger: { key: "Enter", modifier: ["shift"], callback: handleRun },
+    trigger: { key: "Enter", modifier: ["shift"], callback: () => handleRun() },
   }}
 />
 
@@ -91,7 +91,7 @@
     class="not-content"
     title="Run (Shift+Enter)"
     disabled={running}
-    on:click={handleRun}
+    on:click={() => handleRun(true)}
   >
     <Icon icon="carbon:run" width={24} />
   </button>
