@@ -29,6 +29,9 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "@iconify/svelte": "^3.1.4",
+    "@svelte-put/clickoutside": "^3.0.0",
+    "@svelte-put/shortcut": "^3.0.0",
     "prettier": "^3.1.0",
     "prettier-plugin-astro": "^0.12.2",
     "prettier-plugin-svelte": "^3.1.0"

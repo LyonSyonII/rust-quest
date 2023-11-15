@@ -3,6 +3,27 @@ title: The Adventurer's Guild
 description: An introduction to RustQuest
 ---
 
+import CodeBlock from "../../../components/CodeBlock.svelte";
+export function MakeBlock({ code, answer, correct, wrong }) {
+  console.log(code, answer, correct, wrong);
+  const no_dummy = code.toString().replace("?", "");
+  const setup = `
+        const VALUE: &str = "__VALUE__";
+        if !VALUE.starts_with("${no_dummy}") {
+            println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
+            println!("Remember to only modify the ? part of the code.");
+            return;
+        }
+        let a = VALUE.replace("${no_dummy}", "");
+        match a.trim() {
+            "${answer}" => println!("${correct}"),
+            "?" => println!("Replace ? with the correct answer."),
+            _ => println!("${wrong}"),
+        }
+    `.replaceAll("\n", "");
+  return <CodeBlock client:only code={code} setup={setup} />;
+}
+
 Morning adventurer!
 I see you're new on this town, welcome to Newlia, where new heroes are born!
 
@@ -14,16 +35,23 @@ Please, fill up the gaps in the following statements, replace "?" with the corre
 
 What's five plus five?
 
-```rust,editable
-#assert!(
-5 + 5 == ?
-#)
-#println!("5 + 5 == 10, good job!")
-```
+<MakeBlock
+  code="5 + 5 == ?"
+  answer="10"
+  correct="5 + 5 == 10, good job!"
+  wrong="5 + 5 != {a}, keep trying!"
+/>
 
 Well done! Let's continue.
 
 What's negative one minus one?
+
+<MakeBlock
+  code="-1 - 1 == ?"
+  answer="-2"
+  correct="That's right, -2! I see you aren't fooled easily."
+  wrong="-1 - 1 != {a}, keep trying!"
+/>
 
 ```rust,editable
 #assert!(

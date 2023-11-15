@@ -38,15 +38,9 @@ dependencies:
   "@lezer/highlight":
     specifier: ^1.2.0
     version: 1.2.0
-  "@uiw/codemirror-theme-github":
-    specifier: ^4.21.20
-    version: 4.21.20(@codemirror/language@6.9.2)(@codemirror/state@6.3.1)(@codemirror/view@6.22.0)
   astro:
     specifier: ^3.2.3
     version: 3.5.3(typescript@5.2.2)
-  highlight.js:
-    specifier: ^11.9.0
-    version: 11.9.0
   sharp:
     specifier: ^0.32.5
     version: 0.32.6
@@ -61,6 +55,15 @@ dependencies:
     version: 5.2.2
 
 devDependencies:
+  "@iconify/svelte":
+    specifier: ^3.1.4
+    version: 3.1.4(svelte@4.2.3)
+  "@svelte-put/clickoutside":
+    specifier: ^3.0.0
+    version: 3.0.0
+  "@svelte-put/shortcut":
+    specifier: ^3.0.0
+    version: 3.0.0
   prettier:
     specifier: ^3.1.0
     version: 3.1.0
@@ -1310,6 +1313,25 @@ packages:
     dev: false
     optional: true
 
+  /@iconify/svelte@3.1.4(svelte@4.2.3):
+    resolution:
+      {
+        integrity: sha512-YDwQlN46ka8KPRayDb7TivmkAPizfTXi6BSRNqa1IV0+byA907n8JcgQafA7FD//pW5XCuuAhVx6uRbKTo+CfA==,
+      }
+    peerDependencies:
+      svelte: "*"
+    dependencies:
+      "@iconify/types": 2.0.0
+      svelte: 4.2.3
+    dev: true
+
+  /@iconify/types@2.0.0:
+    resolution:
+      {
+        integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==,
+      }
+    dev: true
+
   /@jridgewell/gen-mapping@0.3.3:
     resolution:
       {
@@ -1603,6 +1625,20 @@ packages:
       picomatch: 2.3.1
     dev: false
 
+  /@svelte-put/clickoutside@3.0.0:
+    resolution:
+      {
+        integrity: sha512-a2aA0+uMo2LGK4bwQE+etra57cJuqQsXRkI0IM+cPzjIowqUg5CMSSeQ6YsXBJUdtzm/s6WQKcmoswK/875wtA==,
+      }
+    dev: true
+
+  /@svelte-put/shortcut@3.0.0:
+    resolution:
+      {
+        integrity: sha512-nZg3pwpTi9wUsvQPlqOzEsxZcF2jmY5j+VBq/20IUjjd2OpM92XqZAga0PCCjE6OuEobOt58UMnC2QZgOvk0tQ==,
+      }
+    dev: true
+
   /@sveltejs/vite-plugin-svelte-inspector@1.0.4(@sveltejs/vite-plugin-svelte@2.5.2)(svelte@4.2.3)(vite@4.5.0):
     resolution:
       {
@@ -1813,34 +1849,6 @@ packages:
       {
         integrity: sha512-dqId9J8K/vGi5Zr7oo212BGii5m3q5Hxlkwy3WpYuKPklmBEvsbMYYyLxAQpSffdLl/gdW0XUpKWFvYmyoWCoQ==,
       }
-    dev: false
-
-  /@uiw/codemirror-theme-github@4.21.20(@codemirror/language@6.9.2)(@codemirror/state@6.3.1)(@codemirror/view@6.22.0):
-    resolution:
-      {
-        integrity: sha512-A4DFScxtZDdbT0XmMCpIZ0b2qzxJJ8CI9LibI8PHrwDIG5yp4sRCVoawU953U+J99Yv6zDqi5sqbkLAPRVmd9g==,
-      }
-    dependencies:
-      "@uiw/codemirror-themes": 4.21.20(@codemirror/language@6.9.2)(@codemirror/state@6.3.1)(@codemirror/view@6.22.0)
-    transitivePeerDependencies:
-      - "@codemirror/language"
-      - "@codemirror/state"
-      - "@codemirror/view"
-    dev: false
-
-  /@uiw/codemirror-themes@4.21.20(@codemirror/language@6.9.2)(@codemirror/state@6.3.1)(@codemirror/view@6.22.0):
-    resolution:
-      {
-        integrity: sha512-/Ncc88v5RroeDAOfhao5lmkobmH4aJZqlSAJJTxXE7AzM85BjuCnnUYXVT7VFeEslFtfTiIgriyLmJQoGOi2mA==,
-      }
-    peerDependencies:
-      "@codemirror/language": ">=6.0.0"
-      "@codemirror/state": ">=6.0.0"
-      "@codemirror/view": ">=6.0.0"
-    dependencies:
-      "@codemirror/language": 6.9.2
-      "@codemirror/state": 6.3.1
-      "@codemirror/view": 6.22.0
     dev: false
 
   /@ungap/structured-clone@1.2.0:
@@ -3493,14 +3501,6 @@ packages:
       hast-util-parse-selector: 4.0.0
       property-information: 6.4.0
       space-separated-tokens: 2.0.2
-    dev: false
-
-  /highlight.js@11.9.0:
-    resolution:
-      {
-        integrity: sha512-fJ7cW7fQGCYAkgv4CPfwFHrfd/cLS4Hau96JuJ+ZTOWhjnhoeN1ub1tFmALm/+lW5z4WCAuAV9bm05AP0mS6Gw==,
-      }
-    engines: { node: ">=12.0.0" }
     dev: false
 
   /html-escaper@3.0.3:

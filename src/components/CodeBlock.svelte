@@ -4,22 +4,26 @@
   import { githubLight } from "../codemirror-themes/github-light";
   import { githubDark } from "../codemirror-themes/github-dark";
   import "../styles/custom.css";
-  import { shortcut } from "../utils/shortcut";
-  
-  /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
-  export const setup = "__VALUE__";
-  /** Code in the editor */
-  export let value = "";
-  /** If set, any response will be transformed by this function.
-   * 
-   *  Useful to customize the output of a snippet. 
-   */
-  export const handle: ((value: string) => string) | undefined = undefined;
+  import { shortcut } from "@svelte-put/shortcut";
+  import { clickoutside } from "@svelte-put/clickoutside";
+  import Icon from "@iconify/svelte";
 
+  /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
+  export let setup = "__VALUE__";
+  /** Code in the editor */
+  export let code = "";
+
+  let value = code;
   let running = false;
+  let focused = false;
   let playground_response = "";
 
   const handleRun = () => {
+    console.log(focused);
+    if (!focused) {
+      return;
+    }
+
     running = true;
     const params = {
       version: "stable",
@@ -27,6 +31,7 @@
       code: `fn main() { ${setup.replace("__VALUE__", value)} }`,
       edition: "2021",
     };
+    console.log(params);
 
     fetch("https://play.rust-lang.org/evaluate.json", {
       headers: {
@@ -46,7 +51,20 @@
   };
 </script>
 
-<div class="wrapper not-content">
+<svelte:window
+  use:shortcut={{
+    trigger: { key: "Enter", modifier: ["shift"], callback: handleRun },
+  }}
+/>
+
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div
+  class="wrapper not-content"
+  use:clickoutside
+  on:click={() => (focused = true)}
+  on:clickoutside={() => (focused = false)}
+>
   <CodeMirror
     class="not-content"
     bind:value
@@ -58,13 +76,20 @@
     basic={true}
     editable={!running}
   />
+
   <button
+    class="not-content"
     title="Run (Shift+Enter)"
     disabled={running}
     on:click={handleRun}
-    use:shortcut={{ shift: true, code: "Enter" }}
-    >{running ? "Running..." : "Run"}</button
   >
+    <Icon icon="carbon:run" width={24} />
+  </button>
+
+  <button title="Reset code" on:click={() => (value = code)}>
+    <Icon icon="carbon:reset" width={24} />
+  </button>
+
   {#if playground_response}
     <div class="response">
       <p>{playground_response}</p>
@@ -81,18 +106,23 @@
   }
   .wrapper {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
     font-size: 1rem;
     border-radius: 6px;
     margin: 1rem;
   }
   button {
-    background-color: var(--accent);
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--sl-color-white);
     cursor: pointer;
-    border: 1px solid rgba(27, 31, 35, 0.15);
-    border-radius: 6px;
-    padding: 0px 16px;
-    margin-left: 1rem;
+    border: 0px;
+    margin-left: 0.5rem;
+    padding-bottom: 0px;
+    height: fit-content;
+    transition: color 0.25s ease;
+  }
+  button:disabled {
+    color: color-mix(in srgb, var(--sl-color-white), transparent 80%);
   }
   .response {
     font-size: 1rem;
