@@ -12,26 +12,29 @@
   export let setup = "__VALUE__";
   /** Code in the editor */
   export let code = "";
-
+  export let errorMsg = "";
+  
   let value = code;
   let running = false;
   let focused = false;
   let playground_response = "";
 
-  const handleRun = () => {
-    console.log(focused);
+  const handleRun = async () => {
     if (!focused) {
       return;
     }
 
     running = true;
+    
+    // Wait for the editor to update `value`
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const params = {
       version: "stable",
       optimize: "0",
-      code: `fn main() { ${setup.replace("__VALUE__", value)} }`,
+      code: `fn main() { ${setup.replaceAll("__VALUE__", value)} }`,
       edition: "2021",
     };
-    console.log(params);
 
     fetch("https://play.rust-lang.org/evaluate.json", {
       headers: {
@@ -42,12 +45,20 @@
       body: JSON.stringify(params),
     })
       .then((response) => response.json())
-      .then((response) => (playground_response = response.result))
-      .catch((error) => (playground_response = error.message))
-      .finally(() => {
-        running = false;
-        console.log(playground_response);
-      });
+      .then((response) => { console.log({params, response}); return response})
+      .then((response) => {
+        if (response.error === null) {
+          playground_response = response.result;
+        } else {
+          playground_response = errorMsg || response.error;
+        }
+      })
+      .catch((error) => 
+        playground_response = errorMsg || error.message
+      )
+      .finally(() => 
+        running = false
+      );
   };
 </script>
 

@@ -4,12 +4,12 @@ description: An introduction to RustQuest
 ---
 
 import CodeBlock from "../../../components/CodeBlock.svelte";
-export function MakeBlock({ code, answer, correct, wrong }) {
+export function SimpleQuestion({ code, answer, correct, wrong, checkMessed = true }) {
   console.log(code, answer, correct, wrong);
   const no_dummy = code.toString().replace("?", "");
   const setup = `
         const VALUE: &str = "__VALUE__";
-        if !VALUE.starts_with("${no_dummy}") {
+        if ${checkMessed} && !VALUE.starts_with("${no_dummy}") {
             println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
             println!("Remember to only modify the ? part of the code.");
             return;
@@ -17,11 +17,27 @@ export function MakeBlock({ code, answer, correct, wrong }) {
         let a = VALUE.replace("${no_dummy}", "");
         match a.trim() {
             "${answer}" => println!("${correct}"),
-            "?" => println!("Replace ? with the correct answer."),
+            "?" => println!("Replace ? with your answer."),
             _ => println!("${wrong}"),
         }
     `.replaceAll("\n", "");
   return <CodeBlock client:only code={code} setup={setup} />;
+}
+export function FreeQuestion({ code, correct }) {
+    const setup = `
+        const VALUE: &str = "__VALUE__";
+        if VALUE.contains("?") {
+            println!("Replace ? with your answer.");
+            return;
+        }
+        if __VALUE__ {
+            println!("${correct}");
+        } else {
+            println!("Your answer is wrong, try again!");
+        }
+    `.replaceAll("\n", "");
+    const errorMsg = "Woops, something went wrong and the code does not compile!\n\nIf you've mistakenly messed up the code, click the \"Reset\" button to return it back to its original state.\n\nRemember to replace ? with your answer.";
+    return <CodeBlock client:only code={code} setup={setup} errorMsg={errorMsg} />;
 }
 
 Morning adventurer!
@@ -33,9 +49,13 @@ Good choice! Programmers are a very versatile class, give them enough time and t
 This class requires a small test, to ensure that you have the minimum problem solving skills. Don't worry, it'll be a moment.
 Please, fill up the gaps in the following statements, replace "?" with the correct answer.
 
+:::warning
+If you mess up the code, click the "Reset" button to return it back to its original state.
+:::
+
 What's five plus five?
 
-<MakeBlock
+<SimpleQuestion
   code="5 + 5 == ?"
   answer="10"
   correct="5 + 5 == 10, good job!"
@@ -46,42 +66,33 @@ Well done! Let's continue.
 
 What's negative one minus one?
 
-<MakeBlock
+<SimpleQuestion
   code="-1 - 1 == ?"
   answer="-2"
   correct="That's right, -2! I see you aren't fooled easily."
   wrong="-1 - 1 != {a}, keep trying!"
 />
 
-```rust,editable
-#assert!(
--1 - 1 == ?
-#)
-#println!("That's right, -2! I see you aren't fooled easily")
-```
-
 All right, let's up the challenge a bit.
 
 What's the number that multiplied by two equals sixteen divided by four?
 
-```rust,editable
-#assert!(
-16 / 4 == 2 * ?
-#)
-#println!("You now know how to make the computer do basic calculations for you, good job!")
-```
+<SimpleQuestion 
+  code="16 / 4 == 2 * ?"
+  answer="2"
+  correct="Perfect! Now you know how to make the computer do basic calculations for you, well done!"
+  wrong="16 / 4 != 2 * {a}, keep trying!"
+/>
 
 Well well, Mr. Calculator knows his math! Just joking, I told you it would be pretty easy ;)
 
 Now we'll do some comparisons, simple stuff.
 
 Write any number higher than 200.
-
-```rust,editable
-#assert!(
-200 < ?
-#)
-```
+<FreeQuestion 
+    code="200 < ?"
+    correct="Correct!"
+/>
 
 Okay... Now a number smaller than 200.
 
@@ -107,9 +118,11 @@ And finally one that's greater or equal than 0.
 #)
 ```
 
-> See what we're doing here?
-> Try writing the examples above exactly how the question is formulated.
-> For example, the first one is currently saying "two hundred is smaller than ?" instead of "? is greater than two hundred".
+:::tip[Exercise]
+See what we're doing here?  
+Try writing the examples above exactly how the question is formulated.  
+For example, the first one is currently saying `two hundred is smaller than ?` instead of `? is greater than two hundred`.
+:::
 
 Excellent!
 Now please sign here, and you'll be ready to take your first quest.
