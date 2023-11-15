@@ -13,7 +13,7 @@
   /** Code in the editor */
   export let code = "";
   export let errorMsg = "";
-  
+
   let value = code;
   let running = false;
   let focused = false;
@@ -25,7 +25,7 @@
     }
 
     running = true;
-    
+
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -45,7 +45,10 @@
       body: JSON.stringify(params),
     })
       .then((response) => response.json())
-      .then((response) => { console.log({params, response}); return response})
+      .then((response) => {
+        console.log({ params, response });
+        return response;
+      })
       .then((response) => {
         if (response.error === null) {
           playground_response = response.result;
@@ -53,12 +56,8 @@
           playground_response = errorMsg || response.error;
         }
       })
-      .catch((error) => 
-        playground_response = errorMsg || error.message
-      )
-      .finally(() => 
-        running = false
-      );
+      .catch((error) => (playground_response = errorMsg || error.message))
+      .finally(() => (running = false));
   };
 </script>
 
@@ -120,7 +119,7 @@
     grid-template-columns: 1fr auto auto;
     font-size: 1rem;
     border-radius: 6px;
-    margin: 1rem;
+    margin: 0rem;
   }
   button {
     background-color: rgba(0, 0, 0, 0);

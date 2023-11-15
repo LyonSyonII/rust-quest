@@ -3,9 +3,21 @@ title: The Adventurer's Guild
 description: An introduction to RustQuest
 ---
 
+import { Card } from "@astrojs/starlight/components";
+import QuestionCard from "../../../components/QuestionCard.astro";
 import CodeBlock from "../../../components/CodeBlock.svelte";
-export function SimpleQuestion({ code, answer, correct, wrong, checkMessed = true }) {
-  console.log(code, answer, correct, wrong);
+
+export const errorMsg =
+  'Woops, something went wrong and the code does not compile!\n\nIf you\'ve mistakenly messed up the code, click the "Reset" button to return it back to its original state.\n\nRemember to replace ? with your answer.';
+
+export function SimpleQuestion({
+  question,
+  code,
+  answer,
+  correct,
+  wrong,
+  checkMessed = true,
+}) {
   const no_dummy = code.toString().replace("?", "");
   const setup = `
         const VALUE: &str = "__VALUE__";
@@ -21,10 +33,14 @@ export function SimpleQuestion({ code, answer, correct, wrong, checkMessed = tru
             _ => println!("${wrong}"),
         }
     `.replaceAll("\n", "");
-  return <CodeBlock client:only code={code} setup={setup} />;
+  return (
+    <QuestionCard question={question}>
+      <CodeBlock client:only code={code} setup={setup} />
+    </QuestionCard>
+  );
 }
-export function FreeQuestion({ code, correct }) {
-    const setup = `
+export function FreeQuestion({ question, code, correct }) {
+  const setup = `
         const VALUE: &str = "__VALUE__";
         if VALUE.contains("?") {
             println!("Replace ? with your answer.");
@@ -36,8 +52,11 @@ export function FreeQuestion({ code, correct }) {
             println!("Your answer is wrong, try again!");
         }
     `.replaceAll("\n", "");
-    const errorMsg = "Woops, something went wrong and the code does not compile!\n\nIf you've mistakenly messed up the code, click the \"Reset\" button to return it back to its original state.\n\nRemember to replace ? with your answer.";
-    return <CodeBlock client:only code={code} setup={setup} errorMsg={errorMsg} />;
+  return (
+    <QuestionCard question={question}>
+      <CodeBlock client:only code={code} setup={setup} errorMsg={errorMsg} />
+    </QuestionCard>
+  );
 }
 
 Morning adventurer!
@@ -53,9 +72,8 @@ Please, fill up the gaps in the following statements, replace "?" with the corre
 If you mess up the code, click the "Reset" button to return it back to its original state.
 :::
 
-What's five plus five?
-
 <SimpleQuestion
+  question="What's five plus five?"
   code="5 + 5 == ?"
   answer="10"
   correct="5 + 5 == 10, good job!"
@@ -64,9 +82,8 @@ What's five plus five?
 
 Well done! Let's continue.
 
-What's negative one minus one?
-
 <SimpleQuestion
+  question="What's negative one minus one?"
   code="-1 - 1 == ?"
   answer="-2"
   correct="That's right, -2! I see you aren't fooled easily."
@@ -75,60 +92,60 @@ What's negative one minus one?
 
 All right, let's up the challenge a bit.
 
-What's the number that multiplied by two equals sixteen divided by four?
-
-<SimpleQuestion 
+<SimpleQuestion
+  question="What's the number that multiplied by two equals sixteen divided by four?"
   code="16 / 4 == 2 * ?"
   answer="2"
   correct="Perfect! Now you know how to make the computer do basic calculations for you, well done!"
   wrong="16 / 4 != 2 * {a}, keep trying!"
 />
 
-Well well, Mr. Calculator knows his math! Just joking, I told you it would be pretty easy ;)
+Well well, Mr. Calculator knows his math!  
+Just joking, I told you it would be pretty easy ;)
 
 Now we'll do some comparisons, simple stuff.
 
-Write any number higher than 200.
-<FreeQuestion 
-    code="200 < ?"
-    correct="Correct!"
+<FreeQuestion
+  question="Write any number higher than 200."
+  code="200 < ?"
+  correct="Correct!"
 />
 
-Okay... Now a number smaller than 200.
+<FreeQuestion
+  question="Okay... Now a number smaller than 200."
+  code="200 > ?"
+  correct="Perfect!"
+/>
 
-```rust,editable
-#assert!(
-200 > ?
-#)
-```
+<FreeQuestion
+  question="Now one that's smaller or equal than 0."
+  code="0 >= ?"
+  correct="Good answer!"
+/>
 
-Now one that's smaller or equal than 0.
-
-```rust,editable
-#assert!(
-0 >= ?
-#)
-```
-
-And finally one that's greater or equal than 0.
-
-```rust,editable
-#assert!(
-0 <= ?
-#)
-```
+<FreeQuestion
+  question="And finally one that's greater or equal than 0."
+  code="0 <= ?"
+  correct="Fantastic!"
+/>
 
 :::tip[Exercise]
 See what we're doing here?  
-Try writing the examples above exactly how the question is formulated.  
+Try rewriting the exercises above exactly how the question is formulated.
+
 For example, the first one is currently saying `two hundred is smaller than ?` instead of `? is greater than two hundred`.
 :::
 
-Excellent!
+Excellent!  
 Now please sign here, and you'll be ready to take your first quest.
 
-```rust,editable
-let name = "?";
-#if name == "?" { println!("hint: just replace '?' with your name!") }
-#else { println!("Welcome {name} to the Adventurer's Guild!") }
-```
+<QuestionCard>
+  <CodeBlock
+    client:only
+    code={'let name = "?";'}
+    setup={
+      '__VALUE__ if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'
+    }
+    errorMsg={errorMsg}
+  />
+</QuestionCard>
