@@ -3,7 +3,8 @@ title: Introduction
 description: An introduction to RustQuest
 ---
 
-import CodeBlock from "../../../components/CodeBlock.svelte";
+import CodeBlock from "@components/CodeBlock.svelte";
+import QuestionCard from "@components/QuestionCard.astro";
 
 First of all, thank you for reading Rust Quest!
 
@@ -21,7 +22,9 @@ Each 'Quest' will have a code snippet, and you'll need to modify it in some way 
 
 Try running the following snippet (click the "Run" button at the right or "Shift + Enter" on your keyboard):
 
-<CodeBlock client:only code={'println!("Hello World!")'} />
+<QuestionCard>
+  <CodeBlock client:only code={'println!("Hello World!")'} />
+</QuestionCard>
 
 :::tip[Exercise]
 Well... Your name isn't _World_, right?  

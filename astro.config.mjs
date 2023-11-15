@@ -6,6 +6,8 @@ import svelte from "@astrojs/svelte";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://lyonsyonii.github.io",
+  base: "/rust-quest",
   integrations: [
     starlight({
       title: "Rust Quest",
@@ -18,9 +20,9 @@ export default defineConfig({
       },
       sidebar: [
         {
-          label: "Rust Quest",
+          label: "First Steps",
           autogenerate: {
-            directory: "rustquest",
+            directory: "first-steps",
           },
         },
       ],

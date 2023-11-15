@@ -4,8 +4,8 @@ description: An introduction to RustQuest
 ---
 
 import { Card } from "@astrojs/starlight/components";
-import QuestionCard from "../../../components/QuestionCard.astro";
-import CodeBlock from "../../../components/CodeBlock.svelte";
+import QuestionCard from "@components/QuestionCard.astro";
+import CodeBlock from "@components/CodeBlock.svelte";
 
 export const errorMsg =
   'Woops, something went wrong and the code does not compile!\n\nIf you\'ve mistakenly messed up the code, click the "Reset" button to return it back to its original state.\n\nRemember to replace ? with your answer.';
@@ -59,16 +59,18 @@ export function FreeQuestion({ question, code, correct }) {
   );
 }
 
-Morning adventurer!
+Morning adventurer!  
 I see you're new on this town, welcome to Newlia, where new heroes are born!
 
-Oh, you want to register as a new adventurer? And you want to choose the "Programmer" class?
+Oh, you want to register as a new adventurer? And you want to choose the "Programmer" class?  
 Good choice! Programmers are a very versatile class, give them enough time and they can do anything!
 
-This class requires a small test, to ensure that you have the minimum problem solving skills. Don't worry, it'll be a moment.
+This class requires a small test, to ensure that you have the minimum problem solving skills.  
+Don't worry, it'll be just a moment.  
+
 Please, fill up the gaps in the following statements, replace "?" with the correct answer.
 
-:::warning
+:::caution[Don't worry]
 If you mess up the code, click the "Reset" button to return it back to its original state.
 :::
 
