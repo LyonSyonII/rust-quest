@@ -1,7 +1,7 @@
 # Source for Rust Quest
 > Learn programming in a new way!
 
-![](src/assets/ferris.svg | width=100)
+<img src="src/assets/ferris.svg" width="125">
 
 With this book you'll learn how to program from scratch, all skill levels (even zero) are welcome!  
 You'll complete quests and eventually become the best adventurer ever!
