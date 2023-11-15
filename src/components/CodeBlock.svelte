@@ -5,17 +5,20 @@
   import { githubDark } from "../codemirror-themes/github-dark";
   import "../styles/custom.css";
   import { shortcut } from "../utils/shortcut";
-
+  
+  /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
+  export const setup = "__VALUE__";
+  /** Code in the editor */
   export let value = "";
-  export let setup = "__VALUE__";
+  /** If set, any response will be transformed by this function.
+   * 
+   *  Useful to customize the output of a snippet. 
+   */
+  export const handle: ((value: string) => string) | undefined = undefined;
+
   let running = false;
   let playground_response = "";
 
-  const theme =
-    document.documentElement.attributes.getNamedItem("data-theme")?.value ===
-    "dark"
-      ? githubDark
-      : githubLight;
   const handleRun = () => {
     running = true;
     const params = {
@@ -34,9 +37,12 @@
       body: JSON.stringify(params),
     })
       .then((response) => response.json())
-      .then((response) => playground_response = response.result)
-      .catch((error) => playground_response = error.message)
-      .finally(() => {running = false; console.log(playground_response)});
+      .then((response) => (playground_response = response.result))
+      .catch((error) => (playground_response = error.message))
+      .finally(() => {
+        running = false;
+        console.log(playground_response);
+      });
   };
 </script>
 
@@ -45,11 +51,20 @@
     class="not-content"
     bind:value
     lang={rust()}
-    {theme}
+    theme={document.documentElement.attributes.getNamedItem("data-theme")
+      ?.value === "dark"
+      ? githubDark
+      : githubLight}
     basic={true}
     editable={!running}
   />
-  <button title="Run (Shift+Enter)" disabled={running} on:click={handleRun} use:shortcut={{shift: true, code: "Enter" }}>{running ? "Running..." : "Run"}</button>
+  <button
+    title="Run (Shift+Enter)"
+    disabled={running}
+    on:click={handleRun}
+    use:shortcut={{ shift: true, code: "Enter" }}
+    >{running ? "Running..." : "Run"}</button
+  >
   {#if playground_response}
     <div class="response">
       <p>{playground_response}</p>
