@@ -7,12 +7,23 @@
   import { shortcut } from "@svelte-put/shortcut";
   import { clickoutside } from "@svelte-put/clickoutside";
   import Icon from "@iconify/svelte";
+  import { writable } from "svelte/store";
+  import { onThemeChange } from "src/utils/onThemeChange";
+  import { onDestroy } from "svelte";
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
   /** Code in the editor */
   export let code = "";
   export let errorMsg = "";
+  
+  const theme = writable(document.documentElement.dataset.theme);
+  const observer = onThemeChange((newtheme) => {
+    theme.set(newtheme);
+  });
+  onDestroy(() => {
+    observer.disconnect()
+  });
 
   let value = code;
   let running = false;
@@ -79,10 +90,7 @@
     class="not-content"
     bind:value
     lang={rust()}
-    theme={document.documentElement.attributes.getNamedItem("data-theme")
-      ?.value === "dark"
-      ? githubDark
-      : githubLight}
+    theme={$theme === "dark" ? githubDark : githubLight}
     basic={true}
     editable={!running}
   />
