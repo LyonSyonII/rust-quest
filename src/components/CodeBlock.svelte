@@ -37,6 +37,8 @@
     }
 
     running = true;
+    
+    playground_response = "Compiling...";
 
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
