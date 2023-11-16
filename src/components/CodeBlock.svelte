@@ -125,13 +125,15 @@
   }
   .wrapper {
     display: grid;
-    font-size: 1rem;
     border-radius: 6px;
     margin: 0rem;
+
+    font-size: 0.9rem;
     grid-template-columns: 80% 32px 32px;
   }
   @media only screen and (min-width: 768px) {
     .wrapper {
+      font-size: 1rem;
       grid-template-columns: 90% auto auto;
     }
   }
