@@ -1,13 +1,9 @@
 export function onThemeChange(callback: (theme: "dark" | "light") => void): MutationObserver {
     const target = document.documentElement;
-    const config = { attributes: true };
+    const config = { attributeFilter: ["data-theme"] };
 
-    const c: MutationCallback = (mutationList, _) => {
-        for (const mutation of mutationList) {
-            if (mutation.type === "attributes" && mutation.attributeName === "data-theme") {
-                callback(target.dataset.theme as "dark" | "light");
-            }
-        }
+    const c: MutationCallback = (_, __) => {
+        callback(target.dataset.theme as "dark" | "light");
     }
     const observer = new MutationObserver(c);
     observer.observe(target, config);
