@@ -23,7 +23,7 @@ Each 'Quest' will have a code snippet, and you'll need to modify it in some way 
 Try running the following snippet (click the "Run" button at the right or "Shift + Enter" on your keyboard while editing):
 
 <QuestionCard>
-  <CodeBlock client:only code={'println!("Hello World!")'} />
+  <CodeBlock client:only code={'println!("Hello World!")'} showLineNumbers={false} errorMsg={`Woops, something went wrong and the code does not compile!\nIf you've mistakenly messed up the code, click the "Reset" button to return it back to its original state.`} />
 </QuestionCard>
 
 :::tip[Exercise]

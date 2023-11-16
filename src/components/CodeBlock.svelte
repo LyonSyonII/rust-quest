@@ -16,15 +16,13 @@
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
-  export let errorMsg = 'Woops, something went wrong and the code does not compile!\n\nIf you\'ve mistakenly messed up the code, click the "Reset" button to return it back to its original state.\n\nRemember to replace ? with your answer.';
-  
+  export let errorMsg = 'Woops, something went wrong and the code does not compile!\nIf you\'ve mistakenly messed up the code, click the "Reset" button to return it back to its original state.\n\nRemember to replace ? with your answer.';
+  /** Hide line numbers */
+  export let showLineNumbers = true;
+
   const theme = writable(document.documentElement.dataset.theme);
-  const observer = onThemeChange((newtheme) => {
-    theme.set(newtheme);
-  });
-  onDestroy(() => {
-    observer.disconnect()
-  });
+  const observer = onThemeChange(t => theme.set(t));
+  onDestroy(() => observer.disconnect());
 
   let value = code;
   let running = false;
@@ -94,7 +92,7 @@
     bind:value
     lang={rust()}
     theme={$theme === "dark" ? githubDark : githubLight}
-    basic={false}
+    basic={showLineNumbers}
     editable={!running}
   />
 

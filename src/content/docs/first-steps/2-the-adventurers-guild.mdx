@@ -16,6 +16,7 @@ export function SimpleQuestion({
 }) {
   const no_dummy = code.toString().replace("?", "");
   const setup = `
+        __VALUE__;
         const VALUE: &str = "__VALUE__";
         if ${checkMessed} && !VALUE.starts_with("${no_dummy}") {
             println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
@@ -31,7 +32,7 @@ export function SimpleQuestion({
     `.replaceAll("\n", "");
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} />
+      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
     </QuestionCard>
   );
 }
@@ -50,7 +51,7 @@ export function FreeQuestion({ question, code, correct }) {
     `.replaceAll("\n", "");
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} />
+      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
     </QuestionCard>
   );
 }
