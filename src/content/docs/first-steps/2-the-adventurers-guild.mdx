@@ -6,9 +6,6 @@ description: An introduction to RustQuest
 import QuestionCard from "@components/QuestionCard.astro";
 import CodeBlock from "@components/CodeBlock.svelte";
 
-export const errorMsg =
-  'Woops, something went wrong and the code does not compile!\n\nIf you\'ve mistakenly messed up the code, click the "Reset" button to return it back to its original state.\n\nRemember to replace ? with your answer.';
-
 export function SimpleQuestion({
   question,
   code,
@@ -53,7 +50,7 @@ export function FreeQuestion({ question, code, correct }) {
     `.replaceAll("\n", "");
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} errorMsg={errorMsg} />
+      <CodeBlock client:only code={code} setup={setup} />
     </QuestionCard>
   );
 }
@@ -66,7 +63,7 @@ Good choice! Programmers are a very versatile class, give them enough time and t
 
 This class requires a small test, to ensure that you have the minimum problem solving skills. It'll be just a moment.
 
-Please, fill up the gaps in the following statements, replace "?" with the correct answer.
+Please, fill up the gaps in the following statements, replace **`?`** with the correct answer.
 
 :::note[Don't worry]
 If you mess up the code, click the "Reset" button to return it back to its original state.
@@ -146,6 +143,5 @@ Now please sign here, and you'll be ready to take your first quest.
     setup={
       '__VALUE__ if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'
     }
-    errorMsg={errorMsg}
   />
 </QuestionCard>

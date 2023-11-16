@@ -13,9 +13,10 @@
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
-  /** Code in the editor */
+  /** Code visible in the editor */
   export let code = "";
-  export let errorMsg = "";
+  /** Error message in case the code doesn't compile */
+  export let errorMsg = 'Woops, something went wrong and the code does not compile!\n\nIf you\'ve mistakenly messed up the code, click the "Reset" button to return it back to its original state.\n\nRemember to replace ? with your answer.';
   
   const theme = writable(document.documentElement.dataset.theme);
   const observer = onThemeChange((newtheme) => {
@@ -91,7 +92,7 @@
     bind:value
     lang={rust()}
     theme={$theme === "dark" ? githubDark : githubLight}
-    basic={true}
+    basic={false}
     editable={!running}
   />
 
@@ -124,10 +125,15 @@
   }
   .wrapper {
     display: grid;
-    grid-template-columns: 1fr auto auto;
     font-size: 1rem;
     border-radius: 6px;
     margin: 0rem;
+    grid-template-columns: 80% 32px 32px;
+  }
+  @media only screen and (min-width: 768px) {
+    .wrapper {
+      grid-template-columns: 90% auto auto;
+    }
   }
   button {
     background-color: rgba(0, 0, 0, 0);
@@ -150,7 +156,7 @@
     border-color: color-mix(in srgb, var(--sl-color-white), transparent 90%);
     border-radius: 6px;
     padding: 1rem;
-    grid-column: span 2;
+    grid-column: span 3;
     margin-top: 1rem;
     white-space: pre-line;
   }
