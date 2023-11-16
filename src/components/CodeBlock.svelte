@@ -129,12 +129,15 @@
     margin: 0rem;
 
     font-size: 0.9rem;
-    grid-template-columns: 80% 32px 32px;
+    grid-template-columns: 80% auto auto;
   }
   @media only screen and (min-width: 768px) {
     .wrapper {
       font-size: 1rem;
       grid-template-columns: 90% auto auto;
+    }
+    button {
+      margin-left: 0.5rem;
     }
   }
   button {
@@ -142,7 +145,7 @@
     color: var(--sl-color-white);
     cursor: pointer;
     border: 0px;
-    margin-left: 0.5rem;
+    margin-left: 0rem;
     padding-bottom: 0px;
     height: fit-content;
     transition: color 0.25s ease;
