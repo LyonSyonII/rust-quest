@@ -21,12 +21,28 @@ export default defineConfig({
       sidebar: [
         {
           label: "First Steps",
+          translations: {
+            es: "Primeros Pasos",
+            ca: "Primeres Passes",
+          },
           autogenerate: {
             directory: "first-steps",
           },
         },
       ],
       customCss: ["./src/styles/custom.css"],
+      defaultLocale: "en",
+      locales: {
+        en: {
+          label: "English"
+        },
+        es: {
+          label: "Español"
+        },
+        ca: {
+          label: "Català"
+        }
+      }
     }),
     svelte(),
   ],
