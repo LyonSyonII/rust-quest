@@ -1,6 +1,6 @@
 ---
 title: The Adventurer's Guild
-description: An introduction to RustQuest
+description: The hero registers into the Adventurer's Guild
 ---
 
 import QuestionCard from "@components/QuestionCard.astro";
@@ -16,7 +16,6 @@ export function SimpleQuestion({
 }) {
   const no_dummy = code.toString().replace("?", "");
   const setup = `
-        __VALUE__;
         const VALUE: &str = "__VALUE__";
         if ${checkMessed} && !VALUE.starts_with("${no_dummy}") {
             println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
@@ -38,11 +37,6 @@ export function SimpleQuestion({
 }
 export function FreeQuestion({ question, code, correct }) {
   const setup = `
-        const VALUE: &str = "__VALUE__";
-        if VALUE.contains("?") {
-            println!("Replace ? with your answer.");
-            return;
-        }
         if __VALUE__ {
             println!("${correct}");
         } else {
@@ -57,17 +51,17 @@ export function FreeQuestion({ question, code, correct }) {
 }
 
 Good morning!  
-I see you're new on this town, welcome to Newlia, where new heroes are born!
+I see you're new to this town, welcome to Newlia, where new heroes are born!
 
 Oh, you want to register as a new adventurer? And you want to choose the "Programmer" class?  
 Good choice! Programmers are a very versatile class, give them enough time and they can do anything!
 
-This class requires a small test, to ensure that you have the minimum problem solving skills. It'll be just a moment.
+This class requires a small test, to ensure that you have the minimum problem-solving skills. It'll be just a moment.
 
 Please, fill up the gaps in the following statements, replace **`?`** with the correct answer.
 
 :::note[Don't worry]
-If you mess up the code, click the "Reset" button to return it back to its original state.
+If you mess up the code, click the "Reset" button to return it to its original state.
 :::
 
 <SimpleQuestion
@@ -98,7 +92,7 @@ All right, let's up the challenge a bit.
   wrong="16 / 4 != 2 * {a}, keep trying!"
 />
 
-Well well, Mr. Calculator knows his math!  
+Well, well, Mr. Calculator knows his math!  
 Just kidding, I told you it would be pretty easy ;)
 
 Now we'll do some comparisons, simple stuff.
@@ -129,9 +123,9 @@ Now we'll do some comparisons, simple stuff.
 
 :::tip[Exercise]
 See what we're doing here?  
-Try rewriting the exercises above exactly how the question is formulated.
+Try rewriting the code of the exercises above, exactly how the question is formulated.
 
-For example, the first one is currently saying `two hundred is smaller than ?` instead of `? is greater than two hundred`.
+For example, the first one is currently saying `200 < ?` instead of `? > 200`.
 :::
 
 Excellent!  
@@ -146,3 +140,4 @@ Now please sign here, and you'll be ready to take your first quest.
     }
   />
 </QuestionCard>
+
