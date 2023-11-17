@@ -6,11 +6,12 @@ import svelte from "@astrojs/svelte";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://lyonsyonii.github.io",
+  site: "https://garriga.dev",
   base: "/rust-quest",
   integrations: [
     starlight({
       title: "Rust Quest",
+      tableOfContents: false,
       logo: {
         src: "./src/assets/ferris.svg",
         // replacesTitle: true,
