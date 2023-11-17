@@ -1,6 +1,6 @@
 ---
 title: The Adventurer's Guild
-description: The hero registers into the Adventurer's Guild
+description: The hero registers into the Adventurer's Guild.
 ---
 
 import QuestionCard from "@components/QuestionCard.astro";
@@ -50,15 +50,15 @@ export function FreeQuestion({ question, code = "", correct }) {
   );
 }
 
-Good morning!  
-I see you're new to this town, welcome to Newlia, where new heroes are born!
+Good morning, welcome to Newlia, where new heroes are born!
 
-Oh, you want to register as a new adventurer? And you want to choose the "Programmer" class?  
-Good choice! Programmers are a very versatile class, give them enough time and they can do anything!
+Are you here to register as an adventurer? And you want to choose the "Programmer" class?  
+Great choice! Programmers are a versatile class, give them enough time and they can do anything!
 
-This class requires a small test, to ensure that you have the minimum problem-solving skills. It'll be just a moment.
+This class requires a small test, to make sure you have the minimum problem-solving skills.  
+It'll take just a moment.
 
-Please, fill up the gaps in the following statements, replace **`?`** with the correct answer.
+Please, fill in the blanks in the following statements, replacing **`?`** with the correct answer.
 
 :::note[Don't worry]
 If you mess up the code, click the "Reset" button to return it to its original state.
@@ -93,7 +93,7 @@ All right, let's up the challenge a bit.
 />
 
 Well, well, Mr. Calculator knows his math!  
-Just kidding, I told you it would be pretty easy ;)
+Just kidding, I promised this would be pretty easy ;)
 
 Now we'll do some comparisons, simple stuff.
 
@@ -125,8 +125,8 @@ Now we'll do some comparisons, simple stuff.
 See what we're doing here?  
 Try rewriting the code of the exercises above, exactly how the question is formulated.
 
-For example, the first question is `write any number greater than 200`, but the code is currently saying `200 is smaller than ?`, instead of `? is greater than 200`.  
-Remember to replace `?` in your final answer.
+For instance, for the first question, instead of saying `200 is smaller than ?`, say `? is greater than 200`.
+Remember to fill in the `?` in your final submission.
 
 <FreeQuestion
   question="Write any number greater than 200."
@@ -157,7 +157,7 @@ Now please sign here, and you'll be ready to take your first quest.
     client:only
     code={'let name = "?";'}
     setup={
-      '__VALUE__ if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'
+      '__VALUE__; if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'
     }
   />
 </QuestionCard>

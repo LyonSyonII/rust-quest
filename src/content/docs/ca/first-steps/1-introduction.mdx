@@ -7,30 +7,29 @@ import CodeBlock from "@components/CodeBlock.svelte";
 import QuestionCard from "@components/QuestionCard.astro";
 
 Gràcies per llegir Rust Quest!  
-Aquest llibre està construït tenint en compte gent amb zero experiència amb Rust o programació en general, no tinguis por, estic segur que aprendràs alguna cosa!
+Aquest llibre està pensat per gent amb zero experiència amb Rust o programació en general, no tinguis por, estic segur que aprendràs alguna cosa!
 
-Normalment, Rust es veu com un llenguatge amb una gran corba d'aprenentatge, i no se sol recomanar com a primer llenguatge.  
-Bé, la meva missió és demostrar el contrari!
+Normalment, Rust es veu com un llenguatge difícil d'aprendre, i se sol recomanar com a primer llenguatge.
+Doncs bé, el meu objectiu és demostrar el contrari!
 
-Crec fermament que Rust, encara que estricte, és un professor que s'assegurarà que saps què fa el teu codi abans de fins i tot deixar que l'executis.  
+Crec que Rust és un professor molt estricte però minuciós, que s'assegura que entens el teu codi abans de deixar que l'executis.  
+Alguns poden trobar això poc atractiu al principi: "Deixa'm executar el meu programa!".  
+Però la veritat és que aquesta rigorositat et farà un millor programador, un que escriu codi que "funciona a la primera".
 
-Això pot semblar indesitjable al principi, "deixa'm córrer el meu programa!", sento molts de vosaltres dir.  
-Però la veritat és que aquesta rigorositat et farà un millor programador, un programador que escriu codi que "funciona a la primera".
+El que fa únic a aquest llibre és que està organitzat en 'Missions'.
+Cada missió et proporcionarà una lliçó de programació, i inclou un fragment de codi que hauràs de modificar per completar-la.
 
-Aquest és un llibre una mica especial, ja que està estructurat en 'Missions', on cadascuna t'ensenyarà sobre un tema específic de programació.  
-Cada 'Missió' tindrà un bloc de codi, i hauràs de modificar-lo d'alguna manera per completar-la.
-
-Intenta executar el següent codi (fes clic al botó d'"Executar" de la dreta o `⇧ + ↵` al teclat mentre estiguis editant):
+Intenta executar el següent fragment de codi (fes clic al botó d'"Executar" de la dreta o `⇧ + ↵` al teclat mentre estiguis editant):
 
 <QuestionCard>
   <CodeBlock client:only code={'println!("Hola, Món!")'} showLineNumbers={false} errorMsg={`Ups, alguna cosa ha fallat i el codi no compila!\nSi t'has equivocat modificant el codi, fes clic al botó de "Reset" per tornar-lo al seu estat original.`} />
 </QuestionCard>
 
-:::tip[Exercise]
+:::tip[Exercici]
 Però... El teu nom no és _Món_, oi?  
 Intenta canviar la línia perquè digui `Hola, {ElTeuNom}!`.  
-Per exemple, `"Hola, Liam!"`
+Per exemple: `"Hola, Liam!"`.
 :::
 
 Ara l'ordinador et parla, que simpàtic!  
-Si estàs llest, fes clic a la fletxa de sota per començar el teu viatge!
+Si estàs llest, fes clic a la fletxa de sota per començar la teva aventura!

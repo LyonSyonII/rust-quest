@@ -1,0 +1,164 @@
+---
+title: El Gremio de Aventureros
+description: El héroe se registra en el Gremio de Aventureros.
+---
+
+import QuestionCard from "@components/QuestionCard.astro";
+import CodeBlock from "@components/CodeBlock.svelte";
+
+export function SimpleQuestion({
+  question,
+  code,
+  answer,
+  correct,
+  wrong,
+  checkMessed = true,
+}) {
+  const no_dummy = code.toString().replace("?", "");
+  const setup = `
+        const VALUE: &str = "__VALUE__";
+        if ${checkMessed} && !VALUE.starts_with("${no_dummy}") {
+            println!("Parece que has estropeado el código, haz clic en el botón \\"Reset\\" para devolverlo a su estado original.");
+            println!("Recuerda modificar únicamente las partes con ?.");
+            return;
+        }
+        let a = VALUE.replace("${no_dummy}", "");
+        match a.trim() {
+            "${answer}" => println!("${correct}"),
+            "?" => println!("Substituye ? con tu respuesta."),
+            _ => println!("${wrong}"),
+        }
+    `.replaceAll("\n", "");
+  return (
+    <QuestionCard question={question}>
+      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
+    </QuestionCard>
+  );
+}
+export function FreeQuestion({ question, code = "", correct }) {
+  const setup = `
+        if __VALUE__ {
+            println!("${correct}");
+        } else {
+            println!("Tu respuesta es incorrecta, ¡inténtalo de nuevo!");
+        }
+    `.replaceAll("\n", "");
+  return (
+    <QuestionCard question={question}>
+      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
+    </QuestionCard>
+  );
+}
+
+Buenos días, bienvenido a Newlia, ¡donde nacen los nuevos héroes!
+
+¿Estás aquí para registrarte como aventurero? ¿Y quieres elegir la clase "Programador"?  
+¡Buena elección! Los programadores son una clase versátil, ¡dales el tiempo suficiente y podrán hacer cualquier cosa!
+
+Esta clase requiere una pequeña prueba, para asegurarnos de que tienes las habilidades mínimas para resolver problemas.  
+Sólo te llevará un momento.
+
+Por favor, rellena los espacios en blanco de los siguientes enunciados, sustituyendo **`?`** por la respuesta correcta.
+
+:::note[No te preocupes]
+Si te equivocas con el código, haz clic en el botón "Reset" para devolverlo a su estado original.
+:::
+
+<SimpleQuestion
+  question="¿Cuánto es cinco más cinco?"
+  code="5 + 5 == ?"
+  answer="10"
+  correct="5 + 5 == 10, ¡buen trabajo!"
+  wrong="5 + 5 != {a}, ¡sigue intentado!"
+/>
+
+¡Bien hecho! Continuemos.
+
+<SimpleQuestion
+  question="¿Cuánto es menos uno menos uno?"
+  code="-1 - 1 == ?"
+  answer="-2"
+  correct="¡Eso es, -2! Veo que no te dejas engañar fácilmente."
+  wrong="-1 - 1 != {a}, ¡sigue intentado!"
+/>
+
+Muy bien, subamos un poco el reto.
+
+<SimpleQuestion
+  question="¿Cuál es el número que multiplicado por dos es igual a dieciséis dividido por cuatro?"
+  code="16 / 4 == 2 * ?"
+  answer="2"
+  correct="Perfecto. Ahora ya sabes cómo hacer que el ordenador haga cálculos básicos por ti, ¡bien hecho!"
+  wrong="16 / 4 != 2 * {a}, ¡sigue intentado!"
+/>
+
+Vaya, vaya, ¡el Sr. Calculadora sabe matemáticas!  
+Es broma, ya te he prometido que sería bastante fácil ;)
+
+Ahora haremos algunas comparaciones, cosas sencillas.
+
+<FreeQuestion
+  question="Escribe cualquier número superior a 200."
+  code="200 < ?"
+  correct="¡Correcto!"
+/>
+
+<FreeQuestion
+  question="De acuerdo... Ahora uno inferior a 200."
+  code="200 > ?"
+  correct="¡Perfecto!"
+/>
+
+<FreeQuestion
+  question="Ahora uno que sea menor o igual a 0."
+  code="0 >= ?"
+  correct="¡Buena respuesta!"
+/>
+
+<FreeQuestion
+  question="Y finalmente uno que sea mayor o igual a 0."
+  code="0 <= ?"
+  correct="¡Fantástico!"
+/>
+
+:::tip[Ejercicio]
+¿Ves lo que estamos haciendo?  
+Intenta reescribir el código de los ejercicios anteriores, exactamente como está formulada la pregunta.
+
+Por ejemplo, para la primera pregunta, en lugar de decir `200 es menor que ?`, di `? es mayor que 200`.  
+Acuérdate de rellenar el `?` en tu respuesta final.
+
+<FreeQuestion
+  question="Escribe cualquier número superior a 200."
+  correct="¡Correcto!"
+/>
+
+<FreeQuestion
+  question="De acuerdo... Ahora uno inferior a 200."
+  correct="¡Perfecto!"
+/>
+
+<FreeQuestion
+  question="Ahora uno que sea menor o igual a 0."
+  correct="¡Buena respuesta!"
+/>
+
+<FreeQuestion
+  question="Y finalmente uno que sea mayor o igual a 0."
+  correct="¡Fantástico!"
+/>
+:::
+
+¡Excelente!  
+Ahora por favor firma aquí, y estarás listo para tu primera misión.
+
+<QuestionCard>
+  <CodeBlock
+    client:only
+    code={'let name = "?";'}
+    setup={
+      '__VALUE__; if name == "?" { println!("pista: ¡simplemente sustituye ? con tu nombre!") } else { println!("{name}, ¡bienvenido al Gremio de Aventureros!") }'
+    }
+  />
+</QuestionCard>
+
