@@ -1,0 +1,164 @@
+---
+title: The Adventurer's Guild
+description: The hero registers into the Adventurer's Guild
+---
+
+import QuestionCard from "@components/QuestionCard.astro";
+import CodeBlock from "@components/CodeBlock.svelte";
+
+export function SimpleQuestion({
+  question,
+  code,
+  answer,
+  correct,
+  wrong,
+  checkMessed = true,
+}) {
+  const no_dummy = code.toString().replace("?", "");
+  const setup = `
+        const VALUE: &str = "__VALUE__";
+        if ${checkMessed} && !VALUE.starts_with("${no_dummy}") {
+            println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
+            println!("Remember to only modify the ? part of the code.");
+            return;
+        }
+        let a = VALUE.replace("${no_dummy}", "");
+        match a.trim() {
+            "${answer}" => println!("${correct}"),
+            "?" => println!("Replace ? with your answer."),
+            _ => println!("${wrong}"),
+        }
+    `.replaceAll("\n", "");
+  return (
+    <QuestionCard question={question}>
+      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
+    </QuestionCard>
+  );
+}
+export function FreeQuestion({ question, code = "", correct }) {
+  const setup = `
+        if __VALUE__ {
+            println!("${correct}");
+        } else {
+            println!("Your answer is wrong, try again!");
+        }
+    `.replaceAll("\n", "");
+  return (
+    <QuestionCard question={question}>
+      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
+    </QuestionCard>
+  );
+}
+
+Good morning!  
+I see you're new to this town, welcome to Newlia, where new heroes are born!
+
+Oh, you want to register as a new adventurer? And you want to choose the "Programmer" class?  
+Good choice! Programmers are a very versatile class, give them enough time and they can do anything!
+
+This class requires a small test, to ensure that you have the minimum problem-solving skills. It'll be just a moment.
+
+Please, fill up the gaps in the following statements, replace **`?`** with the correct answer.
+
+:::note[Don't worry]
+If you mess up the code, click the "Reset" button to return it to its original state.
+:::
+
+<SimpleQuestion
+  question="What's five plus five?"
+  code="5 + 5 == ?"
+  answer="10"
+  correct="5 + 5 == 10, good job!"
+  wrong="5 + 5 != {a}, keep trying!"
+/>
+
+Well done! Let's continue.
+
+<SimpleQuestion
+  question="What's negative one minus one?"
+  code="-1 - 1 == ?"
+  answer="-2"
+  correct="That's right, -2! I see you aren't fooled easily."
+  wrong="-1 - 1 != {a}, keep trying!"
+/>
+
+All right, let's up the challenge a bit.
+
+<SimpleQuestion
+  question="What's the number that multiplied by two equals sixteen divided by four?"
+  code="16 / 4 == 2 * ?"
+  answer="2"
+  correct="Perfect! Now you know how to make the computer do basic calculations for you, well done!"
+  wrong="16 / 4 != 2 * {a}, keep trying!"
+/>
+
+Well, well, Mr. Calculator knows his math!  
+Just kidding, I told you it would be pretty easy ;)
+
+Now we'll do some comparisons, simple stuff.
+
+<FreeQuestion
+  question="Write any number greater than 200."
+  code="200 < ?"
+  correct="Correct!"
+/>
+
+<FreeQuestion
+  question="Okay... Now a number smaller than 200."
+  code="200 > ?"
+  correct="Perfect!"
+/>
+
+<FreeQuestion
+  question="Now one that's smaller or equal than 0."
+  code="0 >= ?"
+  correct="Good answer!"
+/>
+
+<FreeQuestion
+  question="And finally one that's greater or equal than 0."
+  code="0 <= ?"
+  correct="Fantastic!"
+/>
+
+:::tip[Exercise]
+See what we're doing here?  
+Try rewriting the code of the exercises above, exactly how the question is formulated.
+
+For example, the first question is `write any number greater than 200`, but the code is currently saying `200 is smaller than ?`, instead of `? is greater than 200`.  
+Remember to replace `?` in your final answer.
+
+<FreeQuestion
+  question="Write any number greater than 200."
+  correct="Correct!"
+/>
+
+<FreeQuestion
+  question="Okay... Now a number smaller than 200."
+  correct="Perfect!"
+/>
+
+<FreeQuestion
+  question="Now one that's smaller or equal than 0."
+  correct="Good answer!"
+/>
+
+<FreeQuestion
+  question="And finally one that's greater or equal than 0."
+  correct="Fantastic!"
+/>
+:::
+
+Excellent!  
+Now please sign here, and you'll be ready to take your first quest.
+
+<QuestionCard>
+  <CodeBlock
+    client:only
+    code={'let name = "?";'}
+    setup={
+      '__VALUE__ if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'
+    }
+  />
+</QuestionCard>
+

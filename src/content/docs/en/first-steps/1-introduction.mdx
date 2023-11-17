@@ -1,0 +1,35 @@
+---
+title: Introduction
+description: An introduction to Rust Quest
+---
+
+import CodeBlock from "@components/CodeBlock.svelte";
+import QuestionCard from "@components/QuestionCard.astro";
+
+Thank you for reading Rust Quest!  
+This book is built accounting for people with zero experience about Rust or programming in general, so don't be scared, I'm sure you'll leave having learned something!
+
+Usually, Rust is viewed as a language with a very steep learning curve, and not recommended as a first language.  
+Well, my mission here is to demonstrate the opposite!
+
+I believe that Rust is a very strict but thorough teacher, that will make sure you understand what your code does before even letting you execute it.  
+This may seem undesirable at first, "let me run my program!" I hear a lot of you saying.  
+But the truth is that this strictness will make you a better programmer, a programmer that writes code that "works the first time".
+
+This is a somewhat special book, as it's structured in 'Quests', where each one will teach you about a specific topic on programming.  
+Each 'Quest' will have a code snippet, and you'll need to modify it in some way to complete it.
+
+Try running the following snippet (click the "Run" button at the right or `⇧ + ↵` on your keyboard while editing):
+
+<QuestionCard>
+  <CodeBlock client:only code={'println!("Hello World!")'} showLineNumbers={false} errorMsg={`Woops, something went wrong and the code does not compile!\nIf you've mistakenly messed up the code, click the "Reset" button to return it back to its original state.`} />
+</QuestionCard>
+
+:::tip[Exercise]
+Well... Your name isn't _World_, right?  
+Try changing the line to say `Hello {YourName}!` instead.  
+e.g. `"Hello Liam!"`
+:::
+
+Now the computer is speaking to you, how nice!  
+If you're ready, click the arrow below to start your journey!
