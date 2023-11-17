@@ -35,7 +35,7 @@ export function SimpleQuestion({
     </QuestionCard>
   );
 }
-export function FreeQuestion({ question, code, correct }) {
+export function FreeQuestion({ question, code = "", correct }) {
   const setup = `
         if __VALUE__ {
             println!("${correct}");

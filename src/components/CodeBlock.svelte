@@ -94,6 +94,7 @@
     theme={$theme === "dark" ? githubDark : githubLight}
     basic={showLineNumbers}
     editable={!running}
+    placeholder="Enter your code here..."
   />
 
   <button
