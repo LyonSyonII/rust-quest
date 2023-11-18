@@ -5,7 +5,6 @@ description: L'heroi es registra en el Gremi d'Aventurers.
 
 import QuestionCard from "@components/QuestionCard.astro";
 import CodeBlock from "@components/CodeBlock.svelte";
-import lang from "@i18n/ca.json";
 
 export function SimpleQuestion({
   question,
@@ -30,10 +29,16 @@ export function SimpleQuestion({
             _ => println!("${wrong}"),
         }
     `.replaceAll("\n", "");
-  
+
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} lang="ca" />
+      <CodeBlock
+        client:only
+        code={code}
+        setup={setup}
+        showLineNumbers={false}
+        lang="ca"
+      />
     </QuestionCard>
   );
 }
@@ -47,7 +52,13 @@ export function FreeQuestion({ question, code = "", correct }) {
     `.replaceAll("\n", "");
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} lang="ca"/>
+      <CodeBlock
+        client:only
+        code={code}
+        setup={setup}
+        showLineNumbers={false}
+        lang="ca"
+      />
     </QuestionCard>
   );
 }
@@ -127,7 +138,7 @@ Ara farem algunes comparacions, res difícil.
 Veus el que estem fent?  
 Intenta reescriure el codi dels exercicis que hem fet, exactament com es formula la pregunta.
 
-Per exemple, per la primera pregunta, en comptes de dir `200 és més petit que ?`, digues `? és més gran que 200`.  
+Per exemple, per la primera pregunta, en comptes de dir `200 és més petit que ?`, digues `? és més gran que 200`.
 
 **Recorda substituïr `?` en la solució final.**
 
@@ -165,4 +176,3 @@ Ara si us plau signa aquí, i estaràs llest per fer la teva primera missió.
     lang="ca"
   />
 </QuestionCard>
-

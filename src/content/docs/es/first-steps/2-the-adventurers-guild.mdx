@@ -31,7 +31,13 @@ export function SimpleQuestion({
     `.replaceAll("\n", "");
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} lang="es" />
+      <CodeBlock
+        client:only
+        code={code}
+        setup={setup}
+        showLineNumbers={false}
+        lang="es"
+      />
     </QuestionCard>
   );
 }
@@ -45,7 +51,13 @@ export function FreeQuestion({ question, code = "", correct }) {
     `.replaceAll("\n", "");
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} lang="es" />
+      <CodeBlock
+        client:only
+        code={code}
+        setup={setup}
+        showLineNumbers={false}
+        lang="es"
+      />
     </QuestionCard>
   );
 }
@@ -125,7 +137,7 @@ Ahora haremos algunas comparaciones, cosas sencillas.
 ¿Ves lo que estamos haciendo?  
 Intenta reescribir el código de los ejercicios anteriores, exactamente como está formulada la pregunta.
 
-Por ejemplo, para la primera pregunta, en lugar de decir `200 es menor que ?`, di `? es mayor que 200`.  
+Por ejemplo, para la primera pregunta, en lugar de decir `200 es menor que ?`, di `? es mayor que 200`.
 
 **Acuérdate de rellenar el `?` en tu respuesta final.**
 
@@ -163,4 +175,3 @@ Ahora por favor firma aquí, y estarás listo para tu primera misión.
     lang="es"
   />
 </QuestionCard>
-

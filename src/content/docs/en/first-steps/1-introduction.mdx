@@ -12,7 +12,7 @@ This book is designed for people with zero experience in Rust or programming in 
 Usually, Rust is seen as a difficult language to learn, and is not recommended as a first language.  
 Well, my goal is to prove otherwise!
 
-I believe Rust is a very strict but thorough teacher, that makes sure you understand your code before letting you run it.    
+I believe Rust is a very strict but thorough teacher, that makes sure you understand your code before letting you run it.  
 Some may find this unappealing at first: "Let me run my program!"  
 However, this strictness will make you a better programmer, one that writes code that "works the first time".
 
@@ -22,7 +22,12 @@ Each quest provides a programming lesson and includes a snippet of code that you
 Try running the following snippet (click the "Run" button on the right or press `⇧ + ↵` on your keyboard while editing):
 
 <QuestionCard>
-  <CodeBlock client:only code={'println!("Hello World!")'} showLineNumbers={false} errorMsg={`Woops, something went wrong and the code does not compile!\nIf you've mistakenly messed up the code, click the "Reset" button to return it back to its original state.`} />
+  <CodeBlock
+    client:only
+    code={'println!("Hello World!")'}
+    showLineNumbers={false}
+    errorMsg={`Woops, something went wrong and the code does not compile!\nIf you've mistakenly messed up the code, click the "Reset" button to return it back to its original state.`}
+  />
 </QuestionCard>
 
 :::tip[Exercise]

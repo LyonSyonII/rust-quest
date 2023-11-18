@@ -35,15 +35,15 @@ export default defineConfig({
       defaultLocale: "en",
       locales: {
         en: {
-          label: "English"
+          label: "English",
         },
         es: {
-          label: "Español"
+          label: "Español",
         },
         ca: {
-          label: "Català"
-        }
-      }
+          label: "Català",
+        },
+      },
     }),
     svelte(),
   ],

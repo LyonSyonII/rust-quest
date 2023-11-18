@@ -31,7 +31,12 @@ export function SimpleQuestion({
     `.replaceAll("\n", "");
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
+      <CodeBlock
+        client:only
+        code={code}
+        setup={setup}
+        showLineNumbers={false}
+      />
     </QuestionCard>
   );
 }
@@ -45,7 +50,12 @@ export function FreeQuestion({ question, code = "", correct }) {
     `.replaceAll("\n", "");
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
+      <CodeBlock
+        client:only
+        code={code}
+        setup={setup}
+        showLineNumbers={false}
+      />
     </QuestionCard>
   );
 }
@@ -161,4 +171,3 @@ Now please sign here, and you'll be ready to take your first quest.
     }
   />
 </QuestionCard>
-
