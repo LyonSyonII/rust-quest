@@ -6,7 +6,8 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["src/components/*"],
-      "@assets/*": ["src/assets/*"]
+      "@assets/*": ["src/assets/*"],
+      "@i18n/*": ["src/content/i18n/*"], 
     }
   },
   "exclude": ["./node_modules", "./dist"]

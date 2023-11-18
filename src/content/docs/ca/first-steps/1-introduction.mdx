@@ -9,25 +9,25 @@ import QuestionCard from "@components/QuestionCard.astro";
 Gràcies per llegir Rust Quest!  
 Aquest llibre està pensat per gent amb zero experiència amb Rust o programació en general, no tinguis por, estic segur que aprendràs alguna cosa!
 
-Normalment, Rust es veu com un llenguatge difícil d'aprendre, i se sol recomanar com a primer llenguatge.
+Normalment, Rust es veu com un llenguatge difícil d'aprendre, i no se sol recomanar com a primer llenguatge.  
 Doncs bé, el meu objectiu és demostrar el contrari!
 
-Crec que Rust és un professor molt estricte però minuciós, que s'assegura que entens el teu codi abans de deixar que l'executis.  
+Crec que Rust és un professor molt estricte i minuciós, que s'assegura que entens el teu codi abans de deixar que l'executis.  
 Alguns poden trobar això poc atractiu al principi: "Deixa'm executar el meu programa!".  
 Però la veritat és que aquesta rigorositat et farà un millor programador, un que escriu codi que "funciona a la primera".
 
-El que fa únic a aquest llibre és que està organitzat en 'Missions'.
+El que fa únic a aquest llibre és que està organitzat en 'Missions'.  
 Cada missió et proporcionarà una lliçó de programació, i inclou un fragment de codi que hauràs de modificar per completar-la.
 
 Intenta executar el següent fragment de codi (fes clic al botó d'"Executar" de la dreta o `⇧ + ↵` al teclat mentre estiguis editant):
 
 <QuestionCard>
-  <CodeBlock client:only code={'println!("Hola, Món!")'} showLineNumbers={false} errorMsg={`Ups, alguna cosa ha fallat i el codi no compila!\nSi t'has equivocat modificant el codi, fes clic al botó de "Reset" per tornar-lo al seu estat original.`} />
+  <CodeBlock client:only code={'println!("Hola, Món!")'} showLineNumbers={false} lang="ca" errorMsg={`Ups, alguna cosa ha fallat i el codi no compila!\nSi t'has equivocat modificant el codi, fes clic al botó de "Reset" per tornar-lo al seu estat original.`} />
 </QuestionCard>
 
 :::tip[Exercici]
 Però... El teu nom no és _Món_, oi?  
-Intenta canviar la línia perquè digui `Hola, {ElTeuNom}!`.  
+Canvia la línia perquè digui `Hola, {ElTeuNom}!`.  
 Per exemple: `"Hola, Liam!"`.
 :::
 

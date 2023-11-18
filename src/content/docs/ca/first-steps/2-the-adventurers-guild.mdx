@@ -5,6 +5,7 @@ description: L'heroi es registra en el Gremi d'Aventurers.
 
 import QuestionCard from "@components/QuestionCard.astro";
 import CodeBlock from "@components/CodeBlock.svelte";
+import lang from "@i18n/ca.json";
 
 export function SimpleQuestion({
   question,
@@ -29,9 +30,10 @@ export function SimpleQuestion({
             _ => println!("${wrong}"),
         }
     `.replaceAll("\n", "");
+  
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
+      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} lang="ca" />
     </QuestionCard>
   );
 }
@@ -45,7 +47,7 @@ export function FreeQuestion({ question, code = "", correct }) {
     `.replaceAll("\n", "");
   return (
     <QuestionCard question={question}>
-      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} />
+      <CodeBlock client:only code={code} setup={setup} showLineNumbers={false} lang="ca"/>
     </QuestionCard>
   );
 }
@@ -126,36 +128,31 @@ Veus el que estem fent?
 Intenta reescriure el codi dels exercicis que hem fet, exactament com es formula la pregunta.
 
 Per exemple, per la primera pregunta, en comptes de dir `200 és més petit que ?`, digues `? és més gran que 200`.  
-Recorda substituïr `?` en la solució final.
+
+**Recorda substituïr `?` en la solució final.**
 
 <FreeQuestion
   question="Escriu qualsevol nombre més gran que 200."
-  code="200 < ?"
   correct="Correcte!"
 />
 
 <FreeQuestion
   question="D'acord... Ara un nombre més petit que 200."
-  code="200 > ?"
   correct="Perfecte!"
 />
 
 <FreeQuestion
   question="Ara un que sigui més petit o igual que 0."
-  code="0 >= ?"
   correct="Bona resposta!"
 />
 
 <FreeQuestion
   question="I finalment un que sigui més gran o igual que 0."
-  code="0 <= ?"
   correct="Fantastic!"
 />
 :::
 
-Excel·lent!
-
-Excellent!  
+Excel·lent!  
 Ara si us plau signa aquí, i estaràs llest per fer la teva primera missió.
 
 <QuestionCard>
@@ -165,6 +162,7 @@ Ara si us plau signa aquí, i estaràs llest per fer la teva primera missió.
     setup={
       '__VALUE__; if name == "?" { println!("pista: simplement canvia ? pel teu nom!") } else { println!("{name}, benvingut al Gremi d\'Aventurers!") }'
     }
+    lang="ca"
   />
 </QuestionCard>
 
