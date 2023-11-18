@@ -6,9 +6,9 @@ description: Finally, your first quest! What will it be...
 import QuestionCard from "@components/QuestionCard.astro";
 import CodeBlock from "@components/CodeBlock.svelte";
 
-export const mission = 
+export const quest = 
 `Welcome Adventurer.
-Your first mission is... To help the local grocer sort some vegetables!
+Your first quest is... To help the local grocer sort some vegetables!
 
 We expect great things of you.
 The Adventurer's Guild`;
@@ -20,8 +20,8 @@ Kill some monsters? Rescue a lost princess?
 
 Let's find out!
 
-<QuestionCard question="Read your first mission!">
-    <CodeBlock client:only code="read_mission()" setup={`fn read_mission() { println!("${mission}") } __VALUE__`} editable={false} showLineNumbers={false} />
+<QuestionCard question="Read your first quest!">
+    <CodeBlock client:only code="read_quest()" setup={`fn read_quest() { println!("${quest}") } __VALUE__`} editable={false} showLineNumbers={false} />
 </QuestionCard>
 
 ...well, let's do it then.
