@@ -3,4 +3,69 @@ title: The First Quest
 description: Finally, your first quest! What will it be...
 ---
 
-Work in progress
+import QuestionCard from "@components/QuestionCard.astro";
+import CodeBlock from "@components/CodeBlock.svelte";
+
+export const mission = 
+`Welcome Adventurer.
+Your first mission is... To help the local grocer sort some vegetables!
+
+We expect great things of you.
+The Adventurer's Guild`;
+
+Finally, your first quest!  
+
+What will it be?  
+Kill some monsters? Rescue a lost princess?
+
+Let's find out!
+
+<QuestionCard question="Read your first mission!">
+    <CodeBlock client:only code="read_mission()" setup={`fn read_mission() { println!("${mission}") } __VALUE__`} editable={false} showLineNumbers={false} />
+</QuestionCard>
+
+...well, let's do it then.
+
+---
+
+The grocery store has all the vegetables stored in magical boxes.  
+Every box has a label indicating what vegetable it contains, and a panel with the number of vegetables in it.
+
+Since the boxes are magical, their panel automatically updates when the number of vegetables in it changes.
+
+The grocer wants to know how many vegetables there are in total.  
+Unfortunately, he's really bad at math, and can't add up the numbers every time.
+
+Therefore, he needs you to come up with a way to calculate the total using the magical properties of the boxes.
+
+He presents you with the following code, which represents the boxes and their contents:
+
+export const code = 
+`let potatoes = 5;
+let carrots  = 4;
+let onions   = 2;
+
+let total = ? + ? + ?;`;
+export const setup =
+`__VALUE__
+let str = "__VALUE__";
+if !str.starts_with("${code.substring(0, code.lastIndexOf("="))}") {
+    println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
+    println!("Remember to only modify the ? part of the code.");
+    return;
+}
+if str[${code.lastIndexOf("=")}..str.len()-1].replace(" ", "").split("+").any(|x| x.parse::<u32>().is_ok()) {
+    println!("Copying each number isn't good enough.");
+    println!("You need to come up with a solution that works even if the numbers change.");
+    println!();
+    println!("Try using the magical properties of the boxes.");
+    return;
+}
+if total == potatoes + carrots + onions {
+    println!("potatoes + carrots + onions == {total}, great job!");
+}
+`;
+
+<QuestionCard question="What's the total number of vegetables in the grocery?">
+    <CodeBlock client:only code={code} setup={setup} />
+</QuestionCard>

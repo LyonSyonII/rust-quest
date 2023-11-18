@@ -23,7 +23,7 @@ export function SimpleQuestion({
             return;
         }
         let a = VALUE.replace("${no_dummy}", "");
-        match a.trim() {
+        match a.replace(" ", "").as_str() {
             "${answer}" => println!("${correct}"),
             "?" => println!("Replace ? with your answer."),
             _ => println!("${wrong}"),

@@ -21,6 +21,8 @@
   export let placeholder = "";
   /** Hide line numbers */
   export let showLineNumbers = true;
+  /** If the code block is editable */
+  export let editable = true;
   /** Language used by the editor */
   export let lang: keyof typeof langs = "en";
 
@@ -122,7 +124,7 @@
     lang={rust()}
     theme={$theme === "dark" ? githubDark : githubLight}
     basic={showLineNumbers}
-    editable={!running}
+    editable={editable && !running}
     placeholder={placeholder || langs[lang].placeholder}
   />
 
