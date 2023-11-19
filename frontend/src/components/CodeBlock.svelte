@@ -1,15 +1,15 @@
 <script lang="ts">
-  import CodeMirror from "svelte-codemirror-editor";
   import { rust } from "@codemirror/lang-rust";
-  import { githubLight } from "../codemirror-themes/github-light";
-  import { githubDark } from "../codemirror-themes/github-dark";
-  import "../styles/custom.css";
-  import { shortcut } from "@svelte-put/shortcut";
-  import { clickoutside } from "@svelte-put/clickoutside";
   import Icon from "@iconify/svelte";
-  import { writable } from "svelte/store";
+  import { clickoutside } from "@svelte-put/clickoutside";
+  import { shortcut } from "@svelte-put/shortcut";
   import { onThemeChange } from "src/utils/onThemeChange";
   import { onDestroy } from "svelte";
+  import CodeMirror from "svelte-codemirror-editor";
+  import { writable } from "svelte/store";
+  import { githubDark } from "../codemirror-themes/github-dark";
+  import { githubLight } from "../codemirror-themes/github-light";
+  import "../styles/custom.css";
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
@@ -67,17 +67,17 @@
 
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
-
+    
     const params = {
       version: "stable",
       optimize: "0",
-      code: `fn main() { ${setup.replaceAll("__VALUE__", value)} }`,
+      code: `#![forbid(unsafe_code)] fn main() { ${setup.replaceAll("__VALUE__", value)} }`,
       edition: "2021",
     };
 
     fetch("https://play.rust-lang.org/evaluate.json", {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       method: "POST",
       mode: "cors",
