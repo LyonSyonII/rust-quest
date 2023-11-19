@@ -5,3 +5,5 @@
 flake.lock
 flake.nix
 Cargo.lock
+Dockerfile
+run_docker.sh
