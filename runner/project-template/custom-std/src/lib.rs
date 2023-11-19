@@ -2,6 +2,11 @@
 
 pub use ::std::collections;
 pub use prelude::rust_2021::*;
+pub use ::std::time;
+
+pub mod thread {
+    pub use ::std::thread::sleep;
+}
 
 pub mod prelude {
     pub mod rust_2021 {

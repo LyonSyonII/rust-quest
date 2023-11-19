@@ -1,0 +1,7 @@
+.direnv
+.vscode
+**/target/*
+.envrc
+flake.lock
+flake.nix
+Cargo.lock

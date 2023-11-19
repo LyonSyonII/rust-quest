@@ -1,16 +1,10 @@
 use serde::{Deserialize, Serialize};
+use tokio::io::AsyncWriteExt;
 use warp::{
     http,
     reject::{Reject, Rejection},
     Filter,
 };
-use rust_embed::RustEmbed;
-
-#[derive(RustEmbed)]
-#[folder = "project-template"]
-#[exclude = "**/target/*"]
-#[exclude = "**/Cargo.lock"]
-struct ProjectTemplate;
 
 #[derive(Deserialize)]
 struct Input {
@@ -38,7 +32,11 @@ async fn main() -> Result<(), &'static str> {
     let Ok(password) = std::env::var("PASSWORD") else {
         return Err("Defining a PASSWORD environment variable is required. Please, call this program with PASSWORD=<your_password>.");
     };
+    let port = std::env::var("PORT").ok().and_then(|p| p.parse::<u16>().ok()).unwrap_or(3030);
     let password: &'static str = password.leak();
+
+    let cors = warp::cors()
+        .allow_origin("https://garriga.dev");
 
     // GET /run/{code}
     let route = warp::post()
@@ -49,9 +47,10 @@ async fn main() -> Result<(), &'static str> {
                 .and(warp::body::json())
                 .and_then(|_, Input { code}| run(code))
         )
-        .recover(handle_rejection);
+        .recover(handle_rejection)
+        .with(cors);
 
-    warp::serve(route).run(([127, 0, 0, 1], 3030)).await;
+    warp::serve(route).run(([0, 0, 0, 0], port)).await;
 
     Ok(())
 }
@@ -84,19 +83,23 @@ async fn run(code: String) -> Result<impl warp::Reply, std::convert::Infallible>
             "You can't use `unsafe` in your code.\nThis is done to avoid malicious activity.",
         );
     }
-    
-    let code = format!("{}{code}", include_str!("../project-template/src/lib.rs"));
 
     let Ok(scratch) = tempfile::Builder::new().prefix("playground").tempdir() else {
         return error("Failed to create a temporary directory");
     };
-
-    create_project_template(&scratch);
-    
-    let input_file = scratch.path().join("src/main.rs");
+    let Ok(input_file) = create_project_template(&scratch).await else {
+        return error("Failed to create the input file");
+    };
     // println!("Writing {}", input_file.display());
-    let Ok(_) = tokio::fs::write(&input_file, &code).await else {
-        return error("Failed to write the input file");
+    let Ok(mut input_file) = tokio::fs::OpenOptions::new()
+        .append(true)
+        .open(input_file)
+        .await else {
+            return error("Failed to open the input file");
+        };
+
+    let Ok(_) = input_file.write_all(code.as_bytes()).await else {
+        return error("Failed to write to the input file");
     };
 
     let Ok(compile) = tokio::process::Command::new("cargo")
@@ -104,9 +107,9 @@ async fn run(code: String) -> Result<impl warp::Reply, std::convert::Infallible>
         .kill_on_drop(true)
         .current_dir(&scratch)
         .output().await else {
-            return error("Failed to run rustc");
+            return error("Failed to run 'cargo build'");
         };
-    println!("{compile:?}");
+    // println!("{compile:?}");
     if !compile.status.success() {
         return error(&String::from_utf8(compile.stderr).unwrap());
     }
@@ -135,14 +138,14 @@ async fn handle_rejection(
     Ok(warp::reply::with_status(warp::reply(), code))
 }
 
-fn create_project_template(parent: impl AsRef<std::path::Path>) {
-    let parent = parent.as_ref();
-    for file in ProjectTemplate::iter() {
-        let path = parent.join(file.as_ref());
-        let prefix = path.parent().unwrap();
-        std::fs::create_dir_all(prefix).unwrap();
-        // println!("Created {}", prefix.display());
-        std::fs::write(&path, ProjectTemplate::get(file.as_ref()).unwrap().data).unwrap();
-        // println!("Written {}", path.display());
-    }
+async fn create_project_template(parent: impl AsRef<std::path::Path>) -> std::io::Result<std::path::PathBuf> {
+    let template = concat!(env!("CARGO_MANIFEST_DIR"), "/project-template/.");
+    tokio::process::Command::new("cp")
+        .arg("-r")
+        .arg(template)
+        .arg(parent.as_ref())
+        .spawn()?
+        .wait()
+        .await?;
+    Ok(parent.as_ref().join("src/main.rs"))
 }
