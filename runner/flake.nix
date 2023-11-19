@@ -18,6 +18,7 @@
           rustup
           sccache
           mold
+          cargo-watch
         ];
         shellHook = ''
           rustup toolchain install stable

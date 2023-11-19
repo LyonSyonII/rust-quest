@@ -1,0 +1,17 @@
+[package]
+name = "project_template"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dependencies.std]
+package = "custom-std"
+path = "custom-std"
+
+[dependencies.core]
+package = "custom-core"
+path = "custom-core"
+
+[workspace]
+members = ["custom-std", "custom-core"]
