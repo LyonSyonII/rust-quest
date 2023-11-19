@@ -2,7 +2,7 @@
 
 > Learn programming in a new way!
 
-<a href="https://lyonsyonii.github.io/rust-quest/first-steps/1-introduction"><img src="src/assets/ferris.svg" width="125"></a>
+<a href="https://lyonsyonii.github.io/rust-quest/first-steps/1-introduction"><img src="frontend/src/assets/ferris.svg" width="125"></a>
 
 With this book you'll learn how to program from scratch, all skill levels (even zero) are welcome!  
 You'll complete quests and eventually become the best adventurer ever!
