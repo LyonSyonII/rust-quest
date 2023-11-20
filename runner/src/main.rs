@@ -29,6 +29,8 @@ curl --request POST \
 
 #[tokio::main]
 async fn main() -> Result<(), &'static str> {
+    console_subscriber::init();
+
     let Ok(password) = std::env::var("PASSWORD") else {
         return Err("Defining a PASSWORD environment variable is required. Please, call this program with PASSWORD=<your_password>.");
     };
@@ -37,7 +39,9 @@ async fn main() -> Result<(), &'static str> {
 
     let cors = warp::cors()
         .allow_origin("https://garriga.dev");
-
+    
+    let semaphore = std::sync::Arc::new(tokio::sync::Semaphore::new(20));
+    
     // GET /run/{code}
     let route = warp::post()
         .and(warp::path("evaluate.json"))
@@ -45,7 +49,7 @@ async fn main() -> Result<(), &'static str> {
             auth(password)
                 .and(warp::body::content_length_limit(512))
                 .and(warp::body::json())
-                .and_then(|_, Input { code}| run(code))
+                .and_then(move |_, Input { code}| run(code, semaphore.clone()))
         )
         .recover(handle_rejection)
         .with(cors);
@@ -68,8 +72,15 @@ fn auth(password: &'static str) -> impl Filter<Extract = ((),), Error = warp::Re
         .or_else(|_| async move { Err(warp::reject::custom(Error::NotAuthorized)) })
 }
 
-async fn run(code: String) -> Result<impl warp::Reply, std::convert::Infallible> {
+async fn run(code: String, semaphore: std::sync::Arc<tokio::sync::Semaphore>) -> Result<impl warp::Reply, std::convert::Infallible> {
     let error = |e: &str| Ok(warp::reply::json(&Err::<(), _>(e)));
+    
+    let semaphore = loop {
+        match semaphore.clone().try_acquire_owned() {
+            Ok(ok) => break ok,
+            Err(_) => tokio::time::sleep(std::time::Duration::from_millis(500)).await,
+        }
+    };
     
     if code.contains("::std") {
         return error("You can't use `::std` in your code, use the modules available with std:: instead.\nThis is done to avoid malicious activity.");
