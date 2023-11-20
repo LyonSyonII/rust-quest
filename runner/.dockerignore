@@ -1,9 +1,18 @@
-.direnv
+.gitignore
+
 .vscode
-**/target/*
+
+# Nix
+.direnv
 .envrc
 flake.lock
 flake.nix
-Cargo.lock
+
+# Docker
+.dockerignore
 Dockerfile
 run_docker.sh
+
+# Rust
+Cargo.lock
+**/target/*

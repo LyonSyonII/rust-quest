@@ -2,7 +2,7 @@ FROM rust:slim
 
 WORKDIR /usr/src/rust-quest-runner
 COPY . .
-RUN cargo build --release
-RUN cargo clean
+RUN ["cargo", "install", "--path", "."]
+RUN ["cargo", "clean"]
 
-ENTRYPOINT target/release/runner
+ENTRYPOINT ["runner"]
