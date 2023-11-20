@@ -11,7 +11,8 @@ use crate::run::run;
 #[derive(Deserialize, Debug)]
 #[serde(default)]
 struct Config {
-    password: String,
+    #[serde(alias = "auth")]
+    authorization: String,
     port: u16,
     semaphore_permits: u8,
     semaphore_wait: u16,
@@ -21,7 +22,7 @@ struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            password: String::new(),
+            authorization: String::new(),
             port: 3030,
             semaphore_permits: 5,
             semaphore_wait: 500,
@@ -63,23 +64,23 @@ async fn main() -> Result<(), &'static str> {
     };
     println!("{config:#?}");
     let Config {
-        password,
+        authorization,
         port,
         semaphore_permits,
         semaphore_wait,
         kill_timeout,
         origins_whitelist,
     } = config;
-
-    if password.is_empty() {
-        return Err("Warning! PASSWORD environment variable is not set, anyone will be able to send requests!");
+    
+    if authorization.is_empty() {
+        return Err("Warning: AUTH environment variable is not set, anyone will be able to send requests!");
     }
     if origins_whitelist.is_empty() {
-        return Err("Warning! ORIGINS_WHITELIST environment variable is not set, anyone will be able to send requests!");
+        return Err("Warning: ORIGINS_WHITELIST environment variable is not set, anyone will be able to send requests!");
     }
 
     // Necessary for passing it into `auth`
-    let password: &'static str = password.leak();
+    let authorization: &'static str = authorization.leak();
     let semaphore: &'static tokio::sync::Semaphore = Box::leak(Box::new(
         tokio::sync::Semaphore::new(semaphore_permits as usize),
     ));
@@ -92,7 +93,7 @@ async fn main() -> Result<(), &'static str> {
     let route = warp::post().and(warp::path("evaluate.json"));
     let auth = warp::header::header("authorization")
         .and_then(move |auth: String| async move {
-            if auth == password {
+            if auth == authorization {
                 Ok(())
             } else {
                 Err(warp::reject::custom(Error::NotAuthorized))
@@ -111,7 +112,7 @@ async fn main() -> Result<(), &'static str> {
         .recover(handle_rejection)
         .with(cors);
 
-    println!("Listening on http://0.0.0.0:{}/evaluate.json", port);
+    println!("Listening on http://0.0.0.0:{port}/evaluate.json");
     warp::serve(filter).run(([0, 0, 0, 0], port)).await;
 
     Ok(())
