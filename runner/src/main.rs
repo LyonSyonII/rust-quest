@@ -95,11 +95,9 @@ async fn main() -> Result<(), &'static str> {
     let route = warp::post().and(warp::path("evaluate.json"));
     let auth = warp::header::header("authorization")
         .and_then(move |auth: String| async move {
-            if auth == authorization {
-                Ok(())
-            } else {
-                Err(warp::reject::custom(Error::NotAuthorized))
-            }
+            (auth == authorization)
+                .then_some(())
+                .ok_or(warp::reject::custom(Error::NotAuthorized))
         })
         .untuple_one();
     let process_input = warp::body::content_length_limit(512)
