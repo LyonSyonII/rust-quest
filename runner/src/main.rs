@@ -35,12 +35,16 @@ async fn main() -> Result<(), &'static str> {
         return Err("Defining a PASSWORD environment variable is required. Please, call this program with PASSWORD=<your_password>.");
     };
     let port = std::env::var("PORT").ok().and_then(|p| p.parse::<u16>().ok()).unwrap_or(3030);
+    let semaphore_permits = std::env::var("SEMAPHORE_PERMITS").ok().and_then(|s| s.parse::<u8>().ok()).unwrap_or(20);
+    let semaphore_wait = std::env::var("SEMAPHORE_WAIT").ok().and_then(|s| s.parse::<u16>().ok()).unwrap_or(500);
+    let kill_timeout = std::env::var("KILL_TIMEOUT").ok().and_then(|s| s.parse::<u16>().ok()).unwrap_or(500);
+
     let password: &'static str = password.leak();
 
     let cors = warp::cors()
         .allow_origin("https://garriga.dev");
     
-    let semaphore = std::sync::Arc::new(tokio::sync::Semaphore::new(20));
+    let semaphore = std::sync::Arc::new(tokio::sync::Semaphore::new(semaphore_permits as usize));
     
     // GET /run/{code}
     let route = warp::post()
@@ -49,12 +53,14 @@ async fn main() -> Result<(), &'static str> {
             auth(password)
                 .and(warp::body::content_length_limit(512))
                 .and(warp::body::json())
-                .and_then(move |_, Input { code}| run(code, semaphore.clone()))
+                .and_then(move |_, Input { code}| run(code, semaphore.clone(), semaphore_wait, kill_timeout))
         )
         .recover(handle_rejection)
         .with(cors);
     
-    println!("Listening on 0.0.0.0:{}", port);
+    println!("Semaphore permits: {semaphore_permits}");
+    println!("Semaphore wait: {semaphore_wait}");
+    println!("Listening on http://0.0.0.0:{}", port);
     warp::serve(route).run(([0, 0, 0, 0], port)).await;
 
     Ok(())
@@ -72,13 +78,14 @@ fn auth(password: &'static str) -> impl Filter<Extract = ((),), Error = warp::Re
         .or_else(|_| async move { Err(warp::reject::custom(Error::NotAuthorized)) })
 }
 
-async fn run(code: String, semaphore: std::sync::Arc<tokio::sync::Semaphore>) -> Result<impl warp::Reply, std::convert::Infallible> {
+async fn run(code: impl AsRef<str>, semaphore: std::sync::Arc<tokio::sync::Semaphore>, semaphore_wait: u16, kill_timeout: u16) -> Result<impl warp::Reply, std::convert::Infallible> {
+    let code = code.as_ref();
     let error = |e: &str| Ok(warp::reply::json(&Err::<(), _>(e)));
     
-    let semaphore = loop {
+    let _semaphore = loop {
         match semaphore.clone().try_acquire_owned() {
             Ok(ok) => break ok,
-            Err(_) => tokio::time::sleep(std::time::Duration::from_millis(500)).await,
+            Err(_) => tokio::time::sleep(std::time::Duration::from_millis(semaphore_wait as u64)).await,
         }
     };
     
@@ -132,8 +139,17 @@ async fn run(code: String, semaphore: std::sync::Arc<tokio::sync::Semaphore>) ->
         .current_dir(&scratch)
         .output();
     
-    match tokio::time::timeout(std::time::Duration::from_millis(500), run).await {
-        Ok(Ok(result)) => Ok(warp::reply::json(&String::from_utf8(result.stdout).unwrap())),
+    #[derive(Serialize)]
+    struct Reply {
+        result: String,
+        compile: String
+    }
+    
+    match tokio::time::timeout(std::time::Duration::from_millis(kill_timeout as u64), run).await {
+        Ok(Ok(result)) => Ok(warp::reply::json(&Reply {
+            result: String::from_utf8(result.stdout).unwrap(),
+            compile: String::from_utf8(compile.stderr).unwrap(),
+        })),
         Ok(Err(e)) => error(&e.to_string()),
         Err(_) => error("Timed out"),
     }
