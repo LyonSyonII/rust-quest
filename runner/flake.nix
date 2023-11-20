@@ -19,6 +19,7 @@
           sccache
           mold
           cargo-watch
+          docker-slim
         ];
         shellHook = ''
           rustup toolchain install stable

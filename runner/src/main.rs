@@ -49,7 +49,8 @@ async fn main() -> Result<(), &'static str> {
         )
         .recover(handle_rejection)
         .with(cors);
-
+    
+    println!("Listening on 0.0.0.0:{}", port);
     warp::serve(route).run(([0, 0, 0, 0], port)).await;
 
     Ok(())
