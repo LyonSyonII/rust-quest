@@ -16,3 +16,6 @@ docker.sh
 # Rust
 Cargo.lock
 **/target/*
+
+# Testing
+stress.sh

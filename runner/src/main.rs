@@ -16,6 +16,7 @@ struct Input {
 #[derive(Debug, Serialize)]
 enum Error {
     NotAuthorized,
+    BodyNotCorrect,
 }
 impl Reject for Error {}
 
@@ -52,38 +53,14 @@ async fn main() -> Result<(), &'static str> {
         .ok()
         .and_then(|s| s.parse::<u16>().ok())
         .unwrap_or(500);
-
+    
+    // Necessary for passing it into `auth`
     let password: &'static str = password.leak();
-
+    let semaphore: &'static tokio::sync::Semaphore = Box::leak(Box::new(tokio::sync::Semaphore::new(semaphore_permits as usize)));
     let cors = warp::cors().allow_origin("https://garriga.dev");
 
-    let semaphore = std::sync::Arc::new(tokio::sync::Semaphore::new(semaphore_permits as usize));
-
-    // GET /run/{code}
-    let route = warp::post()
-        .and(warp::path("evaluate.json"))
-        .and(
-            auth(password)
-                .and(warp::body::content_length_limit(512))
-                .and(warp::body::json())
-                .and_then(move |_, Input { code }| {
-                    run(code, semaphore.clone(), semaphore_wait, kill_timeout)
-                }),
-        )
-        .recover(handle_rejection)
-        .with(cors);
-
-    println!("Semaphore permits: {semaphore_permits}");
-    println!("Semaphore wait: {semaphore_wait}");
-    println!("Kill timeout: {kill_timeout}");
-    println!("Listening on http://0.0.0.0:{}", port);
-    warp::serve(route).run(([0, 0, 0, 0], port)).await;
-
-    Ok(())
-}
-
-fn auth(password: &'static str) -> impl Filter<Extract = ((),), Error = warp::Rejection> + Copy {
-    warp::header::header("authorization")
+    let route = warp::post().and(warp::path("evaluate.json"));
+    let auth = warp::header::header("authorization")
         .and_then(move |auth: String| async move {
             if auth == password {
                 Ok(())
@@ -91,7 +68,26 @@ fn auth(password: &'static str) -> impl Filter<Extract = ((),), Error = warp::Re
                 Err(warp::reject::custom(Error::NotAuthorized))
             }
         })
-        .or_else(|_| async move { Err(warp::reject::custom(Error::NotAuthorized)) })
+        .untuple_one();
+    let process_input = warp::body::content_length_limit(512)
+        .and(warp::body::json())
+        .or_else(|_| async move { Err(warp::reject::custom(Error::BodyNotCorrect)) });
+    let run_input = move |i: Input| run(i.code, semaphore, semaphore_wait, kill_timeout);
+
+    let filter = route
+        .and(auth)
+        .and(process_input)
+        .and_then(run_input)
+        .recover(handle_rejection)
+        .with(cors);
+
+    println!("Semaphore permits: {semaphore_permits}");
+    println!("Semaphore wait: {semaphore_wait}");
+    println!("Kill timeout: {kill_timeout}");
+    println!("Listening on http://0.0.0.0:{}", port);
+    warp::serve(filter).run(([0, 0, 0, 0], port)).await;
+
+    Ok(())
 }
 
 async fn handle_rejection(
@@ -99,7 +95,8 @@ async fn handle_rejection(
 ) -> std::result::Result<impl warp::Reply, warp::Rejection> {
     let code = match err.find() {
         Some(Error::NotAuthorized) => http::StatusCode::UNAUTHORIZED,
-        None => http::StatusCode::NOT_FOUND,
+        Some(Error::BodyNotCorrect) => http::StatusCode::UNPROCESSABLE_ENTITY,
+        None => http::StatusCode::BAD_REQUEST,
     };
 
     Ok(warp::reply::with_status(warp::reply(), code))

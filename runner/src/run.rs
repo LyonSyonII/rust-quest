@@ -2,6 +2,7 @@ use serde::Serialize;
 use tokio::io::AsyncWriteExt;
 
 #[derive(Serialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 enum Error {
     Std,
     Core,
@@ -19,7 +20,9 @@ enum Error {
 
 #[derive(Serialize)]
 enum Reply {
+    #[serde(rename = "ok")]
     Ok { stdout: String, stderr: String },
+    #[serde(rename = "err")]
     Err(Error),
 }
 
@@ -29,9 +32,11 @@ impl Reply {
     const EXTERN_C: Result<Self, std::convert::Infallible> = Self::err(Error::ExternC);
     const UNSAFE: Result<Self, std::convert::Infallible> = Self::err(Error::Unsafe);
     const TEMP_DIR: Result<Self, std::convert::Infallible> = Self::err(Error::TempDir);
-    const INPUT_FILE_CREATE: Result<Self, std::convert::Infallible> = Self::err(Error::InputFileCreate);
+    const INPUT_FILE_CREATE: Result<Self, std::convert::Infallible> =
+        Self::err(Error::InputFileCreate);
     const INPUT_FILE_OPEN: Result<Self, std::convert::Infallible> = Self::err(Error::InputFileOpen);
-    const INPUT_FILE_WRITE: Result<Self, std::convert::Infallible> = Self::err(Error::InputFileWrite);
+    const INPUT_FILE_WRITE: Result<Self, std::convert::Infallible> =
+        Self::err(Error::InputFileWrite);
     const BUILD: Result<Self, std::convert::Infallible> = Self::err(Error::Build);
     const TIMEOUT: Result<Self, std::convert::Infallible> = Self::err(Error::Timeout);
 
@@ -40,15 +45,17 @@ impl Reply {
         stderr: impl AsRef<[u8]>,
     ) -> Result<Self, std::convert::Infallible> {
         Ok(Self::Ok {
-            stdout: String::from_utf8_lossy(stdout.as_ref()).into_owned(),
-            stderr: String::from_utf8_lossy(stderr.as_ref()).into_owned(),
+            stdout: String::from_utf8_lossy(stdout.as_ref()).trim().to_owned(),
+            stderr: String::from_utf8_lossy(stderr.as_ref()).trim().to_owned(),
         })
     }
     const fn err(e: Error) -> Result<Self, std::convert::Infallible> {
         Ok(Self::Err(e))
     }
     fn err_compile(e: impl AsRef<[u8]>) -> Result<Self, std::convert::Infallible> {
-        Self::err(Error::Compiler(String::from_utf8_lossy(e.as_ref()).into_owned()))
+        Self::err(Error::Compiler(
+            String::from_utf8_lossy(e.as_ref()).into_owned(),
+        ))
     }
     fn err_execution(e: String) -> Result<Self, std::convert::Infallible> {
         Self::err(Error::Execution(e))
@@ -63,14 +70,14 @@ impl warp::Reply for Reply {
 
 pub async fn run(
     code: impl AsRef<str>,
-    semaphore: std::sync::Arc<tokio::sync::Semaphore>,
+    semaphore: &'static tokio::sync::Semaphore,
     semaphore_wait: u16,
     kill_timeout: u16,
 ) -> Result<impl warp::Reply, std::convert::Infallible> {
     let code = code.as_ref();
 
     let _semaphore = loop {
-        match semaphore.clone().try_acquire_owned() {
+        match semaphore.try_acquire() {
             Ok(ok) => break ok,
             Err(_) => {
                 tokio::time::sleep(std::time::Duration::from_millis(semaphore_wait as u64)).await
@@ -126,7 +133,7 @@ pub async fn run(
         .kill_on_drop(true)
         .current_dir(&scratch)
         .output();
-    
+
     // TODO: Panic does not trigger Err
     match tokio::time::timeout(std::time::Duration::from_millis(kill_timeout as u64), run).await {
         Ok(Ok(result)) => Reply::ok(result.stdout, result.stderr),
