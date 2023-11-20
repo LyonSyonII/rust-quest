@@ -11,7 +11,7 @@ flake.nix
 # Docker
 .dockerignore
 Dockerfile
-run_docker.sh
+docker.sh
 
 # Rust
 Cargo.lock
