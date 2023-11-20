@@ -71,9 +71,11 @@ async fn main() -> Result<(), &'static str> {
         kill_timeout,
         origins_whitelist,
     } = config;
-    
+
     if authorization.is_empty() {
-        return Err("Warning: AUTH environment variable is not set, anyone will be able to send requests!");
+        return Err(
+            "Warning: AUTH environment variable is not set, anyone will be able to send requests!",
+        );
     }
     if origins_whitelist.is_empty() {
         return Err("Warning: ORIGINS_WHITELIST environment variable is not set, anyone will be able to send requests!");
@@ -89,7 +91,7 @@ async fn main() -> Result<(), &'static str> {
     } else {
         warp::cors().allow_origins(origins_whitelist.iter().map(String::as_str))
     };
-    
+
     let route = warp::post().and(warp::path("evaluate.json"));
     let auth = warp::header::header("authorization")
         .and_then(move |auth: String| async move {

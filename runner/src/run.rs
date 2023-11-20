@@ -26,38 +26,35 @@ enum Reply {
     Err(Error),
 }
 
-impl Reply {
-    const STD: Result<Self, std::convert::Infallible> = Self::err(Error::Std);
-    const CORE: Result<Self, std::convert::Infallible> = Self::err(Error::Core);
-    const EXTERN_C: Result<Self, std::convert::Infallible> = Self::err(Error::ExternC);
-    const UNSAFE: Result<Self, std::convert::Infallible> = Self::err(Error::Unsafe);
-    const TEMP_DIR: Result<Self, std::convert::Infallible> = Self::err(Error::TempDir);
-    const INPUT_FILE_CREATE: Result<Self, std::convert::Infallible> =
-        Self::err(Error::InputFileCreate);
-    const INPUT_FILE_OPEN: Result<Self, std::convert::Infallible> = Self::err(Error::InputFileOpen);
-    const INPUT_FILE_WRITE: Result<Self, std::convert::Infallible> =
-        Self::err(Error::InputFileWrite);
-    const BUILD: Result<Self, std::convert::Infallible> = Self::err(Error::Build);
-    const TIMEOUT: Result<Self, std::convert::Infallible> = Self::err(Error::Timeout);
+type ReplyResult = std::result::Result<Reply, std::convert::Infallible>;
 
-    fn ok(
-        stdout: impl AsRef<[u8]>,
-        stderr: impl AsRef<[u8]>,
-    ) -> Result<Self, std::convert::Infallible> {
+impl Reply {
+    const STD: ReplyResult = Self::err(Error::Std);
+    const CORE: ReplyResult = Self::err(Error::Core);
+    const EXTERN_C: ReplyResult = Self::err(Error::ExternC);
+    const UNSAFE: ReplyResult = Self::err(Error::Unsafe);
+    const TEMP_DIR: ReplyResult = Self::err(Error::TempDir);
+    const INPUT_FILE_CREATE: ReplyResult = Self::err(Error::InputFileCreate);
+    const INPUT_FILE_OPEN: ReplyResult = Self::err(Error::InputFileOpen);
+    const INPUT_FILE_WRITE: ReplyResult = Self::err(Error::InputFileWrite);
+    const BUILD: ReplyResult = Self::err(Error::Build);
+    const TIMEOUT: ReplyResult = Self::err(Error::Timeout);
+
+    fn ok(stdout: impl AsRef<[u8]>, stderr: impl AsRef<[u8]>) -> ReplyResult {
         Ok(Self::Ok {
             stdout: String::from_utf8_lossy(stdout.as_ref()).trim().to_owned(),
             stderr: String::from_utf8_lossy(stderr.as_ref()).trim().to_owned(),
         })
     }
-    const fn err(e: Error) -> Result<Self, std::convert::Infallible> {
+    const fn err(e: Error) -> ReplyResult {
         Ok(Self::Err(e))
     }
-    fn err_compile(e: impl AsRef<[u8]>) -> Result<Self, std::convert::Infallible> {
+    fn err_compile(e: impl AsRef<[u8]>) -> ReplyResult {
         Self::err(Error::Compiler(
             String::from_utf8_lossy(e.as_ref()).into_owned(),
         ))
     }
-    fn err_execution(e: String) -> Result<Self, std::convert::Infallible> {
+    fn err_execution(e: String) -> ReplyResult {
         Self::err(Error::Execution(e))
     }
 }
