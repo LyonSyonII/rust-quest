@@ -8,6 +8,29 @@ use warp::{
 mod run;
 use crate::run::run;
 
+#[derive(Deserialize, Debug)]
+#[serde(default)]
+struct Config {
+    password: String,
+    port: u16,
+    semaphore_permits: u8,
+    semaphore_wait: u16,
+    kill_timeout: u16,
+    origins_whitelist: Vec<String>,
+}
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            password: String::new(),
+            port: 3030,
+            semaphore_permits: 5,
+            semaphore_wait: 500,
+            kill_timeout: 500,
+            origins_whitelist: Vec::new(),
+        }
+    }
+}
+
 #[derive(Deserialize)]
 struct Input {
     code: String,
@@ -34,31 +57,38 @@ curl --request POST \
 async fn main() -> Result<(), &'static str> {
     console_subscriber::init();
 
-    let Ok(password) = std::env::var("PASSWORD") else {
-        return Err("Defining a PASSWORD environment variable is required. Please, call this program with PASSWORD=<your_password>.");
+    let config = match envy::from_env() {
+        Ok(config) => config,
+        Err(e) => panic!("{e}"),
     };
-    let port = std::env::var("PORT")
-        .ok()
-        .and_then(|p| p.parse::<u16>().ok())
-        .unwrap_or(3030);
-    let semaphore_permits = std::env::var("SEMAPHORE_PERMITS")
-        .ok()
-        .and_then(|s| s.parse::<u8>().ok())
-        .unwrap_or(20);
-    let semaphore_wait = std::env::var("SEMAPHORE_WAIT")
-        .ok()
-        .and_then(|s| s.parse::<u16>().ok())
-        .unwrap_or(500);
-    let kill_timeout = std::env::var("KILL_TIMEOUT")
-        .ok()
-        .and_then(|s| s.parse::<u16>().ok())
-        .unwrap_or(500);
-    
+    println!("{config:#?}");
+    let Config {
+        password,
+        port,
+        semaphore_permits,
+        semaphore_wait,
+        kill_timeout,
+        origins_whitelist,
+    } = config;
+
+    if password.is_empty() {
+        return Err("Warning! PASSWORD environment variable is not set, anyone will be able to send requests!");
+    }
+    if origins_whitelist.is_empty() {
+        return Err("Warning! ORIGINS_WHITELIST environment variable is not set, anyone will be able to send requests!");
+    }
+
     // Necessary for passing it into `auth`
     let password: &'static str = password.leak();
-    let semaphore: &'static tokio::sync::Semaphore = Box::leak(Box::new(tokio::sync::Semaphore::new(semaphore_permits as usize)));
-    let cors = warp::cors().allow_origin("https://garriga.dev");
-
+    let semaphore: &'static tokio::sync::Semaphore = Box::leak(Box::new(
+        tokio::sync::Semaphore::new(semaphore_permits as usize),
+    ));
+    let cors = if origins_whitelist.is_empty() {
+        warp::cors().allow_any_origin()
+    } else {
+        warp::cors().allow_origins(origins_whitelist.iter().map(String::as_str))
+    };
+    
     let route = warp::post().and(warp::path("evaluate.json"));
     let auth = warp::header::header("authorization")
         .and_then(move |auth: String| async move {
@@ -81,10 +111,7 @@ async fn main() -> Result<(), &'static str> {
         .recover(handle_rejection)
         .with(cors);
 
-    println!("Semaphore permits: {semaphore_permits}");
-    println!("Semaphore wait: {semaphore_wait}");
-    println!("Kill timeout: {kill_timeout}");
-    println!("Listening on http://0.0.0.0:{}", port);
+    println!("Listening on http://0.0.0.0:{}/evaluate.json", port);
     warp::serve(filter).run(([0, 0, 0, 0], port)).await;
 
     Ok(())
