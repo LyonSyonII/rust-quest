@@ -43,6 +43,14 @@ enum Error {
     BodyNotCorrect,
 }
 impl Reject for Error {}
+impl Error {
+    fn not_authorized() -> Rejection {
+        warp::reject::custom(Self::NotAuthorized)
+    }
+    fn body_not_correct() -> Rejection {
+        warp::reject::custom(Self::BodyNotCorrect)
+    }
+}
 
 /*
 curl --request POST \
@@ -97,12 +105,12 @@ async fn main() -> Result<(), &'static str> {
         .and_then(move |auth: String| async move {
             (auth == authorization)
                 .then_some(())
-                .ok_or(warp::reject::custom(Error::NotAuthorized))
+                .ok_or(Error::not_authorized())
         })
         .untuple_one();
     let process_input = warp::body::content_length_limit(512)
         .and(warp::body::json())
-        .or_else(|_| async move { Err(warp::reject::custom(Error::BodyNotCorrect)) });
+        .or_else(|_| async move { Err(Error::body_not_correct()) });
     let run_input = move |i: Input| run(i.code, semaphore, semaphore_wait, kill_timeout);
 
     let filter = route
