@@ -1,4 +1,4 @@
-sudo docker build -t lgarriga/rust-quest-runner . --no-cache
+sudo docker build -t lgarriga/rust-quest-runner .
 
 case $1 in 
     run)

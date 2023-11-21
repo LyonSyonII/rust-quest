@@ -81,12 +81,14 @@ async fn main() -> Result<(), &'static str> {
     } = config;
 
     if authorization.is_empty() {
-        return Err(
-            "Warning: AUTH environment variable is not set, anyone will be able to send requests!",
+        println!(
+            "Warning: AUTH environment variable is not set, anyone will be able to send requests!"
         );
     }
     if origins_whitelist.is_empty() {
-        return Err("Warning: ORIGINS_WHITELIST environment variable is not set, anyone will be able to send requests!");
+        println!(
+            "Warning: ORIGINS_WHITELIST environment variable is not set, anyone will be able to send requests!"
+        );
     }
 
     // Necessary for passing it into `auth`
