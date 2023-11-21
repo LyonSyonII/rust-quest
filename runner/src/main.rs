@@ -109,7 +109,9 @@ async fn main() -> Result<(), &'static str> {
                 .then_some(())
                 .ok_or(Error::not_authorized())
         })
-        .untuple_one();
+        .untuple_one()
+        .or_else(move |r| async move { authorization.is_empty().then_some(()).ok_or(r) });
+    
     let process_input = warp::body::content_length_limit(512)
         .and(warp::body::json())
         .or_else(|_| async move { Err(Error::body_not_correct()) });

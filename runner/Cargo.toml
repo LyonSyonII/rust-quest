@@ -16,7 +16,8 @@ warp = "0.3.6"
 
 [profile.release]
 strip = true
-opt-level = "z"
+opt-level = "s"
 lto = true
 codegen-units = 1
 panic = "abort"
+debug = false
