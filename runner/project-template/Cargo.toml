@@ -15,3 +15,10 @@ path = "custom-core"
 
 [workspace]
 members = ["custom-std", "custom-core"]
+
+[profile.dev]
+incremental = false
+strip = true
+debug = false
+panic = "abort"
+lto = "off"
