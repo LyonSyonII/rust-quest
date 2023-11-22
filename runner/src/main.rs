@@ -110,8 +110,13 @@ async fn main() -> Result<(), &'static str> {
                 .ok_or(Error::not_authorized())
         })
         .untuple_one()
-        .or_else(move |r| async move { authorization.is_empty().then_some(()).ok_or(r) });
-    
+        .or_else(move |_| async move {
+            authorization
+                .is_empty()
+                .then_some(())
+                .ok_or(Error::not_authorized())
+        });
+
     let process_input = warp::body::content_length_limit(512)
         .and(warp::body::json())
         .or_else(|_| async move { Err(Error::body_not_correct()) });
@@ -124,9 +129,13 @@ async fn main() -> Result<(), &'static str> {
         .recover(handle_rejection)
         .with(cors);
 
-    println!("Listening on http://0.0.0.0:{port}/evaluate.json");
-    warp::serve(filter).run(([0, 0, 0, 0], port)).await;
+    let default = warp::path::end().map(|| warp::reply::html("Waiting requests!"));
 
+    println!("Listening on http://0.0.0.0:{port}/evaluate.json");
+    warp::serve(default.or(filter))
+        .run(([0, 0, 0, 0], port))
+        .await;
+    
     Ok(())
 }
 
