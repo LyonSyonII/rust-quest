@@ -19,7 +19,6 @@
           sccache
           mold
           cargo-watch
-          docker-slim
           tokio-console
         ];
         shellHook = ''
