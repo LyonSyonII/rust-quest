@@ -1,8 +1,7 @@
 import { translation, type Langs } from "@i18n/CodeBlock";
 
-export async function evaluate(value: string, setup: string, lang: Langs, errorMsg?: string): Promise<string> {
+export async function evaluate(code: string, lang: Langs, errorMsg?: string): Promise<string> {
     const error = errorMsg || translation(lang).error;
-    const code = value.replaceAll("__VALUE__", setup);
     
     return Promise.race([
         server(code, error),
@@ -16,10 +15,7 @@ async function server(code: string, error: string): Promise<string> {
         code
     };
     
-    // TODO: Does not work
-    const auth = process.env.AUTH;
-    console.log({auth});
-
+    // TODO: Auth env var is not possible in the browser
     return fetch("https://rust-quest.garriga.dev/evaluate.json", {
         headers: {
             "Content-Type": "application/json",

@@ -49,8 +49,10 @@
 
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const code = `fn main() { \n${setup.replace("__VALUE__", value)}\n }`;
     
-    playground_response = await evaluate(value, setup, lang, errorMsg);
+    playground_response = await evaluate(code, lang, errorMsg);
     running = false;
   };
 </script>
