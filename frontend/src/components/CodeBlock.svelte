@@ -9,7 +9,9 @@
   import { writable } from "svelte/store";
   import { githubDark } from "../codemirror-themes/github-dark";
   import { githubLight } from "../codemirror-themes/github-light";
+  import { translation, type Langs } from "@i18n/CodeBlock.ts";
   import "../styles/custom.css";
+    import { evaluate } from "src/utils/evaluateCode";
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
@@ -24,28 +26,9 @@
   /** If the code block is editable */
   export let editable = true;
   /** Language used by the editor */
-  export let lang: keyof typeof langs = "en";
+  export let lang: Langs = "en";
 
-  const langs = {
-    en: {
-      placeholder: "Enter your code here...",
-      compiling: "Compiling...",
-      error:
-        'Woops, something went wrong and the code does not compile!\nIf you\'ve mistakenly messed up the code, click the "Reset" button to return it back to its original state.\n\nRemember to replace ? with your answer.',
-    },
-    ca: {
-      placeholder: "Escriu el teu codi aqui...",
-      compiling: "Compilant...",
-      error:
-        'Ups, alguna cosa ha fallat i el codi no compila!\nSi t\'has equivocat modificant el codi, fes clic al botó de "Reset" per tornar-lo al seu estat original.\n\nRecorda substituïr ? amb la teva resposta.',
-    },
-    es: {
-      placeholder: "Escribe tu código aquí...",
-      compiling: "Compilando...",
-      error:
-        'Vaya, ¡algo ha ido mal y el código no compila!\nSi has estropeado el código por error, haz clic en el botón "Reset" para devolverlo a su estado original.\n\nRecuerda sustituir ? con tu respuesta.',
-    },
-  };
+  const l = translation(lang);
 
   const theme = writable(document.documentElement.dataset.theme);
   const observer = onThemeChange((t) => theme.set(t));
@@ -60,47 +43,15 @@
     if (!f && !focused) {
       return;
     }
-
+    
     running = true;
-
-    playground_response = langs[lang].compiling;
+    playground_response = l.compiling;
 
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
     
-    const params = {
-      version: "stable",
-      optimize: "0",
-      code: `#![forbid(unsafe_code)] fn main() { ${setup.replaceAll("__VALUE__", value)} }`,
-      edition: "2021",
-    };
-
-    fetch("https://play.rust-lang.org/evaluate.json", {
-      headers: {
-        "Content-Type": "application/json"
-      },
-      method: "POST",
-      mode: "cors",
-      body: JSON.stringify(params),
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        console.log({ params, response });
-        return response;
-      })
-      .then((response) => {
-        if (response.error === null) {
-          playground_response = response.result;
-        } else {
-          playground_response = errorMsg || langs[lang].error || response.error;
-        }
-      })
-      .catch(
-        (error) =>
-          (playground_response =
-            errorMsg || langs[lang].error || error.message),
-      )
-      .finally(() => (running = false));
+    playground_response = await evaluate(value, setup, lang, errorMsg);
+    running = false;
   };
 </script>
 
@@ -125,7 +76,7 @@
     theme={$theme === "dark" ? githubDark : githubLight}
     basic={showLineNumbers}
     editable={editable && !running}
-    placeholder={placeholder || langs[lang].placeholder}
+    placeholder={placeholder || l.placeholder}
   />
 
   <button
