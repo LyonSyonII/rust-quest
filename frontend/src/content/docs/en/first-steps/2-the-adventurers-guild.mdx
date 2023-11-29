@@ -32,7 +32,7 @@ export function SimpleQuestion({
   return (
     <QuestionCard question={question}>
       <CodeBlock
-        client:only
+        client:visible
         code={code}
         setup={setup}
         showLineNumbers={false}
@@ -51,7 +51,7 @@ export function FreeQuestion({ question, code = "", correct }) {
   return (
     <QuestionCard question={question}>
       <CodeBlock
-        client:only
+        client:visible
         code={code}
         setup={setup}
         showLineNumbers={false}
@@ -164,7 +164,7 @@ Now please sign here, and you'll be ready to take your first quest.
 
 <QuestionCard>
   <CodeBlock
-    client:only
+    client:visible
     code={'let name = "?";'}
     setup={
       '__VALUE__; if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'

@@ -33,7 +33,7 @@ export function SimpleQuestion({
 return (
 <QuestionCard question={question}>
 <CodeBlock
-        client:only
+        client:visible
         code={code}
         setup={setup}
         showLineNumbers={false}
@@ -52,7 +52,7 @@ const setup = `         if __VALUE__ {
 return (
 <QuestionCard question={question}>
 <CodeBlock
-        client:only
+        client:visible
         code={code}
         setup={setup}
         showLineNumbers={false}
@@ -167,7 +167,7 @@ Ara si us plau signa aquí, i estaràs llest per fer la teva primera missió.
 
 <QuestionCard>
   <CodeBlock
-    client:only
+    client:visible
     code={'let name = "?";'}
     setup={
       '__VALUE__; if name == "?" { println!("pista: simplement canvia ? pel teu nom!") } else { println!("{name}, benvingut al Gremi d\'Aventurers!") }'

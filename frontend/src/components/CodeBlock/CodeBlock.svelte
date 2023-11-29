@@ -4,7 +4,7 @@
   import { clickoutside } from "@svelte-put/clickoutside";
   import { shortcut } from "@svelte-put/shortcut";
   import { onThemeChange } from "src/utils/onThemeChange";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import CodeMirror from "svelte-codemirror-editor";
   import { writable } from "svelte/store";
   import { githubDark } from "../../codemirror-themes/github-dark";
@@ -15,6 +15,8 @@
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
+  /** Validator */
+  export let validator: (setup: string) => (string | undefined) = (_) => undefined;
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
@@ -29,28 +31,40 @@
   export let lang: Langs = "en";
 
   const l = translation(lang);
-
-  const theme = writable(document.documentElement.dataset.theme);
-  const observer = onThemeChange((t) => theme.set(t));
-  onDestroy(() => observer.disconnect());
-
+  
   let value = code;
   let running = false;
   let focused = false;
   let playground_response = "";
 
-  const handleRun = async (f = false) => {
-    if (!f && !focused) {
+  const theme = writable("light");
+  let observer: MutationObserver | undefined = undefined;
+  
+  onMount(() => {
+    theme.set(document.documentElement.dataset.theme || "light");
+    observer = onThemeChange(t => theme.set(t));
+  });
+  onDestroy(() => observer?.disconnect());
+
+  const handleRun = async (force_focus = false) => {
+    if (!force_focus && !focused) {
+      return;
+    }
+    
+    console.log({validator})
+    const v = validator(value);
+    if (v !== undefined) {
+      playground_response = v;
       return;
     }
 
     running = true;
     playground_response = l.compiling;
 
+    const code = `fn main() { \n${setup.replaceAll("__VALUE__", value)}\n }`;
+
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
-
-    const code = `fn main() { \n${setup.replaceAll("__VALUE__", value)}\n }`;
 
     playground_response = await evaluate(code, lang, errorMsg);
     running = false;

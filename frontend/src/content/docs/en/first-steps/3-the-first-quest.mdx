@@ -22,7 +22,7 @@ Let's find out!
 
 <QuestionCard question="Read your first quest!">
   <CodeBlock
-    client:only
+    client:visible
     code="read_quest()"
     setup={`fn read_quest() { println!("${quest}") } __VALUE__`}
     editable={false}
@@ -72,5 +72,5 @@ if total == potatoes + carrots + onions {
 `;
 
 <QuestionCard question="What's the total number of vegetables in the grocery?">
-  <CodeBlock client:only code={code} setup={setup} />
+  <CodeBlock client:visible code={code} setup={setup} validator={ 5 }/>
 </QuestionCard>
