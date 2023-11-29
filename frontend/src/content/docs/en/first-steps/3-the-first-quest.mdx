@@ -13,7 +13,7 @@ Your first quest is... To help the local grocer sort some vegetables!
 We expect great things of you.
 The Adventurer's Guild`;
 
-Finally, your first quest!  
+Finally, your first quest!
 
 What will it be?  
 Kill some monsters? Rescue a lost princess?
@@ -21,7 +21,13 @@ Kill some monsters? Rescue a lost princess?
 Let's find out!
 
 <QuestionCard question="Read your first quest!">
-    <CodeBlock client:only code="read_quest()" setup={`fn read_quest() { println!("${quest}") } __VALUE__`} editable={false} showLineNumbers={false} />
+  <CodeBlock
+    client:only
+    code="read_quest()"
+    setup={`fn read_quest() { println!("${quest}") } __VALUE__`}
+    editable={false}
+    showLineNumbers={false}
+  />
 </QuestionCard>
 
 ...well, let's do it then.
@@ -47,25 +53,25 @@ let onions   = 2;
 
 let total = ? + ? + ?;`;
 export const setup =
-`__VALUE__
-let str = "__VALUE__";
+`**VALUE**
+let str = "**VALUE**";
 if !str.starts_with("${code.substring(0, code.lastIndexOf("="))}") {
     println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
     println!("Remember to only modify the ? part of the code.");
     return;
 }
 if str[${code.lastIndexOf("=")}..str.len()-1].replace(" ", "").split("+").any(|x| x.parse::<u32>().is_ok()) {
-    println!("Copying each number isn't good enough.");
-    println!("You need to come up with a solution that works even if the numbers change.");
-    println!();
-    println!("Try using the magical properties of the boxes.");
-    return;
+println!("Copying each number isn't good enough.");
+println!("You need to come up with a solution that works even if the numbers change.");
+println!();
+println!("Try using the magical properties of the boxes.");
+return;
 }
 if total == potatoes + carrots + onions {
-    println!("potatoes + carrots + onions == {total}, great job!");
+println!("potatoes + carrots + onions == {total}, great job!");
 }
 `;
 
 <QuestionCard question="What's the total number of vegetables in the grocery?">
-    <CodeBlock client:only code={code} setup={setup} />
+  <CodeBlock client:only code={code} setup={setup} />
 </QuestionCard>

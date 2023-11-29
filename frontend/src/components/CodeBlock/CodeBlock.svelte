@@ -7,11 +7,11 @@
   import { onDestroy } from "svelte";
   import CodeMirror from "svelte-codemirror-editor";
   import { writable } from "svelte/store";
-  import { githubDark } from "../codemirror-themes/github-dark";
-  import { githubLight } from "../codemirror-themes/github-light";
+  import { githubDark } from "../../codemirror-themes/github-dark";
+  import { githubLight } from "../../codemirror-themes/github-light";
   import { translation, type Langs } from "@i18n/CodeBlock.ts";
-  import "../styles/custom.css";
-    import { evaluate } from "src/utils/evaluateCode";
+  import "../../styles/custom.css";
+  import { evaluate } from "./evaluate";
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
@@ -43,7 +43,7 @@
     if (!f && !focused) {
       return;
     }
-    
+
     running = true;
     playground_response = l.compiling;
 
@@ -51,7 +51,7 @@
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const code = `fn main() { \n${setup.replace("__VALUE__", value)}\n }`;
-    
+
     playground_response = await evaluate(code, lang, errorMsg);
     running = false;
   };

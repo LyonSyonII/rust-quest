@@ -30,37 +30,36 @@ export function SimpleQuestion({
         }
     `.replaceAll("\n", "");
 
-  return (
-    <QuestionCard question={question}>
-      <CodeBlock
+return (
+<QuestionCard question={question}>
+<CodeBlock
         client:only
         code={code}
         setup={setup}
         showLineNumbers={false}
         lang="ca"
       />
-    </QuestionCard>
-  );
+</QuestionCard>
+);
 }
 export function FreeQuestion({ question, code = "", correct }) {
-  const setup = `
-        if __VALUE__ {
+const setup = `         if __VALUE__ {
             println!("${correct}");
         } else {
             println!("La teva resposta és incorrecta, torna a intentar-ho!");
         }
     `.replaceAll("\n", "");
-  return (
-    <QuestionCard question={question}>
-      <CodeBlock
+return (
+<QuestionCard question={question}>
+<CodeBlock
         client:only
         code={code}
         setup={setup}
         showLineNumbers={false}
         lang="ca"
       />
-    </QuestionCard>
-  );
+</QuestionCard>
+);
 }
 
 Bon dia, benvingut a Newlia, on neixen els herois!

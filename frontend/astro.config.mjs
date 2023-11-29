@@ -1,6 +1,6 @@
-import { defineConfig } from "astro/config";
-import starlight from "@astrojs/starlight";
 import preact from "@astrojs/preact";
+import starlight from "@astrojs/starlight";
+import { defineConfig } from "astro/config";
 
 import svelte from "@astrojs/svelte";
 
