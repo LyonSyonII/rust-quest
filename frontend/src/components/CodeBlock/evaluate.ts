@@ -6,6 +6,12 @@ export async function evaluate(
   errorMsg?: string,
 ): Promise<string> {
   const error = errorMsg || translation(lang).error;
+  
+  // In development mode use the playground (to avoid CORS errors)
+  // TODO: Find way to use server
+  if (import.meta.env.MODE.includes("dev")) {
+    return playground(code, error)
+  }
 
   return Promise.race([
     server(code, error),

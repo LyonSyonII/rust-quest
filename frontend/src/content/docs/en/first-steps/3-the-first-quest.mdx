@@ -53,22 +53,21 @@ let onions   = 2;
 
 let total = ? + ? + ?;`;
 export const setup =
-`**VALUE**
-let str = "**VALUE**";
-if !str.starts_with("${code.substring(0, code.lastIndexOf("="))}") {
-    println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
-    println!("Remember to only modify the ? part of the code.");
-    return;
+`__VALUE__
+const VALUE: &str = "__VALUE__";
+let answer = VALUE[${code.lastIndexOf("=")}..VALUE.len()-1].replace(" ", "");
+
+if answer.contains("let") {
+  return println!("You're almost there! But you don't need to use \\\"let\\\" in this exercise.");
 }
-if str[${code.lastIndexOf("=")}..str.len()-1].replace(" ", "").split("+").any(|x| x.parse::<u32>().is_ok()) {
-println!("Copying each number isn't good enough.");
-println!("You need to come up with a solution that works even if the numbers change.");
-println!();
-println!("Try using the magical properties of the boxes.");
-return;
+if answer.split("+").any(|x| x.parse::<u32>().is_ok()) {
+  println!("Copying each number isn't good enough.");
+  println!("You need to come up with a solution that works even if the numbers change.");
+  println!();
+  return println!("Try using the magical properties of the boxes.");
 }
 if total == potatoes + carrots + onions {
-println!("potatoes + carrots + onions == {total}, great job!");
+  println!("potatoes + carrots + onions == {total}, great job!");
 }
 `;
 
