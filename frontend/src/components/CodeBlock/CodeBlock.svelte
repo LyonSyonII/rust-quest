@@ -15,8 +15,10 @@
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
-  /** Validator */
-  export let validator: (setup: string) => (string | undefined) = (_) => undefined;
+  /** Validator executed before the code is sent to the playground.
+   *
+   * If the return value is a string, it will be displayed in the editor */
+  export let validator: string = "(_) => undefined";
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
@@ -31,7 +33,7 @@
   export let lang: Langs = "en";
 
   const l = translation(lang);
-  
+
   let value = code;
   let running = false;
   let focused = false;
@@ -39,10 +41,10 @@
 
   const theme = writable("light");
   let observer: MutationObserver | undefined = undefined;
-  
+
   onMount(() => {
     theme.set(document.documentElement.dataset.theme || "light");
-    observer = onThemeChange(t => theme.set(t));
+    observer = onThemeChange((t) => theme.set(t));
   });
   onDestroy(() => observer?.disconnect());
 
@@ -50,21 +52,22 @@
     if (!force_focus && !focused) {
       return;
     }
-    
-    console.log({validator})
-    const v = validator(value);
-    if (v !== undefined) {
-      playground_response = v;
-      return;
-    }
 
     running = true;
     playground_response = l.compiling;
 
-    const code = `fn main() { \n${setup.replaceAll("__VALUE__", value)}\n }`;
-
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
+    
+    const v = eval(validator)(value);
+    console.log({validator, v})
+    if (v !== undefined) {
+      running = false;
+      playground_response = v;
+      return;
+    }
+
+    const code = `#![allow(warnings)] fn main() { \n${setup.replaceAll("__VALUE__", value)}\n }`;
 
     playground_response = await evaluate(code, lang, errorMsg);
     running = false;

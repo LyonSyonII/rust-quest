@@ -1,0 +1,42 @@
+---
+import type { Langs } from "@i18n/CodeBlock";
+import CodeBlock from "./CodeBlock/CodeBlock.svelte";
+import QuestionCard from "./QuestionCard.astro";
+interface Props {
+  question: string;
+  setup: string;
+  validator: string;
+  code: string;
+  errorMsg: string;
+  placeholder: string;
+  showLineNumbers: boolean;
+  editable: boolean;
+  lang: Langs;
+}
+
+const {
+  question,
+  setup,
+  validator = "(_) => undefined",
+  code,
+  errorMsg = "",
+  placeholder = "",
+  showLineNumbers = true,
+  editable = true,
+  lang = "en",
+} = Astro.props;
+---
+
+<QuestionCard question={question}>
+  <CodeBlock
+    client:visible
+    {setup}
+    {validator}
+    {code}
+    {errorMsg}
+    {placeholder}
+    {showLineNumbers}
+    {editable}
+    {lang}
+  />
+</QuestionCard>

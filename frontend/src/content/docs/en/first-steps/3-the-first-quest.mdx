@@ -3,8 +3,7 @@ title: The First Quest
 description: Finally, your first quest! What will it be...
 ---
 
-import QuestionCard from "@components/QuestionCard.astro";
-import CodeBlock from "@components/CodeBlock/CodeBlock.svelte";
+import CodeQuestion from "@components/CodeQuestion.astro";
 
 export const quest = 
 `Welcome Adventurer.
@@ -20,15 +19,12 @@ Kill some monsters? Rescue a lost princess?
 
 Let's find out!
 
-<QuestionCard question="Read your first quest!">
-  <CodeBlock
-    client:visible
-    code="read_quest()"
-    setup={`fn read_quest() { println!("${quest}") } __VALUE__`}
-    editable={false}
-    showLineNumbers={false}
-  />
-</QuestionCard>
+<CodeQuestion
+  code="read_quest()"
+  setup={`fn read_quest() { println!("${quest}") } __VALUE__`}
+  editable={false}
+  showLineNumbers={false}
+/>
 
 ...well, let's do it then.
 
@@ -58,19 +54,28 @@ const VALUE: &str = "__VALUE__";
 let answer = VALUE[${code.lastIndexOf("=")}..VALUE.len()-1].replace(" ", "");
 
 if answer.contains("let") {
-  return println!("You're almost there! But you don't need to use \\\"let\\\" in this exercise.");
+return println!("You're almost there! But you don't need to use \\\"let\\\" in this exercise.");
 }
 if answer.split("+").any(|x| x.parse::<u32>().is_ok()) {
-  println!("Copying each number isn't good enough.");
-  println!("You need to come up with a solution that works even if the numbers change.");
-  println!();
-  return println!("Try using the magical properties of the boxes.");
+println!("Copying each number isn't good enough.");
+println!("You need to come up with a solution that works even if the numbers change.");
+println!();
+return println!("Try using the magical properties of the boxes.");
 }
 if total == potatoes + carrots + onions {
-  println!("potatoes + carrots + onions == {total}, great job!");
+println!("potatoes + carrots + onions == {total}, great job!");
 }
 `;
+export const validator = String(value => {
+  /** @type {string} */
+  const answer = value.substring(value.lastIndexOf("=") + 1, value.length-1).replace(" ", "");
+  console.log({answer});
+  return (
+    answer.includes("?") && "Replace ? with your answer." ||
+    answer.includes("let") && "You're almost there! But you don't need to use \"let\" in this exercise." ||
+    answer.split("+").some((x) => Number(x)) && "Copying each number isn't good enough. You need to come up with a solution that works even if the numbers change." ||
+    undefined
+  );
+});
 
-<QuestionCard question="What's the total number of vegetables in the grocery?">
-  <CodeBlock client:visible code={code} setup={setup} validator={ 5 }/>
-</QuestionCard>
+<CodeQuestion question="What's the total number of vegetables in the grocery?" code={code} setup={setup} validator={validator} />
