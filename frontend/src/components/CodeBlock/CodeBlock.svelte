@@ -66,7 +66,7 @@
       playground_response = v;
       return;
     }
-
+    
     const code = `#![allow(warnings)] fn main() { \n${setup.replaceAll("__VALUE__", value)}\n }`;
 
     playground_response = await evaluate(code, lang, errorMsg);
