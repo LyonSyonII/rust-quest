@@ -59,8 +59,9 @@
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
     
+    console.log({value, validator})
     const v = eval(validator)(value);
-    console.log({validator, v})
+    console.log({v});
     if (v !== undefined) {
       running = false;
       playground_response = v;

@@ -3,6 +3,7 @@ title: The Adventurer's Guild
 description: The hero registers into the Adventurer's Guild.
 ---
 
+import CodeQuestion from "@components/CodeQuestion.astro";
 import QuestionCard from "@components/QuestionCard.astro";
 import CodeBlock from "@components/CodeBlock/CodeBlock.svelte";
 
@@ -17,11 +18,6 @@ export function SimpleQuestion({
   const no_dummy = code.toString().replace("?", "");
   const setup = `
         const VALUE: &str = "__VALUE__";
-        if ${checkMessed} && !VALUE.starts_with("${no_dummy}") {
-            println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
-            println!("Remember to only modify the ? part of the code.");
-            return;
-        }
         let a = VALUE.replace("${no_dummy}", "");
         match a.replace(" ", "").as_str() {
             "${answer}" => println!("${correct}"),
@@ -29,15 +25,16 @@ export function SimpleQuestion({
             _ => println!("${wrong}"),
         }
     `.replaceAll("\n", "");
+  const validator = String(
+    /** @type { (value: string) => (string | undefined) } */
+    (value) => 
+      !value.startsWith("NO_DUMMY") && "Seems like you've messed up the code, click the \"Reset\" button to return it back to its original state.\nRemember to only modify the ? part of the code." ||
+      value.includes("?") && "Replace ? with your answer." ||
+      undefined
+  ).replace("NO_DUMMY", no_dummy);
+
   return (
-    <QuestionCard question={question}>
-      <CodeBlock
-        client:visible
-        code={code}
-        setup={setup}
-        showLineNumbers={false}
-      />
-    </QuestionCard>
+    <CodeQuestion question={question} code={code} setup={setup} validator={validator} showLineNumbers={false} />
   );
 }
 export function FreeQuestion({ question, code = "", correct }) {

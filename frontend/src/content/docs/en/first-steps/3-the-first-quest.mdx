@@ -30,17 +30,17 @@ Let's find out!
 
 ---
 
-The grocery store has all the vegetables stored in magical boxes.  
-Every box has a label indicating what vegetable it contains, and a panel with the number of vegetables in it.
+The grocery store has all the vegetables stored in magical crates.  
+Each crate has a label indicating what vegetable it contains, and a panel with the number of vegetables in it.
 
-Since the boxes are magical, their panel automatically updates when the number of vegetables in it changes.
+Since the crates are magical, their panel automatically updates when the number of vegetables in it changes.
 
 The grocer wants to know how many vegetables there are in total.  
 Unfortunately, he's really bad at math, and can't add up the numbers every time.
 
-Therefore, he needs you to come up with a way to calculate the total using the magical properties of the boxes.
+Therefore, he needs you to come up with a way to calculate the total using the magical properties of the crates.
 
-He presents you with the following code, which represents the boxes and their contents:
+He presents you with the following code, which represents the crates and their contents:
 
 export const code = 
 `let potatoes = 5;
@@ -50,30 +50,17 @@ let onions   = 2;
 let total = ? + ? + ?;`;
 export const setup =
 `__VALUE__
-const VALUE: &str = "__VALUE__";
-let answer = VALUE[${code.lastIndexOf("=")}..VALUE.len()-1].replace(" ", "");
-
-if answer.contains("let") {
-return println!("You're almost there! But you don't need to use \\\"let\\\" in this exercise.");
-}
-if answer.split("+").any(|x| x.parse::<u32>().is_ok()) {
-println!("Copying each number isn't good enough.");
-println!("You need to come up with a solution that works even if the numbers change.");
-println!();
-return println!("Try using the magical properties of the boxes.");
-}
 if total == potatoes + carrots + onions {
-println!("potatoes + carrots + onions == {total}, great job!");
+  println!("potatoes + carrots + onions == {total}, great job!");
 }
 `;
 export const validator = String(value => {
   /** @type {string} */
   const answer = value.substring(value.lastIndexOf("=") + 1, value.length-1).replace(" ", "");
-  console.log({answer});
   return (
     answer.includes("?") && "Replace ? with your answer." ||
     answer.includes("let") && "You're almost there! But you don't need to use \"let\" in this exercise." ||
-    answer.split("+").some((x) => Number(x)) && "Copying each number isn't good enough. You need to come up with a solution that works even if the numbers change." ||
+    answer.split("+").some((x) => Number(x)) && "Copying each number isn't good enough.\nYou need to come up with a solution that works even if the numbers change.\nRemember to use the magical properties of the crates!" ||
     undefined
   );
 });
