@@ -4,14 +4,9 @@
   import { shortcut } from "@svelte-put/shortcut";
   import { onThemeChange } from "src/utils/onThemeChange";
   import { onDestroy, onMount } from "svelte";
-  import CodeMirror from "svelte-codemirror-editor";
-  import { writable } from "svelte/store";
+  import { derived, writable } from "svelte/store";
   import { translation, type Langs } from "@i18n/CodeBlock.ts";
   import "../../styles/custom.css";
-  import { evaluate } from "./evaluate";
-  import { rust } from "@codemirror/lang-rust";
-  import { githubDark } from "../../codemirror-themes/github-dark";
-  import { githubLight } from "../../codemirror-themes/github-light";
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
@@ -38,8 +33,13 @@
   let running = false;
   let focused = false;
   let playground_response = "";
-  
+
   const theme = writable("light");
+  const getTheme = derived(theme, async ($theme) =>
+    $theme === "light"
+      ? (await import("../../codemirror-themes/github-light")).githubLight
+      : (await import("../../codemirror-themes/github-dark")).githubDark,
+  );
   let observer: MutationObserver | undefined = undefined;
 
   onMount(async () => {
@@ -58,18 +58,22 @@
 
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
-    
-    console.log({value, validator})
+
+    console.log({ value, validator });
     const v = eval(validator)(value);
-    console.log({v});
+    console.log({ v });
     if (v !== undefined) {
       running = false;
       playground_response = v;
       return;
     }
-    
-    const code = `#![allow(warnings)] fn main() { \n${setup.replaceAll("__VALUE__", value)}\n }`;
 
+    const code = `#![allow(warnings)] fn main() { \n${setup.replaceAll(
+      "__VALUE__",
+      value,
+    )}\n }`;
+    
+    const { evaluate } = await import("./evaluate");
     playground_response = await evaluate(code, lang, errorMsg);
     running = false;
   };
@@ -89,16 +93,17 @@
   on:click={() => (focused = true)}
   on:clickoutside={() => (focused = false)}
 >
-  <CodeMirror
-  class="not-content"
-  bind:value
-  lang={rust()}
-  theme={$theme == "dark" ? githubDark : githubLight}
-  basic={showLineNumbers}
-  editable={editable && !running}
-  placeholder={placeholder || l.placeholder}
-  />
-
+  {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], ) then [CodeMirror, theme, lang]}
+    <CodeMirror.default
+      class="not-content"
+      bind:value
+      lang={lang.rust()}
+      {theme}
+      basic={showLineNumbers}
+      editable={editable && !running}
+      placeholder={placeholder || l.placeholder}
+    />
+  {/await}
 
   <button
     class="not-content"

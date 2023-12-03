@@ -6,9 +6,9 @@ export async function evaluate(
   errorMsg?: string,
 ): Promise<string> {
   const error = errorMsg || translation(lang).error;
-  
+
   if (import.meta.env.MODE.includes("dev")) {
-    return Promise.race([godbolt(code, error)/* , server(code, error) */]);
+    return Promise.race([godbolt(code, error) /* , server(code, error) */]);
   }
 
   return Promise.race([
@@ -25,7 +25,7 @@ async function server(code: string, error: string): Promise<string> {
   const params = {
     code,
   };
-  
+
   return fetch("https://rust-quest-runner.fly.dev/evaluate.json", {
     headers: {
       "Content-Type": "application/json",
