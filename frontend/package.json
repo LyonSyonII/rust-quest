@@ -8,11 +8,11 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "analyze": "source-map-explorer 'dist/_astro/*.js'"
   },
   "dependencies": {
     "@astrojs/check": "^0.3.1",
-    "@astrojs/preact": "^3.0.1",
     "@astrojs/starlight": "^0.12.0",
     "@astrojs/svelte": "^4.0.3",
     "@codemirror/lang-rust": "^6.0.1",
@@ -23,6 +23,7 @@
     "@ddietr/codemirror-themes": "^1.4.2",
     "@lezer/highlight": "^1.2.0",
     "astro": "^3.2.3",
+    "astro-compress": "^2.2.3",
     "sharp": "^0.32.5",
     "svelte": "^4.0.0",
     "svelte-codemirror-editor": "^1.1.0",
@@ -34,6 +35,7 @@
     "@svelte-put/shortcut": "^3.0.0",
     "prettier": "^3.1.0",
     "prettier-plugin-astro": "^0.12.2",
-    "prettier-plugin-svelte": "^3.1.0"
+    "prettier-plugin-svelte": "^3.1.0",
+    "rollup-plugin-visualizer": "^5.9.3"
   }
 }

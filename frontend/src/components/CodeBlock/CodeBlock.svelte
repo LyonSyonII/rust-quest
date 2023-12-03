@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { rust } from "@codemirror/lang-rust";
   import Icon from "@iconify/svelte";
   import { clickoutside } from "@svelte-put/clickoutside";
   import { shortcut } from "@svelte-put/shortcut";
@@ -7,11 +6,12 @@
   import { onDestroy, onMount } from "svelte";
   import CodeMirror from "svelte-codemirror-editor";
   import { writable } from "svelte/store";
-  import { githubDark } from "../../codemirror-themes/github-dark";
-  import { githubLight } from "../../codemirror-themes/github-light";
   import { translation, type Langs } from "@i18n/CodeBlock.ts";
   import "../../styles/custom.css";
   import { evaluate } from "./evaluate";
+  import { rust } from "@codemirror/lang-rust";
+  import { githubDark } from "../../codemirror-themes/github-dark";
+  import { githubLight } from "../../codemirror-themes/github-light";
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
@@ -38,11 +38,11 @@
   let running = false;
   let focused = false;
   let playground_response = "";
-
+  
   const theme = writable("light");
   let observer: MutationObserver | undefined = undefined;
 
-  onMount(() => {
+  onMount(async () => {
     theme.set(document.documentElement.dataset.theme || "light");
     observer = onThemeChange((t) => theme.set(t));
   });
@@ -90,14 +90,15 @@
   on:clickoutside={() => (focused = false)}
 >
   <CodeMirror
-    class="not-content"
-    bind:value
-    lang={rust()}
-    theme={$theme === "dark" ? githubDark : githubLight}
-    basic={showLineNumbers}
-    editable={editable && !running}
-    placeholder={placeholder || l.placeholder}
+  class="not-content"
+  bind:value
+  lang={rust()}
+  theme={$theme == "dark" ? githubDark : githubLight}
+  basic={showLineNumbers}
+  editable={editable && !running}
+  placeholder={placeholder || l.placeholder}
   />
+
 
   <button
     class="not-content"

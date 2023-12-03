@@ -21,22 +21,22 @@ export function SimpleQuestion({
         let a = VALUE.replace("${no_dummy}", "");
         match a.replace(" ", "").as_str() {
             "${answer}" => println!("${correct}"),
-            "?" => println!("Replace ? with your answer."),
             _ => println!("${wrong}"),
         }
     `.replaceAll("\n", "");
   const validator = String(
     /** @type { (value: string) => (string | undefined) } */
     (value) => 
-      !value.startsWith("NO_DUMMY") && "Seems like you've messed up the code, click the \"Reset\" button to return it back to its original state.\nRemember to only modify the ? part of the code." ||
-      value.includes("?") && "Replace ? with your answer." ||
-      undefined
+      !value.startsWith("NO_DUMMY") && "Seems like you've messed up the code, click the \"Reset\" button to return it back to its original state.\nRemember to only modify the ? symbol."
+      || value.includes("?") && "Replace ? with your answer."
+      || undefined
   ).replace("NO_DUMMY", no_dummy);
-
+  
   return (
     <CodeQuestion question={question} code={code} setup={setup} validator={validator} showLineNumbers={false} />
   );
 }
+/** @param {{question: string, code: string, correct: string}} */
 export function FreeQuestion({ question, code = "", correct }) {
   const setup = `
         if __VALUE__ {
@@ -45,15 +45,14 @@ export function FreeQuestion({ question, code = "", correct }) {
             println!("Your answer is wrong, try again!");
         }
     `.replaceAll("\n", "");
+  const validator = String(
+    /** @type { (value: string) => (string | undefined) } */
+    (value) => 
+      value.includes("?") && "Replace ? with your answer." ||
+      undefined
+  ).replace("NO_DUMMY", code);
   return (
-    <QuestionCard question={question}>
-      <CodeBlock
-        client:visible
-        code={code}
-        setup={setup}
-        showLineNumbers={false}
-      />
-    </QuestionCard>
+    <CodeQuestion question={question} code={code} setup={setup} validator={validator} showLineNumbers={false} />
   );
 }
 
@@ -132,7 +131,7 @@ Now we'll do some comparisons, simple stuff.
 See what we're doing here?  
 Try rewriting the code of the exercises above, exactly how the question is formulated.
 
-For instance, for the first question, instead of saying `200 is smaller than ?`, say `? is greater than 200`.
+For instance, for the first question, instead of saying `200 is smaller than ?`, say `? is greater than 200`.  
 Remember to fill in the `?` in your final submission.
 
 <FreeQuestion
@@ -159,12 +158,17 @@ Remember to fill in the `?` in your final submission.
 Excellent!  
 Now please sign here, and you'll be ready to take your first quest.
 
-<QuestionCard>
-  <CodeBlock
-    client:visible
-    code={'let name = "?";'}
-    setup={
-      '__VALUE__; if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'
-    }
-  />
-</QuestionCard>
+export const validator = String(
+  /** @type { (value: string) => (string | undefined) } */
+  (value) => value.includes("?") && "Hint: Just replace ? with your name!" || undefined
+);
+export const pata = Symbol();
+
+<CodeQuestion
+  question=""
+  code={'let name = "?";'}
+  setup={
+    '__VALUE__; if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'
+  }
+  validator={validator}
+/>

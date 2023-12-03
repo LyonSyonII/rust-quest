@@ -7,7 +7,7 @@ import CodeQuestion from "@components/CodeQuestion.astro";
 
 export const quest = 
 `Welcome Adventurer.
-Your first quest is... To help the local grocer sort some vegetables!
+Your first quest is... To assist the local grocery store!
 
 We expect great things of you.
 The Adventurer's Guild`;
@@ -21,6 +21,7 @@ Let's find out!
 
 <CodeQuestion
   code="read_quest()"
+  validator={`() => \`${quest}\``}
   setup={`fn read_quest() { println!("${quest}") } __VALUE__`}
   editable={false}
   showLineNumbers={false}
