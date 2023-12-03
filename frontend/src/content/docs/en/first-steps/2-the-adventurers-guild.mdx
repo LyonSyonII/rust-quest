@@ -4,8 +4,14 @@ description: The hero registers into the Adventurer's Guild.
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
-import QuestionCard from "@components/QuestionCard.astro";
-import CodeBlock from "@components/CodeBlock/CodeBlock.svelte";
+import PortraitCard from "@components/PortraitCard.astro";
+import Portrait from "@assets/portraits/AdventurersGuild.svg";
+
+export const code_mess =
+`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
+Remember to only modify the ? symbol.`
+export const replace = "Replace ? with your answer."
+export const wrong_answer = "Wrong answer, try again!"
 
 export function SimpleQuestion({
   question,
@@ -17,18 +23,18 @@ export function SimpleQuestion({
 }) {
   const no_dummy = code.toString().replace("?", "");
   const setup = `
-        const VALUE: &str = "__VALUE__";
-        let a = VALUE.replace("${no_dummy}", "");
-        match a.replace(" ", "").as_str() {
-            "${answer}" => println!("${correct}"),
-            _ => println!("${wrong}"),
-        }
-    `.replaceAll("\n", "");
+    const VALUE: &str = "__VALUE__";
+    let a = VALUE.replace("${no_dummy}", "");
+    match a.replace(" ", "").as_str() {
+        "${answer}" => println!("${correct}"),
+        _ => println!("${wrong}"),
+    }
+  `.replaceAll("\n", "");
   const validator = String(
     /** @type { (value: string) => (string | undefined) } */
     (value) => 
-      !value.startsWith("NO_DUMMY") && "Seems like you've messed up the code, click the \"Reset\" button to return it back to its original state.\nRemember to only modify the ? symbol."
-      || value.includes("?") && "Replace ? with your answer."
+      !value.startsWith("NO_DUMMY") && code_mess
+      || value.includes("?") && replace
       || undefined
   ).replace("NO_DUMMY", no_dummy);
   
@@ -39,16 +45,11 @@ export function SimpleQuestion({
 /** @param {{question: string, code: string, correct: string}} */
 export function FreeQuestion({ question, code = "", correct }) {
   const setup = `
-        if __VALUE__ {
-            println!("${correct}");
-        } else {
-            println!("Your answer is wrong, try again!");
-        }
-    `.replaceAll("\n", "");
+        if __VALUE__ { println!("${correct}"); } else { println!("${wrong_answer}"); }`.replaceAll("\n", "");
   const validator = String(
     /** @type { (value: string) => (string | undefined) } */
     (value) => 
-      value.includes("?") && "Replace ? with your answer." ||
+      value.includes("?") && replace ||
       undefined
   ).replace("NO_DUMMY", code);
   return (
@@ -56,6 +57,7 @@ export function FreeQuestion({ question, code = "", correct }) {
   );
 }
 
+<PortraitCard src={Portrait}>
 Good morning, welcome to Newlia, where new heroes are born!
 
 Are you here to register as an adventurer? And you want to choose the "Programmer" class?  
@@ -65,6 +67,7 @@ This class requires a small test, to make sure you have the minimum problem-solv
 It'll take just a moment.
 
 Please, fill in the blanks in the following statements, replacing **`?`** with the correct answer.
+</PortraitCard>
 
 :::note[Don't worry]
 If you mess up the code, click the "Reset" button to return it to its original state.
@@ -158,17 +161,18 @@ Remember to fill in the `?` in your final submission.
 Excellent!  
 Now please sign here, and you'll be ready to take your first quest.
 
-export const validator = String(
-  /** @type { (value: string) => (string | undefined) } */
-  (value) => value.includes("?") && "Hint: Just replace ? with your name!" || undefined
-);
-export const pata = Symbol();
+{
+function() {
+const hint = "Hint: Just replace ? with your name!";
+const welcome = "{name}, welcome to the Adventurer's Guild!";
+const validator = `(value) => value.includes("?") && ${hint} || undefined)`;
 
-<CodeQuestion
+return <CodeQuestion
   question=""
   code={'let name = "?";'}
-  setup={
-    '__VALUE__; if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'
-  }
+  setup={`__VALUE__; println!("${welcome}")`}
   validator={validator}
 />
+  }()
+}
+

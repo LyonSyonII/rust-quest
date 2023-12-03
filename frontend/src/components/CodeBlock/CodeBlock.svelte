@@ -27,8 +27,8 @@
   /** Language used by the editor */
   export let lang: Langs = "en";
 
-  const l = translation(lang);
-
+  $: l = translation(lang);
+  
   let value = code;
   let running = false;
   let focused = false;
@@ -45,6 +45,7 @@
   onMount(async () => {
     theme.set(document.documentElement.dataset.theme || "light");
     observer = onThemeChange((t) => theme.set(t));
+    lang = window.location.pathname.split("/")[2] as Langs;
   });
   onDestroy(() => observer?.disconnect());
 
@@ -72,7 +73,7 @@
       "__VALUE__",
       value,
     )}\n }`;
-    
+
     const { evaluate } = await import("./evaluate");
     playground_response = await evaluate(code, lang, errorMsg);
     running = false;
@@ -95,18 +96,18 @@
 >
   {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], )}
     <pre>{value || placeholder || l.placeholder}</pre>
-  {:then [CodeMirror, theme, lang]} 
+  {:then [CodeMirror, theme, lang]}
     <CodeMirror.default
-    class="not-content"
-    bind:value
-    lang={lang.rust()}
-    {theme}
-    basic={showLineNumbers}
-    editable={editable && !running}
-    placeholder={placeholder || l.placeholder}
-  />
+      class="not-content"
+      bind:value
+      lang={lang.rust()}
+      {theme}
+      basic={showLineNumbers}
+      editable={editable && !running}
+      placeholder={placeholder || l.placeholder}
+    />
   {/await}
-<!--   {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], ) then [CodeMirror, theme, lang]}
+  <!--   {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], ) then [CodeMirror, theme, lang]}
     <CodeMirror.default
       class="not-content"
       bind:value
@@ -117,7 +118,7 @@
       placeholder={placeholder || l.placeholder}
     />
     {/await} -->
-    
+
   <button
     class="not-content"
     title="Run (Shift+Enter)"
@@ -126,11 +127,11 @@
   >
     <Icon icon="carbon:run" width={24} />
   </button>
-  
+
   <button title="Reset code" on:click={() => (value = code)}>
     <Icon icon="carbon:reset" width={24} />
   </button>
-    
+
   {#if playground_response}
     <div class="response">
       <p>{playground_response}</p>

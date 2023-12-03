@@ -3,8 +3,7 @@ title: Introduction
 description: An introduction to Rust Quest
 ---
 
-import CodeBlock from "@components/CodeBlock/CodeBlock.svelte";
-import QuestionCard from "@components/QuestionCard.astro";
+import CodeQuestion from "@components/CodeQuestion.astro";
 
 Thank you for reading Rust Quest!  
 This book is designed for people with zero experience in Rust or programming in general, so don't worry, I'm sure you'll leave having learned something!
@@ -21,14 +20,16 @@ Each quest provides a programming lesson and includes a snippet of code that you
 
 Try running the following snippet (click the "Run" button on the right or press `⇧ + ↵` on your keyboard while editing):
 
-<QuestionCard>
-  <CodeBlock
-    client:visible
-    code={'println!("Hello World!")'}
-    showLineNumbers={false}
-    errorMsg={`Woops, something went wrong and the code does not compile!\nIf you've mistakenly messed up the code, click the "Reset" button to return it back to its original state.`}
-  />
-</QuestionCard>
+export const code = 'println!("Hello World!")';
+export const errorMsg =
+`Woops, something went wrong and the code does not compile!
+If you've mistakenly messed up the code, click the "Reset" button to return it back to its original state.`
+
+<CodeQuestion 
+  code={code}
+  showLineNumbers={false}
+  errorMsg={errorMsg}
+/>
 
 :::tip[Exercise]
 Well... Your name isn't _World_, right?  

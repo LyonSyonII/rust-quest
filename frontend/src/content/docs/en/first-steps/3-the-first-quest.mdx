@@ -5,6 +5,8 @@ description: Finally, your first quest! What will it be...
 
 import CodeQuestion from "@components/CodeQuestion.astro";
 
+export const replace = "Replace ? with your answer.";
+
 export const quest = 
 `Welcome Adventurer.
 Your first quest is... To assist the local grocery store!
@@ -43,27 +45,47 @@ Therefore, he needs you to come up with a way to calculate the total using the m
 
 He presents you with the following code, which represents the crates and their contents:
 
-export const code = 
-`let potatoes = 5;
-let carrots  = 4;
-let onions   = 2;
+{
+function(){
 
-let total = ? + ? + ?;`;
-export const setup =
-`__VALUE__
+const question = `
+What's the total number of vegetables in the grocery?
+`;
+const code = `
+let potatoes = 5;
+let carrots = 4;
+let onions = 2;
+
+let total = ? + ? + ?;
+`;
+const setup = `
+__VALUE__
 if total == potatoes + carrots + onions {
   println!("potatoes + carrots + onions == {total}, great job!");
 }
 `;
-export const validator = String(value => {
-  /** @type {string} */
+const almost = `
+You're almost there! 
+But you don't need to use "let" in this exercise.
+`;
+const copy = `
+Copying each number isn't good enough.
+You need to come up with a solution that works even if the numbers change.
+Remember to use the magical properties of the crates!
+`;
+const validator = `(value) => {
   const answer = value.substring(value.lastIndexOf("=") + 1, value.length-1).replace(" ", "");
   return (
-    answer.includes("?") && "Replace ? with your answer." ||
-    answer.includes("let") && "You're almost there! But you don't need to use \"let\" in this exercise." ||
-    answer.split("+").some((x) => Number(x)) && "Copying each number isn't good enough.\nYou need to come up with a solution that works even if the numbers change.\nRemember to use the magical properties of the crates!" ||
+    answer.includes("?") && \`${replace}\` ||
+    answer.includes("let") && \`${almost}\` ||
+    answer.split("+").some((x) => Number(x)) && \`${copy}\` ||
     undefined
   );
-});
+}`;
 
-<CodeQuestion question="What's the total number of vegetables in the grocery?" code={code} setup={setup} validator={validator} />
+return (
+  <CodeQuestion {...{question, code, setup, validator}} />
+);
+
+}()
+}

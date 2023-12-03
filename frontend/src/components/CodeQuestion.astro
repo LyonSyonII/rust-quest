@@ -3,20 +3,20 @@ import type { Langs } from "@i18n/CodeBlock";
 import CodeBlock from "./CodeBlock/CodeBlock.svelte";
 import QuestionCard from "./QuestionCard.astro";
 interface Props {
-  question: string;
-  setup: string;
-  validator: string;
+  question?: string;
+  setup?: string;
+  validator?: string;
   code: string;
-  errorMsg: string;
-  placeholder: string;
-  showLineNumbers: boolean;
-  editable: boolean;
-  lang: Langs;
+  errorMsg?: string;
+  placeholder?: string;
+  showLineNumbers?: boolean;
+  editable?: boolean;
+  lang?: Langs;
 }
 
 const {
-  question,
-  setup,
+  question = "",
+  setup = "__VALUE__",
   validator = "(_) => undefined",
   code,
   errorMsg = "",
@@ -29,10 +29,10 @@ const {
 
 <QuestionCard question={question}>
   <CodeBlock
-    client:idle
+    client:visible
     {setup}
     {validator}
-    {code}
+    code={code.trim()}
     {errorMsg}
     {placeholder}
     {showLineNumbers}

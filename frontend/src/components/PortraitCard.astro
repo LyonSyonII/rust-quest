@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  src: ImageMetadata;
+}
+const { src } = Astro.props;
+---
+
+
+<article class="card">
+  <Image src={src} alt="portrait" class="portrait" />
+  <div class="text speech-bubble">
+    <slot />
+  </div>
+</article>
+
+<style>
+  article {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+  .portrait {
+    width: 80px;
+    background-color: var(--sl-color-portrait-bg);
+    border-radius: .4em;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .text {
+    color: var(--sl-color-gray-1);
+    background: var(--sl-color-portrait-bg);
+    border-radius: .4em;
+    border-top-left-radius: 0;
+    padding: 1rem;
+    margin-top: 0 !important;
+  }
+</style>
+
