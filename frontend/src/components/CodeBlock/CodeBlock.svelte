@@ -93,7 +93,20 @@
   on:click={() => (focused = true)}
   on:clickoutside={() => (focused = false)}
 >
-  {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], ) then [CodeMirror, theme, lang]}
+  {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], )}
+    <pre>{value || placeholder || l.placeholder}</pre>
+  {:then [CodeMirror, theme, lang]} 
+    <CodeMirror.default
+    class="not-content"
+    bind:value
+    lang={lang.rust()}
+    {theme}
+    basic={showLineNumbers}
+    editable={editable && !running}
+    placeholder={placeholder || l.placeholder}
+  />
+  {/await}
+<!--   {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], ) then [CodeMirror, theme, lang]}
     <CodeMirror.default
       class="not-content"
       bind:value
@@ -103,8 +116,8 @@
       editable={editable && !running}
       placeholder={placeholder || l.placeholder}
     />
-  {/await}
-
+    {/await} -->
+    
   <button
     class="not-content"
     title="Run (Shift+Enter)"
@@ -113,11 +126,11 @@
   >
     <Icon icon="carbon:run" width={24} />
   </button>
-
+  
   <button title="Reset code" on:click={() => (value = code)}>
     <Icon icon="carbon:reset" width={24} />
   </button>
-
+    
   {#if playground_response}
     <div class="response">
       <p>{playground_response}</p>
@@ -131,6 +144,10 @@
   }
   :root[data-theme="light"] {
     --accent: var(--sl-color-accent);
+  }
+  pre {
+    height: 33.4px;
+    color: gray;
   }
   .wrapper {
     display: grid;
