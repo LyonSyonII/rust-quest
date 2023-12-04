@@ -1,4 +1,4 @@
-export type Langs = "en" | "ca" | "es";
+import { type Langs } from "./langs";
 type Translations = {
   placeholder: string;
   compiling: string;
