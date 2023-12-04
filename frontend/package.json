@@ -22,6 +22,7 @@
     "@codemirror/view": "^6.22.0",
     "@ddietr/codemirror-themes": "^1.4.2",
     "@lezer/highlight": "^1.2.0",
+    "@macfja/svelte-persistent-store": "^2.4.1",
     "astro": "^3.2.3",
     "astro-compress": "^2.2.3",
     "sharp": "^0.32.5",

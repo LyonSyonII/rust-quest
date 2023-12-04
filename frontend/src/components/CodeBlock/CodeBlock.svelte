@@ -5,8 +5,12 @@
   import { onThemeChange } from "src/utils/onThemeChange";
   import { onDestroy, onMount } from "svelte";
   import { derived, writable } from "svelte/store";
-  import { translation, type Langs } from "@i18n/CodeBlock.ts";
-
+  import { translation } from "@i18n/CodeBlock.ts";
+  import { type Langs } from "@i18n/langs";
+  import { checkpointStore } from "@components/Checkpoint/checkpoint";
+  
+  /** Id of the CodeBlock. If provided, when the output's last line is "SUCCESS", a local-storage entry will be created with this id */
+  export let id: string = "";
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
   /** Validator executed before the code is sent to the playground.
@@ -74,7 +78,13 @@
     )}\n }`;
 
     const { evaluate } = await import("./evaluate");
-    playground_response = await evaluate(code, lang, errorMsg);
+    
+    const result = await evaluate(code, lang, errorMsg);
+    const out = result.replace("SUCCESS\n", "");
+    if (id && result.length !== out.length) {
+      checkpointStore.update(s => { s.add(id); return s})
+    }
+    playground_response = out;
     running = false;
   };
 </script>

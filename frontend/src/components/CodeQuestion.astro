@@ -1,5 +1,5 @@
 ---
-import type { Langs } from "@i18n/CodeBlock";
+import type { Langs } from "@i18n/langs";
 import CodeBlock from "./CodeBlock/CodeBlock.svelte";
 import QuestionCard from "./QuestionCard.astro";
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
   showLineNumbers?: boolean;
   editable?: boolean;
   lang?: Langs;
+  id?: string;
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   showLineNumbers = true,
   editable = true,
   lang = "en",
+  id = ""
 } = Astro.props;
 ---
 
@@ -38,5 +40,6 @@ const {
     {showLineNumbers}
     {editable}
     {lang}
+    {id}
   />
 </QuestionCard>
