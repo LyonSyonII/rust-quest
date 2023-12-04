@@ -6,7 +6,6 @@
   import { onDestroy, onMount } from "svelte";
   import { derived, writable } from "svelte/store";
   import { translation, type Langs } from "@i18n/CodeBlock.ts";
-  import "../../styles/custom.css";
 
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
@@ -107,17 +106,6 @@
       placeholder={placeholder || l.placeholder}
     />
   {/await}
-  <!--   {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], ) then [CodeMirror, theme, lang]}
-    <CodeMirror.default
-      class="not-content"
-      bind:value
-      lang={lang.rust()}
-      {theme}
-      basic={showLineNumbers}
-      editable={editable && !running}
-      placeholder={placeholder || l.placeholder}
-    />
-    {/await} -->
 
   <button
     class="not-content"
