@@ -10,30 +10,49 @@ const { src } = Astro.props;
 
 <article class="card">
   <Image src={src} alt="portrait" class="portrait" />
-  <div class="text speech-bubble">
+  <div class="text" id="text">
     <slot />
   </div>
 </article>
 
 <style>
+  :root {
+    --portrait-size: 80px;
+    --border-radius: .4em;
+  }
   article {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: auto;
   }
   .portrait {
-    width: 80px;
+    width: var(--portrait-size);
     background-color: var(--sl-color-portrait-bg);
-    border-radius: .4em;
-    border-top-right-radius: 0;
+    border-radius: var(--border-radius);
+    border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
-  .text {
+  #text {
     color: var(--sl-color-gray-1);
     background: var(--sl-color-portrait-bg);
-    border-radius: .4em;
+    border-radius: var(--border-radius);
     border-top-left-radius: 0;
     padding: 1rem;
-    margin-top: 0 !important;
+    margin-top: 0;
+  }
+
+  @media only screen and (min-width: 1152px) {
+    article {
+      grid-template-columns: auto auto;
+      margin-left: calc(-1 * var(--portrait-size));
+    }
+    .portrait {
+      margin-top: 1.5rem;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: var(--border-radius);
+    }
+    #text {
+      margin-top: 1.5rem;
+    }
   }
 </style>
 
