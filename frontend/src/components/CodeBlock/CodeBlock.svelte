@@ -34,7 +34,15 @@
   let value = code;
   let running = false;
   let focused = false;
-  let playground_response = "";
+  let playgroundResponse = "";
+  const setResponse = async (response: string) => {
+    const out = response.replace("SUCCESS\n", "");
+    if (id && response.length !== out.length) {
+      const { checkpointStore } = await import("../Checkpoint/checkpoint");
+      checkpointStore.update(s => { s.add(id); return s})
+    }
+    playgroundResponse = out;
+  };
 
   const theme = writable("light");
   const getTheme = derived(theme, async ($theme) =>
@@ -57,7 +65,7 @@
     }
 
     running = true;
-    playground_response = l.compiling;
+    playgroundResponse = l.compiling;
 
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -67,7 +75,7 @@
     console.log({ v });
     if (v !== undefined) {
       running = false;
-      playground_response = v;
+      await setResponse(v);
       return;
     }
 
@@ -79,12 +87,7 @@
     const { evaluate } = await import("./evaluate");
     
     const result = await evaluate(code, lang, errorMsg);
-    const out = result.replace("SUCCESS\n", "");
-    if (id && result.length !== out.length) {
-      const { checkpointStore } = await import("../Checkpoint/checkpoint");
-      checkpointStore.update(s => { s.add(id); return s})
-    }
-    playground_response = out;
+    await setResponse(result);
     running = false;
   };
 </script>
@@ -130,9 +133,9 @@
     <Icon icon="carbon:reset" width={24} />
   </button>
 
-  {#if playground_response}
+  {#if playgroundResponse}
     <div class="response">
-      <p>{playground_response}</p>
+      <p>{playgroundResponse}</p>
     </div>
   {/if}
 </div>
