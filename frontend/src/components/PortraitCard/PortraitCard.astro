@@ -1,0 +1,61 @@
+---
+import { Image } from "astro:assets";
+import { portrait, type Portrait } from "./portraits";
+
+interface Props {
+  src: Portrait;
+}
+const { src } = Astro.props;
+
+const { img, bg } = portrait(src);
+const darkBg = `#${(parseInt(bg.replace("#", "0x")) - 0xb1b8b8).toString(16)}`;
+---
+
+<article class="card" id="article">
+  <Image src={img} alt="portrait" class="portrait" />
+  <div id="text">
+    <slot />
+  </div>
+</article>
+
+<style define:vars={{ bg, darkBg }}>
+  :root {
+    --portrait-size: 80px;
+  }
+  :root article {
+    background-color: var(--bg);
+  }
+  :root[data-theme="dark"] article {
+    background-color: var(--darkBg);
+  }
+  article {
+    display: grid;
+    grid-template-columns: auto;
+    margin-top: 1.5rem;
+    border: 1px;
+    border-radius: .25em;
+  }
+  .portrait {
+    width: var(--portrait-size);
+  }
+  #text {
+    color: var(--sl-color-gray-1);
+    padding: 0.75rem;
+    margin-top: 0;
+    align-self: center;
+  }
+  @media only screen and (min-width: 1152px) {
+    article {
+      grid-template-columns: var(--portrait-size) auto;
+      margin-left: calc(-1 * var(--portrait-size));
+    }
+    .portrait {
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+    #text {
+      padding: 1rem;
+      padding-left: 0.25rem;
+    }
+  }
+</style>

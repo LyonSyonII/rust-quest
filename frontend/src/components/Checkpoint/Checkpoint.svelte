@@ -4,6 +4,7 @@
 
   /** Id of the checkpoint. Will only show inside when "id" is present in LocalStorage */
   export let id: string;
+  export let scroll: boolean = true;
   let loaded = false;
   let show = false;
 
@@ -20,7 +21,7 @@
         if (loaded) {
           loaded = false;
           await new Promise((resolve) => setTimeout(resolve, 400));
-          scrollBy({top: 400, behavior: "smooth"});
+          scroll && scrollBy({top: 400, behavior: "smooth"});
           return;
         }
     });
