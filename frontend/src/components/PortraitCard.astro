@@ -7,8 +7,7 @@ interface Props {
 const { src } = Astro.props;
 ---
 
-
-<article class="card">
+<article class="card" id="article" >
   <Image src={src} alt="portrait" class="portrait" />
   <div id="text">
     <slot />
@@ -18,41 +17,36 @@ const { src } = Astro.props;
 <style>
   :root {
     --portrait-size: 80px;
-    --border-radius: .4em;
   }
   article {
     display: grid;
     grid-template-columns: auto;
+    margin-top: 1.5rem;
+    background-color: var(--sl-color-portrait-bg);
+    border: 1px;
+    border-radius: .25em;
   }
   .portrait {
     width: var(--portrait-size);
-    background-color: var(--sl-color-portrait-bg);
-    border-radius: var(--border-radius);
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
   }
   #text {
     color: var(--sl-color-gray-1);
-    background: var(--sl-color-portrait-bg);
-    border-radius: var(--border-radius);
-    border-top-left-radius: 0;
-    padding: 1rem;
+    padding: 0.75rem;
     margin-top: 0;
+    align-self: center;
   }
-
   @media only screen and (min-width: 1152px) {
     article {
-      grid-template-columns: auto auto;
+      grid-template-columns: var(--portrait-size) auto;
       margin-left: calc(-1 * var(--portrait-size));
     }
     .portrait {
-      margin-top: 1.5rem;
-      border-top-right-radius: 0;
-      border-bottom-left-radius: var(--border-radius);
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
     }
     #text {
-      margin-top: 1.5rem;
+      padding: 1rem;
+      padding-left: 0.25rem;
     }
   }
 </style>
-
