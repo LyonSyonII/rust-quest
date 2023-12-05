@@ -4,8 +4,7 @@ description: The hero registers into the Adventurer's Guild.
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
-import PortraitCard from "@components/PortraitCard.astro";
-import Portrait from "@assets/portraits/AdventurersGuild.svg";
+import PortraitCard from "@components/PortraitCard/PortraitCard.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.svelte";
 
 export const code_mess =
@@ -58,7 +57,7 @@ export function FreeQuestion({ question, code = "", correct, id }) {
   );
 }
 
-<PortraitCard src={Portrait} >
+<PortraitCard src="guild-girl" >
 Good morning, welcome to Newlia, where new heroes are born!
 
 Are you here to register as an adventurer? And you want to choose the "Programmer" class?  
@@ -84,7 +83,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
 />
 
 <Checkpoint client:only id="2-1">
-  <PortraitCard src={Portrait}>
+  <PortraitCard src="guild-girl">
   Well done! Let's continue.
   </PortraitCard>
   
@@ -99,7 +98,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint client:only id="2-2">
-  <PortraitCard src={Portrait}>
+  <PortraitCard src="guild-girl">
   All right, let's up the challenge a bit.
   </PortraitCard>
 
@@ -114,7 +113,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint client:only id="2-3">
-  <PortraitCard src={Portrait}>
+  <PortraitCard src="guild-girl">
   Well, well, Mx. Calculator knows their math!  
   Just kidding, I promised this would be pretty easy ;)
   
@@ -185,7 +184,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
   :::
   
-  <PortraitCard src={Portrait}>
+  <PortraitCard src="guild-girl">
   Excellent!  
     
   Now please sign here, and you'll be ready to take your first quest.

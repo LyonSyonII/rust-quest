@@ -4,6 +4,8 @@ description: Finally, your first quest! What will it be...
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
+import PortraitCard from "@components/PortraitCard/PortraitCard.astro";
+import Checkpoint from "@components/Checkpoint/Checkpoint.svelte";
 
 export const replace = "Replace ? with your answer.";
 
@@ -23,27 +25,26 @@ Let's find out!
 
 <CodeQuestion
   code="read_quest()"
-  validator={`() => \`${quest}\``}
+  validator={`() => \`${quest}SUCCESS\n\``}
   setup={`fn read_quest() { println!("${quest}") } __VALUE__`}
   editable={false}
   showLineNumbers={false}
+  id="3-1"
 />
 
+
+<Checkpoint client:only id="3-1" scroll={false} >
 ...well, let's do it then.
 
 ---
+<PortraitCard src="grocery">
+Good morning Adventurer, I'm glad you've accepted my request.  
+My age is starting to show and it's difficult to keep up with the work here at the store.  
 
-The grocery store has all the vegetables stored in magical crates.  
-Each crate has a label indicating what vegetable it contains, and a panel with the number of vegetables in it.
+Your first task is to help me keep track of the inventory, please, follow me.
+</PortraitCard>
 
-Since the crates are magical, their panel automatically updates when the number of vegetables in it changes.
-
-The grocer wants to know how many vegetables there are in total.  
-Unfortunately, he's really bad at math, and can't add up the numbers every time.
-
-Therefore, he needs you to come up with a way to calculate the total using the magical properties of the crates.
-
-He presents you with the following code, which represents the crates and their contents:
+You follow the owner to the back of the store, where he has crates full of vegetables.
 
 {
 function(){
@@ -89,3 +90,93 @@ return (
 
 }()
 }
+
+</Checkpoint>
+
+Great!
+Now the grocer knows how many vegetables he has stored.
+
+Next, he needs to create another magical box, to store **18 apples**.
+He gives you a box with a panel and an empty label, and says that this should be enough to make it.
+
+Then, looking at the box, he mutters: "`let`".
+Once... Hearing? The word, the box starts to glow, and in the panel appears: "Please, fill the label with the name of the contents of the box and put the items inside".
+
+The man then goes to attend a customer, leaving you to finish the work.
+
+###### Create a magical box to store 18 apples!
+```rust
+let ? = ?;
+
+# "__VALUE__".replace(" ", "") == "letapples=18;"
+# println!("
+# Well done, the box is now operative!
+# ")
+```
+
+# Hide next until exercise is completed
+> Use svelte, read cookie specified by `until="cookie"` and if it doesn't exist don't show contents
+
+Having created the box, you start walking to the counter to tell the Grocer your success, but then he shouts: "Hey, adventurer! Bring me two apples from the box please".
+
+Okay, this shouldn't be difficult, just take two apples and... Huh? Why is your hand being stopped in the air?
+You look at the panel, maybe something is wrong?
+Indeed, the panel is red, and says: "Anti theft protection activated, if you want to change the contents of this box add the `mut` directive".
+
+What? What does this mean? Why does a grocery store have anti theft magical boxes?
+
+Knowing you are making the owner wait, you hurry and try to fix it.
+The grocer before said `let` to activate the box, maybe you need to do the same with this `mut` thing?
+###### Fix the box and take two apples from it!
+```rust
+? apples = 18;
+apples = apples - 2;
+# apples == 16 => "Once you say the magical words `let mut` the barrier sorrounding the box disappears, and you're able to take the apples, good job!"
+
+# account for:
+# - ? apples
+# - "mut" only
+# - "mut let" 
+```
+> `apples = apples - 2` means: "Make `apples` be its previous value minus two".
+> It ends up translating to `apples = 18 - 2`.
+>  
+> If you want, you can use the shorthand `apples -= 2`, which would mean: "Substract 2 from the current value of apples".
+
+# Hide next until exercise is completed
+
+Having dispatched the customer, the owner comes carrying a normal-looking box full of apples, leaves it on the floor and tells you to add them to the magical one.
+"There's **64 apples** there", he says.
+
+Well, let's get to work.
+###### Add 64 apples to the box! (complete the whole line)
+```rust
+let mut apples = 16;
+?
+# apples == 16 + 64 => "Perfect, apples = {apples}, now you know how to modify values!"
+```
+
+:::note[Being more technical...]
+`let mut apples = 18` is meant to convey "let this mutable apples be 18",
+where "mutable" means that it can be changed.
+
+It may seem archaic, but `let` is a widely used term in mathematics.
+ 
+Also, the magical boxes are called "variables" in programming, mostly for the same reason as `let`, because in mathematics it's very common to assign things to specific letters, and the field calls this letters "variables".
+
+In Rust, variables are "immutable" by default (uncommon in other programming languages).
+The reasoning behind this is that most of the time you use variables to store temporary values, and don't need to modify them directly.
+:::
+
+<PortraitCard src="grocery">
+Thank you a lot for your help, young one.  
+I'll tell the Adventurer's Guild about your excellent assistance, see you again!
+</PortraitCard>
+
+This seems like mission complete!  
+Satisfied with your work, you return to the local inn, where you go to sleep early, to  be ready for whatever happens tomorrow.
+
+# Todo
+- Canviar boxes a crates
+- Arreglar problema primer exercici
+- Fer que l'NPC parli
