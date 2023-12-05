@@ -1,4 +1,5 @@
-import { type Langs, translation } from "@i18n/CodeBlock";
+import { translation } from "@i18n/CodeBlock";
+import type { Langs } from "@i18n/langs";
 
 export async function evaluate(
   code: string,
@@ -6,15 +7,15 @@ export async function evaluate(
   errorMsg?: string,
 ): Promise<string> {
   const error = errorMsg || translation(lang).error;
-
+  
   if (import.meta.env.MODE.includes("dev")) {
-    return Promise.race([godbolt(code, error) /* , server(code, error) */]);
+    return Promise.race([godbolt(code, error), playground(code, error) /* , server(code, error) */]);
   }
 
   return Promise.race([
     // server(code, error),
     godbolt(code, error),
-    // playground(code, error),
+    playground(code, error),
     new Promise((_, reject) =>
       setTimeout(() => reject("TIMEOUT"), 2000),
     ) as Promise<string>,
