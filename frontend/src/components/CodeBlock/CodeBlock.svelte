@@ -7,7 +7,6 @@
   import { derived, writable } from "svelte/store";
   import { translation } from "@i18n/CodeBlock.ts";
   import { type Langs } from "@i18n/langs";
-  import { checkpointStore } from "@components/Checkpoint/checkpoint";
   
   /** Id of the CodeBlock. If provided, when the output's last line is "SUCCESS", a local-storage entry will be created with this id */
   export let id: string = "";
@@ -82,6 +81,7 @@
     const result = await evaluate(code, lang, errorMsg);
     const out = result.replace("SUCCESS\n", "");
     if (id && result.length !== out.length) {
+      const { checkpointStore } = await import("../Checkpoint/checkpoint");
       checkpointStore.update(s => { s.add(id); return s})
     }
     playground_response = out;
