@@ -58,7 +58,7 @@ export function FreeQuestion({ question, code = "", correct, id }) {
   );
 }
 
-<PortraitCard src={Portrait}>
+<PortraitCard src={Portrait} >
 Good morning, welcome to Newlia, where new heroes are born!
 
 Are you here to register as an adventurer? And you want to choose the "Programmer" class?  
@@ -84,7 +84,9 @@ If you mess up the code, click the "Reset" button to return it to its original s
 />
 
 <Checkpoint client:only id="2-1">
+  <PortraitCard src={Portrait}>
   Well done! Let's continue.
+  </PortraitCard>
   
   <SimpleQuestion
     question="What's negative one minus one?"
@@ -97,7 +99,9 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint client:only id="2-2">
+  <PortraitCard src={Portrait}>
   All right, let's up the challenge a bit.
+  </PortraitCard>
 
   <SimpleQuestion
     question="What's the number that multiplied by two equals sixteen divided by four?"
@@ -110,10 +114,12 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint client:only id="2-3">
+  <PortraitCard src={Portrait}>
   Well, well, Mx. Calculator knows their math!  
   Just kidding, I promised this would be pretty easy ;)
   
   Now we'll do some comparisons, simple stuff.
+  </PortraitCard>
 
   <FreeQuestion
     question="Write any number greater than 200."
@@ -179,8 +185,11 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
   :::
   
+  <PortraitCard src={Portrait}>
   Excellent!  
+    
   Now please sign here, and you'll be ready to take your first quest.
+  </PortraitCard>
 
 </Checkpoint>
 
