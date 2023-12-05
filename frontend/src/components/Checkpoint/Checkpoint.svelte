@@ -28,13 +28,13 @@
 </script>
 
 {#if show}
-   <div in:fade >
+   <div in:fade>
      <slot />
    </div>
 {/if}
 
 <style>
-  div {
+  div:first-child {
     margin-top: 1.5rem;
   }
 </style>
