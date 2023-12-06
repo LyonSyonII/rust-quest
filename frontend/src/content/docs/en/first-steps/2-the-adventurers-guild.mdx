@@ -30,28 +30,20 @@ export function SimpleQuestion({
         "${answer}" => println!("${correct}SUCCESS\\n"),
         _ => println!("${wrong}"),
     }
-  `.replaceAll("\n", "");
-  const validator = String(
-    /** @type { (value: string) => (string | undefined) } */
-    (value) => 
-      !value.startsWith("NO_DUMMY") && `CODE_MESS`
-      || value.includes("?") && `REPLACE`
+  `;
+  const validator = `
+      return !value.startsWith(\`${no_dummy}\`) && \`${code_mess}\`
+      || value.includes("?") && \`${replace}\`
       || undefined
-  ).replace("NO_DUMMY", no_dummy).replace("CODE_MESS", code_mess).replace("REPLACE", replace);
+  `;
   
   return (
     <CodeQuestion { ...{question, code, setup, validator, id} } showLineNumbers={false} />
   );
 }
 export function FreeQuestion({ question, code = "", correct, id }) {
-  const setup = `
-        if __VALUE__ { println!("${correct}SUCCESS\\n"); } else { println!("${wrong_answer}"); }`.replaceAll("\n", "");
-  const validator = String(
-    /** @type { (value: string) => (string | undefined) } */
-    (value) => 
-      value.includes("?") && `REPLACE` ||
-      undefined
-  ).replace("REPLACE", replace);
+  const setup = `if __VALUE__ { println!("${correct}SUCCESS\\n"); } else { println!("${wrong_answer}"); }`;
+  const validator = `return value.includes("?") && \`${replace}\` || undefined`;
   return (
     <CodeQuestion { ...{question, code, setup, validator, id} } showLineNumbers={false} />
   );
