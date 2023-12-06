@@ -14,12 +14,17 @@ const { bg, bgDark = bgToDark(bg) } = Astro.props;
 </span>
 
 <style define:vars={{ bg, bgDark }} is:global>
-  :root .highlight > *, :root .highlight {
+  :root .highlight * {
+    padding: 0;
+  }
+
+  :root .highlight *, :root .highlight {
     background-color: var(--bg);
     border: 1px;
     border-radius: .25em;
+    padding: .2em;
   }
-  :root[data-theme="dark"] .highlight > *, :root[data-theme="dark"] .highlight {
+  :root[data-theme="dark"] .highlight *, :root[data-theme="dark"] .highlight {
     background-color: var(--bgDark);
   }
 </style>
