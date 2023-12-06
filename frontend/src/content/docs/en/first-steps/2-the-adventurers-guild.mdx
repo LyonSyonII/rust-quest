@@ -4,7 +4,7 @@ description: The hero registers into the Adventurer's Guild.
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
-import PortraitCard from "@components/Portrait/PortraitCard.astro";
+import Portrait from "@components/Portrait/PortraitCard.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.svelte";
 
 export const code_mess =
@@ -49,7 +49,7 @@ export function FreeQuestion({ question, code = "", correct, id }) {
   );
 }
 
-<PortraitCard src="guild-girl" >
+<Portrait src="guild-girl" >
 Good morning, welcome to Newlia, where new heroes are born!
 
 Are you here to register as an adventurer? And you want to choose the "Programmer" class?  
@@ -59,7 +59,7 @@ This class requires a small test, to make sure you have the minimum problem-solv
 It'll take just a moment.
 
 Please, fill in the blanks in the following statements, replacing **`?`** with the correct answer.
-</PortraitCard>
+</Portrait>
 
 :::note[Don't worry]
 If you mess up the code, click the "Reset" button to return it to its original state.
@@ -75,9 +75,9 @@ If you mess up the code, click the "Reset" button to return it to its original s
 />
 
 <Checkpoint client:only id="2-1">
-  <PortraitCard src="guild-girl">
+  <Portrait src="guild-girl">
   Well done! Let's continue.
-  </PortraitCard>
+  </Portrait>
   
   <SimpleQuestion
     question="What's negative one minus one?"
@@ -90,9 +90,9 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint client:only id="2-2">
-  <PortraitCard src="guild-girl">
+  <Portrait src="guild-girl">
   All right, let's up the challenge a bit.
-  </PortraitCard>
+  </Portrait>
 
   <SimpleQuestion
     question="What's the number that multiplied by two equals sixteen divided by four?"
@@ -105,12 +105,12 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint client:only id="2-3">
-  <PortraitCard src="guild-girl">
+  <Portrait src="guild-girl">
   Well, well, Mx. Calculator knows their math!  
   Just kidding, I promised this would be pretty easy ;)
   
   Now we'll do some comparisons, simple stuff.
-  </PortraitCard>
+  </Portrait>
 
   <FreeQuestion
     question="Write any number greater than 200."
@@ -176,11 +176,11 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
   :::
   
-  <PortraitCard src="guild-girl">
+  <Portrait src="guild-girl">
   Excellent!  
     
   Now please sign here, and you'll be ready to take your first quest.
-  </PortraitCard>
+  </Portrait>
 
 </Checkpoint>
 
