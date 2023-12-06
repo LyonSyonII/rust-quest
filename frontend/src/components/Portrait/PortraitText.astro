@@ -15,8 +15,12 @@ const { bg, darkBg } = portrait(Astro.props.src);
 <style define:vars={{ bg, darkBg }} is:global>
   :root .portrait-text > * {
     background-color: var(--bg);
+    border: 1px;
+    border-radius: .25em;
   }
   :root[data-theme="dark"] .portrait-text > * {
     background-color: var(--darkBg);
+    border: 1px;
+    border-radius: .25em;
   }
 </style>
