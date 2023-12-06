@@ -7,7 +7,7 @@ interface Props {
 }
 const { src } = Astro.props;
 
-const { img, bg, darkBg } = portrait(src);
+const { img, bg, bgDark } = portrait(src);
 
 ---
 
@@ -18,7 +18,7 @@ const { img, bg, darkBg } = portrait(src);
   </div>
 </article>
 
-<style define:vars={{ bg, darkBg }}>
+<style define:vars={{ bg, bgDark }}>
   :root {
     --portrait-size: 80px;
   }
@@ -26,7 +26,7 @@ const { img, bg, darkBg } = portrait(src);
     background-color: var(--bg);
   }
   :root[data-theme="dark"] article {
-    background-color: var(--darkBg);
+    background-color: var(--bgDark);
   }
   article {
     display: grid;
