@@ -1,0 +1,12 @@
+---
+import C from "./Checkpoint.svelte";
+
+interface Props {
+  id: string;
+  scroll?: boolean;
+}
+---
+
+<C client:only {...Astro.props}>
+  <slot/>
+</C>
