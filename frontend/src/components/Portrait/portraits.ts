@@ -2,14 +2,25 @@ import GuildGirl from "@assets/portraits/AdventurersGuildGirl.svg";
 import Grocery from "@assets/portraits/GroceryStore.svg";
 import { bgToDark } from "src/utils/colors";
 
+export const colors = {
+    purple: "#ede9fe",
+    green: "#d1fae5",
+    red: "#fecaca",
+    yellow: "#fef8c3",
+    orange: "#ffedd5",
+    blue: "#e0f2fe",
+    pink: "#fbcfe8",
+    gray: "#e5e7eb"
+}
+
 const portraits = {
     "guild-girl": {
         img: GuildGirl,
-        bg: "#ede9fe"
+        bg: colors.purple
     },
     "grocery": {
         img: Grocery,
-        bg: "#D1FAE5"
+        bg: colors.green
     }
 };
 
@@ -20,3 +31,12 @@ export function portrait(portrait: Portrait): { img: ImageMetadata, bg: string, 
     const bgDark = bgToDark(bg);
     return { img, bg, bgDark };
 }
+
+/* <Highlight bg={colors.purple}> Purple </Highlight>
+<Highlight bg={colors.green}> Green </Highlight>
+<Highlight bg={colors.red}> Red </Highlight>
+<Highlight bg={colors.yellow}> Yellow </Highlight>
+<Highlight bg={colors.orange}> Orange </Highlight>
+<Highlight bg={colors.blue}> Blue </Highlight>
+<Highlight bg={colors.pink}> Pink </Highlight>
+<Highlight bg={colors.gray}> Gray </Highlight> */
