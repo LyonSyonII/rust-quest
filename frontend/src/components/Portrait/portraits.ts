@@ -1,5 +1,6 @@
 import GuildGirl from "@assets/portraits/AdventurersGuildGirl.svg"; 
 import Grocery from "@assets/portraits/GroceryStore.svg";
+import { bgToDark } from "src/utils/colors";
 
 const portraits = {
     "guild-girl": {
@@ -14,8 +15,8 @@ const portraits = {
 
 export type Portrait = keyof typeof portraits;
 
-export function portrait(portrait: Portrait): { img: ImageMetadata, bg: string, darkBg: string } {
+export function portrait(portrait: Portrait): { img: ImageMetadata, bg: string, bgDark: string } {
     const { img, bg } = portraits[portrait];
-    const darkBg = `#${(parseInt(bg.replace("#", "0x")) - 0xb1b8b8).toString(16)}`;
-    return { img, bg, darkBg };
+    const bgDark = bgToDark(bg);
+    return { img, bg, bgDark };
 }
