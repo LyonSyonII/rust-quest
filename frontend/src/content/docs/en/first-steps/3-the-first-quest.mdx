@@ -4,8 +4,29 @@ description: Finally, your first quest! What will it be...
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
-import Portrait from "@components/PortraitCard/PortraitCard.astro";
-import Checkpoint from "@components/Checkpoint/Checkpoint.svelte";
+import Portrait from "@components/Portrait/PortraitCard.astro";
+import { colors } from "@components/Portrait/portraits";
+import PText from "@components/Portrait/PortraitText.astro";
+import Highlight from "@components/Highlight.astro";
+import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
+
+export function Grocer(props) {
+  return (
+    <Portrait
+      src="grocery"
+      {...props}
+    />
+  )
+}
+/** Grocer text. Text with the grocer's background but without padding or portrait. */
+export function GT(props) {
+  return (
+    <PText
+      src="grocery"
+      {...props}
+    />
+  )
+}
 
 export const replace = "Replace ? with your answer.";
 
@@ -31,35 +52,34 @@ The Adventurer's Guild`;
   showLineNumbers={false}
 />
 
-<Checkpoint client:only id="3-1" scroll={false} >
+<Checkpoint id="3-1" scroll={false} >
   ...well, let's do it then.
 
   ---
-  <Portrait src="grocery">
+  <Grocer>
   Good morning Adventurer, I'm glad you accepted my request.  
   My age is starting to show, and it's hard to keep up with the work here at the grocery store.  
-
+  
   Your first task is to help me keep track of the inventory.  
   Please, follow me.
-  </Portrait>
+  </Grocer>
 
   You follow the owner to the back of the store, where he has crates full of vegetables.  
   Each crate has a label indicating its contents and a panel with a number.
   
-  <Portrait src="grocery">
+  <Grocer>
   See all these crates? They are magical boxes!  
   
   The number you see on each panel is the amount of vegetables stored, and it updates automatically. Pretty handy, right?  
   
   Unfortunately, only Programmers can mess with them, they are too complicated for people like me.  
   This is where you come in.  
-  
+  client:only
   I often find that I need to check the total number of vegetables in the store, but having to add up the numbers by hand is tedious.  
   So, as a Programmer, could you find a way to automate this?
   
   I have this code thing that represents our magical crates and what's in them, check it out:
-
-  </Portrait>
+  </Grocer>
   
   <CodeQuestion 
 id = "3-2"
@@ -75,6 +95,7 @@ setup = {`
 __VALUE__
 if total == potatoes + carrots + onions {
   println!("potatoes + carrots + onions == {total}, great job!");
+  println!("SUCCESS");
 }
 `}
 validator = {(() => {
@@ -102,33 +123,52 @@ return `
 Great!
 Now the grocer knows how many vegetables he has stored.
 
-Next, he needs to create another magical box, to store **18 apples**.
-He gives you a box with a panel and an empty label, and says that this should be enough to make it.
+<Grocer>
+Thank you so much! I knew you could do it.
 
-Then, looking at the box, he mutters: "`let`".
-Once... Hearing? The word, the box starts to glow, and in the panel appears: "Please, fill the label with the name of the contents of the box and put the items inside".
+While you were working, a shipment of apples arrived.  
+I don't have a crate for them, so I need you to make one.  
 
-The man then goes to attend a customer, leaving you to finish the work.
+I think I have a kit somewhere... Ah, here it is!
+</Grocer>
 
-###### Create a magical box to store 18 apples!
-```rust
-let ? = ?;
+The man picks up a folded box and sets it on the ground.  
+Then, looking at the box, he mumbles: <GT>`let`</GT>.
 
-# "__VALUE__".replace(" ", "") == "letapples=18;"
-# println!("
-# Well done, the box is now operative!
-# ")
-```
+Upon hearing the word, the crate begins to glow, floats slowly in the air and unfolds.  
+In the panel appears: "Please, fill in the label with the name of the contents of the box and place the items inside".
+
+<Grocer> Sorry, I have to attend to a customer. Can you finish the work? </Grocer>
+
+You're on your own for this one. Let's get to it!
+
+<CodeQuestion 
+id="3-3"
+question="Create a magical box to store 18 apples!"
+code="let ? = ?;"
+setup={`
+if "__VALUE__".replace(" ", "") == "letapples=18;" {
+  println!("Well done, the crate is now operative!");
+  println!("SUCCESS");
+} else { println!("Not yet, keep trying!") }
+`}
+validator={`
+return value.includes("apple ") && "Remember to use the plural form of the label!"
+    || value.includes("let apples =") && !value.includes("18") && "Remember that you need to store 18 apples!"
+    || value.includes("?") && \`${replace}\`
+    || undefined
+`}
+/>
+
 </Checkpoint>
 
-# Hide next until exercise is completed
-> Use svelte, read cookie specified by `until="cookie"` and if it doesn't exist don't show contents
+<Checkpoint id="3-3">
+Having configured the box, you start walking to the counter to tell the Grocer your success, but then he shouts: <GT>Hey, adventurer! Bring me two apples from the box please</GT>.
 
-Having created the box, you start walking to the counter to tell the Grocer your success, but then he shouts: "Hey, adventurer! Bring me two apples from the box please".
+Okay, this shouldn't be difficult, just take two apples and... Huh? Why is your hand being stopped in the air?  
 
-Okay, this shouldn't be difficult, just take two apples and... Huh? Why is your hand being stopped in the air?
-You look at the panel, maybe something is wrong?
-Indeed, the panel is red, and says: "Anti theft protection activated, if you want to change the contents of this box add the `mut` directive".
+You look at the panel, maybe something is wrong?  
+Indeed, the panel is red, and says: <Highlight bg={colors.red}>Anti theft protection activated, if you want to change the contents of this box add the **`mut`** directive</Highlight>
 
 What? What does this mean? Why does a grocery store have anti theft magical boxes?
 
@@ -149,6 +189,8 @@ apples = apples - 2;
 > It ends up translating to `apples = 18 - 2`.
 >  
 > If you want, you can use the shorthand `apples -= 2`, which would mean: "Substract 2 from the current value of apples".
+
+</Checkpoint>
 
 # Hide next until exercise is completed
 
@@ -175,10 +217,11 @@ In Rust, variables are "immutable" by default (uncommon in other programming lan
 The reasoning behind this is that most of the time you use variables to store temporary values, and don't need to modify them directly.
 :::
 
-<Portrait src="grocery">
+<Grocer>
 Thank you a lot for your help, young one.  
 I'll tell the Adventurer's Guild about your excellent assistance, see you again!
-</Portrait>
+</Grocer>
 
 This seems like mission complete!  
 Satisfied with your work, you return to the local inn, where you go to sleep early, to  be ready for whatever happens tomorrow.
+
