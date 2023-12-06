@@ -71,7 +71,7 @@
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     console.log({ value, validator });
-    const v = eval(validator)(value);
+    const v = Function("value", validator)(value);
     console.log({ v });
     if (v !== undefined) {
       running = false;
