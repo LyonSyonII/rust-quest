@@ -2,7 +2,6 @@ import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import svelte from "@astrojs/svelte";
 import { visualizer } from "rollup-plugin-visualizer";
-
 import compress from "astro-compress";
 
 // https://astro.build/config
@@ -53,4 +52,8 @@ export default defineConfig({
   vite: {
     plugins: [visualizer()],
   },
+  markdown: {
+    remarkPlugins: [],
+    extendDefaultPlugins: true,
+  }
 });
