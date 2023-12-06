@@ -4,17 +4,10 @@ description: Finally, your first quest! What will it be...
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
-import PortraitCard from "@components/PortraitCard/PortraitCard.astro";
+import Portrait from "@components/PortraitCard/PortraitCard.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.svelte";
 
 export const replace = "Replace ? with your answer.";
-
-export const quest = 
-`Welcome Adventurer.
-Your first quest is... To assist the local grocery store!
-
-We expect great things of you.
-The Adventurer's Guild`;
 
 Finally, your first quest!
 
@@ -23,48 +16,68 @@ Kill some monsters? Rescue a lost princess?
 
 Let's find out!
 
+export const quest = 
+`Welcome Adventurer.
+Your first quest is... To assist the local grocery store!
+
+We expect great things of you.
+The Adventurer's Guild`;
+
 <CodeQuestion
+  id="3-1"
   code="read_quest()"
   validator={`() => \`${quest}SUCCESS\n\``}
-  setup={`fn read_quest() { println!("${quest}") } __VALUE__`}
   editable={false}
   showLineNumbers={false}
-  id="3-1"
 />
 
-
 <Checkpoint client:only id="3-1" scroll={false} >
-...well, let's do it then.
+  ...well, let's do it then.
 
----
-<PortraitCard src="grocery">
-Good morning Adventurer, I'm glad you've accepted my request.  
-My age is starting to show and it's difficult to keep up with the work here at the store.  
+  ---
+  <Portrait src="grocery">
+  Good morning Adventurer, I'm glad you accepted my request.  
+  My age is starting to show, and it's hard to keep up with the work here at the grocery store.  
 
-Your first task is to help me keep track of the inventory, please, follow me.
-</PortraitCard>
+  Your first task is to help me keep track of the inventory.  
+  Please, follow me.
+  </Portrait>
 
-You follow the owner to the back of the store, where he has crates full of vegetables.
+  You follow the owner to the back of the store, where he has crates full of vegetables.  
+  Each crate has a label indicating its contents and a panel with a number.
+  
+  <Portrait src="grocery">
+  See all these crates? They are magical boxes!  
+  
+  The number you see on each panel is the amount of vegetables stored, and it updates automatically. Pretty handy, right?  
+  
+  Unfortunately, only Programmers can mess with them, they are too complicated for people like me.  
+  This is where you come in.  
+  
+  I often find that I need to check the total number of vegetables in the store, but having to add up the numbers by hand is tedious.  
+  So, as a Programmer, could you find a way to automate this?
+  
+  I have this code thing that represents our magical crates and what's in them, check it out:
 
-{
-function(){
-
-const question = `
-What's the total number of vegetables in the grocery?
-`;
-const code = `
+  </Portrait>
+  
+  <CodeQuestion 
+id = "3-2"
+question = "What's the total number of vegetables in the grocery?"
+code = {`
 let potatoes = 5;
 let carrots = 4;
 let onions = 2;
 
 let total = ? + ? + ?;
-`;
-const setup = `
+`}
+setup = {`
 __VALUE__
 if total == potatoes + carrots + onions {
   println!("potatoes + carrots + onions == {total}, great job!");
 }
-`;
+`}
+validator = {(() => {
 const almost = `
 You're almost there! 
 But you don't need to use "let" in this exercise.
@@ -74,25 +87,18 @@ Copying each number isn't good enough.
 You need to come up with a solution that works even if the numbers change.
 Remember to use the magical properties of the crates!
 `;
-const validator = `(value) => {
+return `
   const answer = value.substring(value.lastIndexOf("=") + 1, value.length-1).replace(" ", "");
   return (
     answer.includes("?") && \`${replace}\` ||
     answer.includes("let") && \`${almost}\` ||
     answer.split("+").some((x) => Number(x)) && \`${copy}\` ||
     undefined
-  );
-}`;
-
-return (
-  <CodeQuestion {...{question, code, setup, validator}} />
-);
-
-}()
-}
-
+  );`
+})()} />
 </Checkpoint>
 
+<Checkpoint id="3-2">
 Great!
 Now the grocer knows how many vegetables he has stored.
 
@@ -113,6 +119,7 @@ let ? = ?;
 # Well done, the box is now operative!
 # ")
 ```
+</Checkpoint>
 
 # Hide next until exercise is completed
 > Use svelte, read cookie specified by `until="cookie"` and if it doesn't exist don't show contents
@@ -168,15 +175,10 @@ In Rust, variables are "immutable" by default (uncommon in other programming lan
 The reasoning behind this is that most of the time you use variables to store temporary values, and don't need to modify them directly.
 :::
 
-<PortraitCard src="grocery">
+<Portrait src="grocery">
 Thank you a lot for your help, young one.  
 I'll tell the Adventurer's Guild about your excellent assistance, see you again!
-</PortraitCard>
+</Portrait>
 
 This seems like mission complete!  
 Satisfied with your work, you return to the local inn, where you go to sleep early, to  be ready for whatever happens tomorrow.
-
-# Todo
-- Canviar boxes a crates
-- Arreglar problema primer exercici
-- Fer que l'NPC parli
