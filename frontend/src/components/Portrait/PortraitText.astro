@@ -1,0 +1,22 @@
+---
+import { portrait, type Portrait } from "./portraits";
+
+interface Props {
+  src: Portrait;
+}
+
+const { bg, darkBg } = portrait(Astro.props.src);
+---
+
+<span class="portrait-text">
+ <slot />
+</span>
+
+<style define:vars={{ bg, darkBg }} is:global>
+  :root .portrait-text > * {
+    background-color: var(--bg);
+  }
+  :root[data-theme="dark"] .portrait-text > * {
+    background-color: var(--darkBg);
+  }
+</style>
