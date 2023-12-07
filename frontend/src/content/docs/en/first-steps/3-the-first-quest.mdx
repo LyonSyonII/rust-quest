@@ -112,8 +112,8 @@ return `
   const answer = value.substring(value.lastIndexOf("=") + 1, value.length-1).replace(" ", "");
   return (
     answer.includes("?") && \`${replace}\` ||
-    answer.includes("let") && \`${almost}\` ||
-    answer.split("+").some((x) => Number(x)) && \`${copy}\` ||
+    answer.includes("let") && \`${almost.trim()}\` ||
+    answer.split("+").some((x) => Number(x)) && \`${copy.trim()}\` ||
     undefined
   );`
 })()} />
