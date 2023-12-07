@@ -37,6 +37,6 @@ jobs:
       name: preview
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy to Preview
         id: deployment
         uses: actions/deploy-pages@v1
