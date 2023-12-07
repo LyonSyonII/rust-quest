@@ -192,12 +192,12 @@ if apples == 16 {
 }
 `}
 validator={`
-  const v = value.replaceAll(" ", "");
-  return value.includes("?") && \`${replace}\`
-      || value.includes("letmut") && "Good guess! But each directive should be on its own, maybe try adding a space?"
-      || v.includes("mutlet") && "Almost! But the panel says to 'add' the directive, so maybe you need to use it in another order?"
-      || v.startsWith("mutapples") && "You're nearly there, but remember the first magical word!\\nThe panel says to 'add mut', not replace."
-      || undefined
+const v = value.replaceAll(" ", "");
+return value.includes("?") && \`${replace}\`
+    || value.includes("letmut") && "Good guess! But each directive should be on its own, maybe try adding a space?"
+    || v.includes("mutlet") && "Almost! But the panel says to 'add' the directive, so maybe you need to use it in another order?"
+    || v.startsWith("mutapples") && "You're nearly there, but remember the first magical word!\\nThe panel says to 'add mut', not replace."
+    || undefined
 `}
 />
 
@@ -211,36 +211,57 @@ If you want, you can use the shorthand `apples -= 2`, which would mean:
 
 </Checkpoint>
 
-# Hide next until exercise is completed
+<Checkpoint id="3-4">
+Having dispatched the customer, the owner comes carrying a normal-looking box full of apples and leaves it in the floor.
+<Grocer>
+Seems like some of the shipment was still outside, can you help me add them to the storage crate?
+</Grocer>
 
-Having dispatched the customer, the owner comes carrying a normal-looking box full of apples, leaves it on the floor and tells you to add them to the magical one.
-"There's **64 apples** there", he says.
-
-Well, let's get to work.
-###### Add 64 apples to the box! (complete the whole line)
-```rust
+<CodeQuestion
+id="3-5"
+question="Add 64 apples to their crate!"
+code={`
 let mut apples = 16;
-?
-# apples == 16 + 64 => "Perfect, apples = {apples}, now you know how to modify values!"
-```
+?;
+`}
+setup={`
+__VALUE__
+if apples == 16 + 64 {
+  println!("Perfect, apples = {apples}, now you know how to modify values!");
+  println!("SUCCESS");
+} else {
+  println!("Not yet, keep trying!");
+}
+`}
+validator={`
+const v = value.replaceAll(" ", "");
+const answer = v.substring(v.indexOf(";"));
+return answer.includes("?") && \`${replace}\`
+    || answer.includes("letapples") && "'let' is used to create magical boxes, but this one already exists!"
+    || answer.includes("letmutapples") && "'let' and 'mut' are used to create mutable magical boxes, but this one already exists!"
+    || answer.includes("16") && "Remember, we need reusable code!\\nLook at the previous exercise if you need some inspiration."
+    || undefined
+`}
+/>
+</Checkpoint>
 
+<Checkpoint id="3-5">
 :::note[Being more technical...]
-`let mut apples = 18` is meant to convey "let this mutable apples be 18",
-where "mutable" means that it can be changed.
+`let mut apples = 18` means "make these apples changeable and set them to 18", where "mut" is "mutable".
 
-It may seem archaic, but `let` is a widely used term in mathematics.
+Although it may seem outdated, `let` is a widely used term in math.
  
-Also, the magical boxes are called "variables" in programming, mostly for the same reason as `let`, because in mathematics it's very common to assign things to specific letters, and the field calls this letters "variables".
+In programming, the magical boxes are referred to as "variables" for a similar reason as `let` - assigning things to specific letters is common in math, and these letters are called "variables".
 
-In Rust, variables are "immutable" by default (uncommon in other programming languages).
-The reasoning behind this is that most of the time you use variables to store temporary values, and don't need to modify them directly.
+In Rust, variables are "immutable" by default (which is uncommon in other programming languages).
+The reason for this is that you typically utilize variables to hold temporary values and do not need to directly alter them.
 :::
 
 <Grocer>
-Thank you a lot for your help, young one.  
+Thank you a lot for your help.  
 I'll tell the Adventurer's Guild about your excellent assistance, see you again!
 </Grocer>
 
 This seems like mission complete!  
-Satisfied with your work, you return to the local inn, where you go to sleep early, to  be ready for whatever happens tomorrow.
-
+Satisfied with your work, you return to the nearby inn and retire early to be ready for whatever comes tomorrow.
+</Checkpoint>
