@@ -3,8 +3,7 @@
   import { clickoutside } from "@svelte-put/clickoutside";
   import { shortcut } from "@svelte-put/shortcut";
   import { onThemeChange } from "src/utils/onThemeChange";
-  import { onDestroy, onMount
- } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { derived, writable } from "svelte/store";
   import { translation } from "@i18n/CodeBlock.ts";
   import { type Langs } from "@i18n/langs";
