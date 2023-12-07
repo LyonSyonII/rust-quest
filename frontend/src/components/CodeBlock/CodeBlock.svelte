@@ -15,7 +15,7 @@
   /** Validator executed before the code is sent to the playground.
    *
    * If the return value is a string, it will be displayed in the editor */
-  export let validator: string = "(_) => undefined";
+  export let validator: string = "return undefined";
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
