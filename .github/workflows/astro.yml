@@ -25,7 +25,7 @@ jobs:
         with:
           path: "frontend"
           package-manager: pnpm@latest
-
+  
   deploy:
     needs: build
     runs-on: ubuntu-latest
