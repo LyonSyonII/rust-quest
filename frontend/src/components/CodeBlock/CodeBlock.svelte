@@ -1,20 +1,21 @@
 <script lang="ts">
-  import { rust } from "@codemirror/lang-rust";
   import Icon from "@iconify/svelte";
   import { clickoutside } from "@svelte-put/clickoutside";
   import { shortcut } from "@svelte-put/shortcut";
   import { onThemeChange } from "src/utils/onThemeChange";
-  import { onDestroy } from "svelte";
-  import CodeMirror from "svelte-codemirror-editor";
-  import { writable } from "svelte/store";
-  import { githubDark } from "../../codemirror-themes/github-dark";
-  import { githubLight } from "../../codemirror-themes/github-light";
-  import { translation, type Langs } from "@i18n/CodeBlock.ts";
-  import "../../styles/custom.css";
-  import { evaluate } from "./evaluate";
-
+  import { onDestroy, onMount } from "svelte";
+  import { derived, writable } from "svelte/store";
+  import { translation } from "@i18n/CodeBlock.ts";
+  import { type Langs } from "@i18n/langs";
+  
+  /** Id of the CodeBlock. If provided, when the output's last line is "SUCCESS", a local-storage entry will be created with this id */
+  export let id: string = "";
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
   export let setup = "__VALUE__";
+  /** Validator executed before the code is sent to the playground.
+   *
+   * If the return value is a string, it will be displayed in the editor */
+  export let validator: string = "(_) => undefined";
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
@@ -28,31 +29,65 @@
   /** Language used by the editor */
   export let lang: Langs = "en";
 
-  const l = translation(lang);
-
-  const theme = writable(document.documentElement.dataset.theme);
-  const observer = onThemeChange((t) => theme.set(t));
-  onDestroy(() => observer.disconnect());
-
+  $: l = translation(lang);
+  
   let value = code;
   let running = false;
   let focused = false;
-  let playground_response = "";
+  let playgroundResponse = "";
+  const setResponse = async (response: string) => {
+    const out = response.replace("SUCCESS\n", "");
+    if (id && response.length !== out.length) {
+      const { checkpointStore } = await import("../Checkpoint/checkpoint");
+      checkpointStore.update(s => { s.add(id); return s})
+    }
+    playgroundResponse = out;
+  };
 
-  const handleRun = async (f = false) => {
-    if (!f && !focused) {
+  const theme = writable("light");
+  const getTheme = derived(theme, async ($theme) =>
+    $theme === "light"
+      ? (await import("../../codemirror-themes/github-light")).githubLight
+      : (await import("../../codemirror-themes/github-dark")).githubDark,
+  );
+  let observer: MutationObserver | undefined = undefined;
+
+  onMount(async () => {
+    theme.set(document.documentElement.dataset.theme || "light");
+    observer = onThemeChange((t) => theme.set(t));
+    lang = window.location.pathname.split("/")[2] as Langs;
+  });
+  onDestroy(() => observer?.disconnect());
+
+  const handleRun = async (force_focus = false) => {
+    if (!force_focus && !focused) {
       return;
     }
 
     running = true;
-    playground_response = l.compiling;
+    playgroundResponse = l.compiling;
 
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const code = `fn main() { \n${setup.replace("__VALUE__", value)}\n }`;
+    console.log({ value, validator });
+    const v = Function("value", validator)(value);
+    console.log({ v });
+    if (v !== undefined) {
+      running = false;
+      await setResponse(v);
+      return;
+    }
 
-    playground_response = await evaluate(code, lang, errorMsg);
+    const code = `#![allow(warnings)] fn main() { \n${setup.replaceAll(
+      "__VALUE__",
+      value,
+    )}\n }`;
+
+    const { evaluate } = await import("./evaluate");
+    
+    const result = await evaluate(code, lang, errorMsg);
+    await setResponse(result);
     running = false;
   };
 </script>
@@ -71,15 +106,19 @@
   on:click={() => (focused = true)}
   on:clickoutside={() => (focused = false)}
 >
-  <CodeMirror
-    class="not-content"
-    bind:value
-    lang={rust()}
-    theme={$theme === "dark" ? githubDark : githubLight}
-    basic={showLineNumbers}
-    editable={editable && !running}
-    placeholder={placeholder || l.placeholder}
-  />
+  {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], )}
+    <pre>{value || placeholder || l.placeholder}</pre>
+  {:then [CodeMirror, theme, lang]}
+    <CodeMirror.default
+      class="not-content"
+      bind:value
+      lang={lang.rust()}
+      {theme}
+      basic={showLineNumbers}
+      editable={editable && !running}
+      placeholder={placeholder || l.placeholder}
+    />
+  {/await}
 
   <button
     class="not-content"
@@ -94,9 +133,9 @@
     <Icon icon="carbon:reset" width={24} />
   </button>
 
-  {#if playground_response}
+  {#if playgroundResponse}
     <div class="response">
-      <p>{playground_response}</p>
+      <p>{playgroundResponse}</p>
     </div>
   {/if}
 </div>
@@ -107,6 +146,10 @@
   }
   :root[data-theme="light"] {
     --accent: var(--sl-color-accent);
+  }
+  pre {
+    height: 33.4px;
+    color: gray;
   }
   .wrapper {
     display: grid;

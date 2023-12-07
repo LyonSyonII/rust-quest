@@ -3,8 +3,15 @@ title: The Adventurer's Guild
 description: The hero registers into the Adventurer's Guild.
 ---
 
-import QuestionCard from "@components/QuestionCard.astro";
-import CodeBlock from "@components/CodeBlock/CodeBlock.svelte";
+import CodeQuestion from "@components/CodeQuestion.astro";
+import Portrait from "@components/Portrait/PortraitCard.astro";
+import Checkpoint from "@components/Checkpoint/Checkpoint.svelte";
+
+export const code_mess =
+`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
+Remember to only modify the ? symbol.`
+export const replace = "Replace ? with your answer."
+export const wrong_answer = "Wrong answer, try again!"
 
 export function SimpleQuestion({
   question,
@@ -13,53 +20,36 @@ export function SimpleQuestion({
   correct,
   wrong,
   checkMessed = true,
+  id,
 }) {
   const no_dummy = code.toString().replace("?", "");
   const setup = `
-        const VALUE: &str = "__VALUE__";
-        if ${checkMessed} && !VALUE.starts_with("${no_dummy}") {
-            println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
-            println!("Remember to only modify the ? part of the code.");
-            return;
-        }
-        let a = VALUE.replace("${no_dummy}", "");
-        match a.replace(" ", "").as_str() {
-            "${answer}" => println!("${correct}"),
-            "?" => println!("Replace ? with your answer."),
-            _ => println!("${wrong}"),
-        }
-    `.replaceAll("\n", "");
+    const VALUE: &str = "__VALUE__";
+    let a = VALUE.replace("${no_dummy}", "");
+    match a.replace(" ", "").as_str() {
+        "${answer}" => println!("${correct}SUCCESS\\n"),
+        _ => println!("${wrong}"),
+    }
+  `;
+  const validator = `
+      return !value.startsWith(\`${no_dummy}\`) && \`${code_mess}\`
+      || value.includes("?") && \`${replace}\`
+      || undefined
+  `;
+  
   return (
-    <QuestionCard question={question}>
-      <CodeBlock
-        client:only
-        code={code}
-        setup={setup}
-        showLineNumbers={false}
-      />
-    </QuestionCard>
+    <CodeQuestion { ...{question, code, setup, validator, id} } showLineNumbers={false} />
   );
 }
-export function FreeQuestion({ question, code = "", correct }) {
-  const setup = `
-        if __VALUE__ {
-            println!("${correct}");
-        } else {
-            println!("Your answer is wrong, try again!");
-        }
-    `.replaceAll("\n", "");
+export function FreeQuestion({ question, code = "", correct, id }) {
+  const setup = `if __VALUE__ { println!("${correct}SUCCESS\\n"); } else { println!("${wrong_answer}"); }`;
+  const validator = `return value.includes("?") && \`${replace}\` || undefined`;
   return (
-    <QuestionCard question={question}>
-      <CodeBlock
-        client:only
-        code={code}
-        setup={setup}
-        showLineNumbers={false}
-      />
-    </QuestionCard>
+    <CodeQuestion { ...{question, code, setup, validator, id} } showLineNumbers={false} />
   );
 }
 
+<Portrait src="guild-girl" >
 Good morning, welcome to Newlia, where new heroes are born!
 
 Are you here to register as an adventurer? And you want to choose the "Programmer" class?  
@@ -69,6 +59,7 @@ This class requires a small test, to make sure you have the minimum problem-solv
 It'll take just a moment.
 
 Please, fill in the blanks in the following statements, replacing **`?`** with the correct answer.
+</Portrait>
 
 :::note[Don't worry]
 If you mess up the code, click the "Reset" button to return it to its original state.
@@ -80,94 +71,131 @@ If you mess up the code, click the "Reset" button to return it to its original s
   answer="10"
   correct="5 + 5 == 10, good job!"
   wrong="5 + 5 != {a}, keep trying!"
+  id="2-1"
 />
 
-Well done! Let's continue.
-
-<SimpleQuestion
-  question="What's negative one minus one?"
-  code="-1 - 1 == ?"
-  answer="-2"
-  correct="That's right, -2! I see you aren't fooled easily."
-  wrong="-1 - 1 != {a}, keep trying!"
-/>
-
-All right, let's up the challenge a bit.
-
-<SimpleQuestion
-  question="What's the number that multiplied by two equals sixteen divided by four?"
-  code="16 / 4 == 2 * ?"
-  answer="2"
-  correct="Perfect! Now you know how to make the computer do basic calculations for you, well done!"
-  wrong="16 / 4 != 2 * {a}, keep trying!"
-/>
-
-Well, well, Mr. Calculator knows his math!  
-Just kidding, I promised this would be pretty easy ;)
-
-Now we'll do some comparisons, simple stuff.
-
-<FreeQuestion
-  question="Write any number greater than 200."
-  code="200 < ?"
-  correct="Correct!"
-/>
-
-<FreeQuestion
-  question="Okay... Now a number smaller than 200."
-  code="200 > ?"
-  correct="Perfect!"
-/>
-
-<FreeQuestion
-  question="Now one that's smaller or equal than 0."
-  code="0 >= ?"
-  correct="Good answer!"
-/>
-
-<FreeQuestion
-  question="And finally one that's greater or equal than 0."
-  code="0 <= ?"
-  correct="Fantastic!"
-/>
-
-:::tip[Exercise]
-See what we're doing here?  
-Try rewriting the code of the exercises above, exactly how the question is formulated.
-
-For instance, for the first question, instead of saying `200 is smaller than ?`, say `? is greater than 200`.
-Remember to fill in the `?` in your final submission.
-
-<FreeQuestion
-  question="Write any number greater than 200."
-  correct="Correct!"
-/>
-
-<FreeQuestion
-  question="Okay... Now a number smaller than 200."
-  correct="Perfect!"
-/>
-
-<FreeQuestion
-  question="Now one that's smaller or equal than 0."
-  correct="Good answer!"
-/>
-
-<FreeQuestion
-  question="And finally one that's greater or equal than 0."
-  correct="Fantastic!"
-/>
-:::
-
-Excellent!  
-Now please sign here, and you'll be ready to take your first quest.
-
-<QuestionCard>
-  <CodeBlock
-    client:only
-    code={'let name = "?";'}
-    setup={
-      '__VALUE__; if name == "?" { println!("hint: just replace ? with your name!") } else { println!("{name}, welcome to the Adventurer\'s Guild!") }'
-    }
+<Checkpoint client:only id="2-1">
+  <Portrait src="guild-girl">
+  Well done! Let's continue.
+  </Portrait>
+  
+  <SimpleQuestion
+    question="What's negative one minus one?"
+    code="-1 - 1 == ?"
+    answer="-2"
+    correct="That's right, -2! I see you aren't fooled easily."
+    wrong="-1 - 1 != {a}, keep trying!"
+    id="2-2"
   />
-</QuestionCard>
+</Checkpoint>
+
+<Checkpoint client:only id="2-2">
+  <Portrait src="guild-girl">
+  All right, let's up the challenge a bit.
+  </Portrait>
+
+  <SimpleQuestion
+    question="What's the number that multiplied by two equals sixteen divided by four?"
+    code="16 / 4 == 2 * ?"
+    answer="2"
+    correct="Perfect! Now you know how to make the computer do basic calculations for you, well done!"
+    wrong="16 / 4 != 2 * {a}, keep trying!"
+    id="2-3"
+  />
+</Checkpoint>
+
+<Checkpoint client:only id="2-3">
+  <Portrait src="guild-girl">
+  Well, well, Mx. Calculator knows their math!  
+  Just kidding, I promised this would be pretty easy ;)
+  
+  Now we'll do some comparisons, simple stuff.
+  </Portrait>
+
+  <FreeQuestion
+    question="Write any number greater than 200."
+    code="200 < ?"
+    correct="Correct!"
+    id="2-4"
+  />
+</Checkpoint>
+
+<Checkpoint client:only id="2-4">
+  <FreeQuestion
+    question="Okay... Now a number smaller than 200."
+    code="200 > ?"
+    correct="Perfect!"
+    id="2-5"
+  />
+</Checkpoint>
+
+<Checkpoint client:only id="2-5">
+  <FreeQuestion
+    question="Now one that's smaller or equal than 0."
+    code="0 >= ?"
+    correct="Good answer!"
+    id="2-6"
+  />
+</Checkpoint>
+
+<Checkpoint client:only id="2-6">
+  <FreeQuestion
+    question="And finally one that's greater or equal than 0."
+    code="0 <= ?"
+    correct="Fantastic!"
+    id="2-7"
+  />
+</Checkpoint>
+
+<Checkpoint client:only id="2-7">
+  :::tip[Exercise]
+  See what we're doing here?  
+  Try rewriting the code of the exercises above, exactly how the question is formulated.
+  
+  For instance, for the first question, instead of saying `200 is smaller than ?`, say `? is greater than 200`.  
+  Remember to fill in the `?` in your final submission.
+  
+  <FreeQuestion
+    question="Write any number greater than 200."
+    correct="Correct!"
+  />
+
+  <FreeQuestion
+    question="Okay... Now a number smaller than 200."
+    correct="Perfect!"
+  />
+  
+  <FreeQuestion
+    question="Now one that's smaller or equal than 0."
+    correct="Good answer!"
+  />
+  
+  <FreeQuestion
+    question="And finally one that's greater or equal than 0."
+    correct="Fantastic!"
+  />
+  :::
+  
+  <Portrait src="guild-girl">
+  Excellent!  
+    
+  Now please sign here, and you'll be ready to take your first quest.
+  </Portrait>
+
+</Checkpoint>
+
+{ /** TODO! Circumvent bug: If not defined in a function, all Svelte components will not load */}
+export function Q({}) {
+  return (
+    <CodeQuestion
+      question=""
+      code={'let name = "?";'}
+      setup={`__VALUE__; println!("{name}, welcome to the Adventurer's Guild!")`}
+      validator={`(value) => value.includes("?") && "Hint: Just replace ? with your name!" || undefined`}
+    />
+  )
+}
+
+<Checkpoint client:only id="2-7">
+  <Q />
+</Checkpoint>

@@ -1,3 +1,6 @@
+dist
 build
 coverage
 node_modules
+.astro
+**/*.mdx

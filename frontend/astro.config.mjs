@@ -1,8 +1,8 @@
-import preact from "@astrojs/preact";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
-
 import svelte from "@astrojs/svelte";
+import { visualizer } from "rollup-plugin-visualizer";
+import compress from "astro-compress";
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,6 +16,7 @@ export default defineConfig({
         src: "./src/assets/ferris.svg",
         // replacesTitle: true,
       },
+
       social: {
         github: "https://github.com/lyonsyonii/rust-quest",
       },
@@ -46,5 +47,13 @@ export default defineConfig({
       },
     }),
     svelte(),
+    compress(),
   ],
+  vite: {
+    plugins: [visualizer()],
+  },
+  markdown: {
+    remarkPlugins: [],
+    extendDefaultPlugins: true,
+  }
 });

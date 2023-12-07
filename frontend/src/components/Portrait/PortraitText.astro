@@ -1,0 +1,14 @@
+---
+import Highlight from "@components/Highlight.astro";
+import { portrait, type Portrait } from "./portraits";
+
+interface Props {
+  src: Portrait;
+}
+
+const { bg, bgDark } = portrait(Astro.props.src);
+---
+
+<Highlight bg={bg} bgDark={bgDark}>
+  <slot />
+</Highlight>

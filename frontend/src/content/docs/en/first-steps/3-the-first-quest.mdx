@@ -3,15 +3,32 @@ title: The First Quest
 description: Finally, your first quest! What will it be...
 ---
 
-import QuestionCard from "@components/QuestionCard.astro";
-import CodeBlock from "@components/CodeBlock/CodeBlock.svelte";
+import CodeQuestion from "@components/CodeQuestion.astro";
+import Portrait from "@components/Portrait/PortraitCard.astro";
+import { colors } from "@components/Portrait/portraits";
+import PText from "@components/Portrait/PortraitText.astro";
+import Highlight from "@components/Highlight.astro";
+import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 
-export const quest = 
-`Welcome Adventurer.
-Your first quest is... To help the local grocer sort some vegetables!
+export function Grocer(props) {
+  return (
+    <Portrait
+      src="grocery"
+      {...props}
+    />
+  )
+}
+/** Grocer text. Text with the grocer's background but without padding or portrait. */
+export function GT(props) {
+  return (
+    <PText
+      src="grocery"
+      {...props}
+    />
+  )
+}
 
-We expect great things of you.
-The Adventurer's Guild`;
+export const replace = "Replace ? with your answer.";
 
 Finally, your first quest!
 
@@ -20,58 +37,231 @@ Kill some monsters? Rescue a lost princess?
 
 Let's find out!
 
-<QuestionCard question="Read your first quest!">
-  <CodeBlock
-    client:only
-    code="read_quest()"
-    setup={`fn read_quest() { println!("${quest}") } __VALUE__`}
-    editable={false}
-    showLineNumbers={false}
-  />
-</QuestionCard>
+export const quest = 
+`Welcome Adventurer.
+Your first quest is... To assist the local grocery store!
 
-...well, let's do it then.
+We expect great things of you.
+The Adventurer's Guild`;
 
----
+<CodeQuestion
+  id="3-1"
+  code="read_quest()"
+  validator={`() => \`${quest}SUCCESS\n\``}
+  editable={false}
+  showLineNumbers={false}
+/>
 
-The grocery store has all the vegetables stored in magical boxes.  
-Every box has a label indicating what vegetable it contains, and a panel with the number of vegetables in it.
+<Checkpoint id="3-1" scroll={false} >
+  ...well, let's do it then.
 
-Since the boxes are magical, their panel automatically updates when the number of vegetables in it changes.
+  ---
+  <Grocer>
+  Good morning Adventurer, I'm glad you accepted my request.  
+  My age is starting to show, and it's hard to keep up with the work here at the grocery store.  
+  
+  Your first task is to help me keep track of the inventory.  
+  Please, follow me.
+  </Grocer>
 
-The grocer wants to know how many vegetables there are in total.  
-Unfortunately, he's really bad at math, and can't add up the numbers every time.
+  You follow the owner to the back of the store, where he has crates full of vegetables.  
+  Each crate has a label indicating its contents and a panel with a number.
+  
+  <Grocer>
+  See all these crates? They are magical boxes!  
+  
+  The number you see on each panel is the amount of vegetables stored, and it updates automatically. Pretty handy, right?  
+  
+  Unfortunately, only Programmers can mess with them, they are too complicated for people like me.  
+  This is where you come in.  
+  client:only
+  I often find that I need to check the total number of vegetables in the store, but having to add up the numbers by hand is tedious.  
+  So, as a Programmer, could you find a way to automate this?
+  
+  I have this code thing that represents our magical crates and what's in them, check it out:
+  </Grocer>
+  
+  <CodeQuestion 
+id = "3-2"
+question = "What's the total number of vegetables in the grocery?"
+code = {`
+let potatoes = 5;
+let carrots = 4;
+let onions = 2;
 
-Therefore, he needs you to come up with a way to calculate the total using the magical properties of the boxes.
-
-He presents you with the following code, which represents the boxes and their contents:
-
-export const code = 
-`let potatoes = 5;
-let carrots  = 4;
-let onions   = 2;
-
-let total = ? + ? + ?;`;
-export const setup =
-`**VALUE**
-let str = "**VALUE**";
-if !str.starts_with("${code.substring(0, code.lastIndexOf("="))}") {
-    println!("Seems like you've messed up the code, click the \\"Reset\\" button to return it back to its original state.");
-    println!("Remember to only modify the ? part of the code.");
-    return;
-}
-if str[${code.lastIndexOf("=")}..str.len()-1].replace(" ", "").split("+").any(|x| x.parse::<u32>().is_ok()) {
-println!("Copying each number isn't good enough.");
-println!("You need to come up with a solution that works even if the numbers change.");
-println!();
-println!("Try using the magical properties of the boxes.");
-return;
-}
+let total = ? + ? + ?;
+`}
+setup = {`
+__VALUE__
 if total == potatoes + carrots + onions {
-println!("potatoes + carrots + onions == {total}, great job!");
+  println!("potatoes + carrots + onions == {total}, great job!");
+  println!("SUCCESS");
 }
+`}
+validator = {(() => {
+const almost = `
+You're almost there! 
+But you don't need to use "let" in this exercise.
 `;
+const copy = `
+Copying each number isn't good enough.
+You need to come up with a solution that works even if the numbers change.
+Remember to use the magical properties of the crates!
+`;
+return `
+  const answer = value.substring(value.lastIndexOf("=") + 1, value.length-1).replace(" ", "");
+  return (
+    answer.includes("?") && \`${replace}\` ||
+    answer.includes("let") && \`${almost}\` ||
+    answer.split("+").some((x) => Number(x)) && \`${copy}\` ||
+    undefined
+  );`
+})()} />
+</Checkpoint>
 
-<QuestionCard question="What's the total number of vegetables in the grocery?">
-  <CodeBlock client:only code={code} setup={setup} />
-</QuestionCard>
+<Checkpoint id="3-2">
+Great!
+Now the grocer knows how many vegetables he has stored.
+
+<Grocer>
+Thank you so much! I knew you could do it.
+
+While you were working, a shipment of apples arrived.  
+I don't have a crate for them, so I need you to make one.  
+
+I think I have a kit somewhere... Ah, here it is!
+</Grocer>
+
+The man picks up a folded crate and sets it on the ground.  
+Then, looking at the box, he mumbles: <GT>`let`</GT>.
+
+Upon hearing the word, the crate begins to glow, floats slowly in the air and unfolds.  
+In the panel appears: "Please, fill in the label with the name of the contents of the box and place the items inside".
+
+<Grocer> Sorry, I have to attend to a customer. Can you finish the work? </Grocer>
+
+You're on your own for this one. Let's get to it!
+
+<CodeQuestion 
+id="3-3"
+question="Create a magical box to store 18 apples!"
+code="let ? = ?;"
+setup={`
+if "__VALUE__".replace(" ", "") == "letapples=18;" {
+  println!("Well done, the crate is now operative!");
+  println!("SUCCESS");
+} else { println!("Not yet, keep trying!") }
+`}
+validator={`
+return value.includes("apple ") && "Remember to use the plural form of the label!"
+    || value.includes("let apples =") && !value.includes("18") && "Remember that you need to store 18 apples!"
+    || value.includes("?") && \`${replace}\`
+    || undefined
+`}
+/>
+
+</Checkpoint>
+
+<Checkpoint id="3-3">
+After configuring the box, you walk to the counter to tell the grocer of your success, but he yells: <GT>Hey, adventurer! Bring me two apples from the box, please</GT>.
+
+Okay, that shouldn't be difficult, just take two apples and... Huh? Why is your hand being stopped in the air?  
+
+You look at the panel, maybe something is wrong?  
+Sure enough, the panel is red, and says: <Highlight bg={colors.red}>Anti-theft protection enabled, if you want to change the contents of this box **add the `mut` directive**</Highlight>
+
+`mut` what? What does that mean? Why does a grocery store have anti-theft magical boxes?
+
+Knowing that you are making the owner wait, you hurry and try to fix it.
+The grocer before said `let` to activate the box, maybe you need to do the same with this `mut` thing?
+{ /* TODO: Test if a single ? is enough. If not, put two */ }
+<CodeQuestion
+id="3-4"
+question="Fix the box and take two apples from it!"
+code={`
+? apples = 18;
+apples = apples - 2;
+`}
+setup={`
+__VALUE__
+if apples == 16 {
+  println!("Once you say the magical words 'let mut' the barrier sorrounding the box disappears, and you're able to take the apples.\\nGood job!");
+  println!("SUCCESS");
+} else {
+  println!("There should be 16 apples in the box, but you have {apples}, did you replace some values?");
+}
+`}
+validator={`
+const v = value.replaceAll(" ", "");
+return value.includes("?") && \`${replace}\`
+    || value.includes("letmut") && "Good guess! But each directive should be on its own, maybe try adding a space?"
+    || v.includes("mutlet") && "Almost! But the panel says to 'add' the directive, so maybe you need to use it in another order?"
+    || v.startsWith("mutapples") && "You're nearly there, but remember the first magical word!\\nThe panel says to 'add mut', not replace."
+    || undefined
+`}
+/>
+
+:::note[What does the second line mean?]
+`apples = apples - 2` means: "Make `apples` be its previous value minus two".  
+It ends up translating to `apples = 18 - 2`.
+ 
+If you want, you can use the shorthand `apples -= 2`, which would mean:  
+"Substract 2 from the current value of apples".
+:::
+
+</Checkpoint>
+
+<Checkpoint id="3-4">
+Having dispatched the customer, the owner comes carrying a normal-looking box full of apples and leaves it in the floor.
+<Grocer>
+Seems like some of the shipment was still outside, can you help me add them to the storage crate?
+</Grocer>
+
+<CodeQuestion
+id="3-5"
+question="Add 64 apples to their crate!"
+code={`
+let mut apples = 16;
+?;
+`}
+setup={`
+__VALUE__
+if apples == 16 + 64 {
+  println!("Perfect, apples = {apples}, now you know how to modify values!");
+  println!("SUCCESS");
+} else {
+  println!("Not yet, keep trying!");
+}
+`}
+validator={`
+const v = value.replaceAll(" ", "");
+const answer = v.substring(v.indexOf(";"));
+return answer.includes("?") && \`${replace}\`
+    || answer.includes("letapples") && "'let' is used to create magical boxes, but this one already exists!"
+    || answer.includes("letmutapples") && "'let' and 'mut' are used to create mutable magical boxes, but this one already exists!"
+    || answer.includes("16") && "Remember, we need reusable code!\\nLook at the previous exercise if you need some inspiration."
+    || undefined
+`}
+/>
+</Checkpoint>
+
+<Checkpoint id="3-5">
+:::note[Being more technical...]
+`let mut apples = 18` means "make these apples changeable and set them to 18", where "mut" is "mutable".
+
+Although it may seem outdated, `let` is a widely used term in math.
+ 
+In programming, the magical boxes are referred to as "variables" for a similar reason as `let` - assigning things to specific letters is common in math, and these letters are called "variables".
+
+In Rust, variables are "immutable" by default (which is uncommon in other programming languages).
+The reason for this is that you typically utilize variables to hold temporary values and do not need to directly alter them.
+:::
+
+<Grocer>
+Thank you a lot for your help.  
+I'll tell the Adventurer's Guild about your excellent assistance, see you again!
+</Grocer>
+
+This seems like mission complete!  
+Satisfied with your work, you return to the nearby inn and retire early to be ready for whatever comes tomorrow.
+</Checkpoint>

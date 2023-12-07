@@ -8,32 +8,34 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "analyze": "source-map-explorer 'dist/_astro/*.js'"
   },
   "dependencies": {
     "@astrojs/check": "^0.3.1",
-    "@astrojs/preact": "^3.0.1",
-    "@astrojs/starlight": "^0.12.0",
-    "@astrojs/svelte": "^4.0.3",
+    "@astrojs/starlight": "^0.12.1",
+    "@astrojs/svelte": "^4.0.4",
     "@codemirror/lang-rust": "^6.0.1",
-    "@codemirror/language": "^6.9.2",
-    "@codemirror/state": "^6.3.1",
+    "@codemirror/language": "^6.9.3",
+    "@codemirror/state": "^6.3.3",
     "@codemirror/theme-one-dark": "^6.1.2",
-    "@codemirror/view": "^6.22.0",
+    "@codemirror/view": "^6.22.1",
     "@ddietr/codemirror-themes": "^1.4.2",
     "@lezer/highlight": "^1.2.0",
-    "astro": "^3.2.3",
-    "sharp": "^0.32.5",
-    "svelte": "^4.0.0",
-    "svelte-codemirror-editor": "^1.1.0",
-    "typescript": "^5.2.2"
+    "@macfja/svelte-persistent-store": "^2.4.1",
+    "astro": "^3.6.4",
+    "astro-compress": "^2.2.3",
+    "svelte": "^4.2.8",
+    "svelte-codemirror-editor": "^1.2.0",
+    "typescript": "^5.3.3"
   },
   "devDependencies": {
     "@iconify/svelte": "^3.1.4",
-    "@svelte-put/clickoutside": "^3.0.0",
+    "@svelte-put/clickoutside": "^3.0.1",
     "@svelte-put/shortcut": "^3.0.0",
     "prettier": "^3.1.0",
     "prettier-plugin-astro": "^0.12.2",
-    "prettier-plugin-svelte": "^3.1.0"
+    "prettier-plugin-svelte": "^3.1.2",
+    "rollup-plugin-visualizer": "^5.10.0"
   }
 }
