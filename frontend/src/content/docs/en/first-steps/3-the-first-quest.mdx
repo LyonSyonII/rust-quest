@@ -132,7 +132,7 @@ I don't have a crate for them, so I need you to make one.
 I think I have a kit somewhere... Ah, here it is!
 </Grocer>
 
-The man picks up a folded box and sets it on the ground.  
+The man picks up a folded crate and sets it on the ground.  
 Then, looking at the box, he mumbles: <GT>`let`</GT>.
 
 Upon hearing the word, the crate begins to glow, floats slowly in the air and unfolds.  
@@ -163,32 +163,51 @@ return value.includes("apple ") && "Remember to use the plural form of the label
 </Checkpoint>
 
 <Checkpoint id="3-3">
-Having configured the box, you start walking to the counter to tell the Grocer your success, but then he shouts: <GT>Hey, adventurer! Bring me two apples from the box please</GT>.
+After configuring the box, you walk to the counter to tell the grocer of your success, but he yells: <GT>Hey, adventurer! Bring me two apples from the box, please</GT>.
 
-Okay, this shouldn't be difficult, just take two apples and... Huh? Why is your hand being stopped in the air?  
+Okay, that shouldn't be difficult, just take two apples and... Huh? Why is your hand being stopped in the air?  
 
 You look at the panel, maybe something is wrong?  
-Indeed, the panel is red, and says: <Highlight bg={colors.red}>Anti theft protection activated, if you want to change the contents of this box add the **`mut`** directive</Highlight>
+Sure enough, the panel is red, and says: <Highlight bg={colors.red}>Anti-theft protection enabled, if you want to change the contents of this box **add the `mut` directive**</Highlight>
 
-What? What does this mean? Why does a grocery store have anti theft magical boxes?
+`mut` what? What does that mean? Why does a grocery store have anti-theft magical boxes?
 
-Knowing you are making the owner wait, you hurry and try to fix it.
+Knowing that you are making the owner wait, you hurry and try to fix it.
 The grocer before said `let` to activate the box, maybe you need to do the same with this `mut` thing?
-###### Fix the box and take two apples from it!
-```rust
+{ /* TODO: Test if a single ? is enough. If not, put two */ }
+<CodeQuestion
+id="3-4"
+question="Fix the box and take two apples from it!"
+code={`
 ? apples = 18;
 apples = apples - 2;
-# apples == 16 => "Once you say the magical words `let mut` the barrier sorrounding the box disappears, and you're able to take the apples, good job!"
+`}
+setup={`
+__VALUE__
+if apples == 16 {
+  println!("Once you say the magical words 'let mut' the barrier sorrounding the box disappears, and you're able to take the apples.\\nGood job!");
+  println!("SUCCESS");
+} else {
+  println!("There should be 16 apples in the box, but you have {apples}, did you replace some values?");
+}
+`}
+validator={`
+  const v = value.replaceAll(" ", "");
+  return value.includes("?") && \`${replace}\`
+      || value.includes("letmut") && "Good guess! But each directive should be on its own, maybe try adding a space?"
+      || v.includes("mutlet") && "Almost! But the panel says to 'add' the directive, so maybe you need to use it in another order?"
+      || v.startsWith("mutapples") && "You're nearly there, but remember the first magical word!\\nThe panel says to 'add mut', not replace."
+      || undefined
+`}
+/>
 
-# account for:
-# - ? apples
-# - "mut" only
-# - "mut let" 
-```
-> `apples = apples - 2` means: "Make `apples` be its previous value minus two".
-> It ends up translating to `apples = 18 - 2`.
->  
-> If you want, you can use the shorthand `apples -= 2`, which would mean: "Substract 2 from the current value of apples".
+:::note[What does the second line mean?]
+`apples = apples - 2` means: "Make `apples` be its previous value minus two".  
+It ends up translating to `apples = 18 - 2`.
+ 
+If you want, you can use the shorthand `apples -= 2`, which would mean:  
+"Substract 2 from the current value of apples".
+:::
 
 </Checkpoint>
 
