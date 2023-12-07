@@ -16,8 +16,8 @@ export async function evaluate(
     // server(code, error),
     godbolt(code, error),
     playground(code, error),
-    new Promise((_, reject) =>
-      setTimeout(() => reject("TIMEOUT"), 2000),
+    new Promise((resolve, _) =>
+      setTimeout(() => resolve("Execution timed out, please try again."), 3000),
     ) as Promise<string>,
   ]);
 }
