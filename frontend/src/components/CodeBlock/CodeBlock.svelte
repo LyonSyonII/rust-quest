@@ -63,12 +63,12 @@
     if (!force_focus && !focused) {
       return;
     }
-
+    
     running = true;
     playgroundResponse = l.compiling;
-
+    
     // Wait for the editor to update `value`
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 125));
 
     console.log({ value, validator });
     const v = Function("value", validator)(value);
@@ -115,7 +115,8 @@
       lang={lang.rust()}
       {theme}
       basic={showLineNumbers}
-      editable={editable && !running}
+      editable={editable}
+      readonly={!editable || running}
       placeholder={placeholder || l.placeholder}
     />
   {/await}

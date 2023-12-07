@@ -1,4 +1,4 @@
-name: Deploy
+name: Changelog
 
 on:
   push:
