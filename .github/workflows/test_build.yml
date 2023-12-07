@@ -1,5 +1,4 @@
-# .github/workflows/preview.yml
-name: Deploy PR previews
+name: Build PR previews
 
 on:
   pull_request:
@@ -15,8 +14,6 @@ permissions:
   contents: read
   pages: write
   id-token: write
-
-concurrency: preview-${{ github.ref }}
   
 jobs:
   build:
@@ -29,14 +26,3 @@ jobs:
         with:
           path: "frontend"
           package-manager: pnpm@latest
-  
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: preview
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to Preview
-        id: deployment
-        uses: actions/deploy-pages@v1
