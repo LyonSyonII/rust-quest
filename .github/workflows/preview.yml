@@ -8,23 +8,35 @@ on:
       - reopened
       - synchronize
       - closed
+  workflow_dispatch:
+  
+# Allow this job to clone the repo and create a page deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency: preview-${{ github.ref }}
-
+  
 jobs:
-  deploy-preview:
-    runs-on: ubuntu-20.04
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout your repository using git
         uses: actions/checkout@v3
-      
       - name: Install, build, and upload your site output
         uses: withastro/action@v1
         with:
-            path: "frontend"
-            package-manager: pnpm@latest
-      
-      - name: Deploy preview
-        uses: rossjrw/pr-preview-action@v1
-        with:
-          source-dir: ./frontend/dist/
+          path: "frontend"
+          package-manager: pnpm@latest
+  
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
