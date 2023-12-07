@@ -74,7 +74,7 @@ The Adventurer's Guild`;
   
   Unfortunately, only Programmers can mess with them, they are too complicated for people like me.  
   This is where you come in.  
-  client:only
+  
   I often find that I need to check the total number of vegetables in the store, but having to add up the numbers by hand is tedious.  
   So, as a Programmer, could you find a way to automate this?
   
@@ -193,10 +193,13 @@ if apples == 16 {
 `}
 validator={`
 const v = value.replaceAll(" ", "");
+const secondLine = v.substring(v.indexOf(";")).trim();
 return value.includes("?") && \`${replace}\`
     || value.includes("letmut") && "Good guess! But each directive should be on its own, maybe try adding a space?"
     || v.includes("mutlet") && "Almost! But the panel says to 'add' the directive, so maybe you need to use it in another order?"
     || v.startsWith("mutapples") && "You're nearly there, but remember the first magical word!\\nThe panel says to 'add mut', not replace."
+    || v.startsWith("letapples") && "The box still doesn't let you take the apples!\\nRemember what the panel says 'add the \`mut\` directive'"
+    || secondLine.includes("let") && "Looks like you've modified the second line, replace only the ? part!"
     || undefined
 `}
 />
