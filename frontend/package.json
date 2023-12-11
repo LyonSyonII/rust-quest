@@ -12,27 +12,24 @@
     "analyze": "source-map-explorer 'dist/_astro/*.js'"
   },
   "dependencies": {
-    "@astrojs/check": "^0.3.1",
-    "@astrojs/starlight": "^0.15.0",
-    "@astrojs/svelte": "^5.0.0",
     "@codemirror/lang-rust": "^6.0.1",
     "@codemirror/language": "^6.9.3",
     "@codemirror/state": "^6.3.3",
-    "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.22.2",
-    "@ddietr/codemirror-themes": "^1.4.2",
     "@lezer/highlight": "^1.2.0",
+    "confettis": "^0.3.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.3.1",
+    "@astrojs/starlight": "^0.15.0",
+    "@astrojs/svelte": "^5.0.0",
     "@macfja/svelte-persistent-store": "^2.4.1",
+    "svelte": "^4.2.8",
+    "svelte-codemirror-editor": "^1.2.0",
+    "typescript": "^5.3.3",
     "astro": "^4.0.3",
     "astro-compress": "^2.2.3",
     "astro-robots-txt": "^1.0.0",
-    "confettis": "^0.3.0",
-    "svelte": "^4.2.8",
-    "svelte-codemirror-editor": "^1.2.0",
-    "svelte-confetti-p5": "^0.2.0",
-    "typescript": "^5.3.3"
-  },
-  "devDependencies": {
     "@iconify/svelte": "^3.1.4",
     "@svelte-put/clickoutside": "^3.0.1",
     "@svelte-put/shortcut": "^3.0.0",
