@@ -18,13 +18,15 @@ const { bg, bgDark = bgToDark(bg) } = Astro.props;
     padding: 0;
   }
 
-  :root .highlight *, :root .highlight {
+  :root .highlight *,
+  :root .highlight {
     background-color: var(--bg);
     border: 1px;
-    border-radius: .25em;
-    padding: .2em;
+    border-radius: 0.25em;
+    padding: 0.2em;
   }
-  :root[data-theme="dark"] .highlight *, :root[data-theme="dark"] .highlight {
+  :root[data-theme="dark"] .highlight *,
+  :root[data-theme="dark"] .highlight {
     background-color: var(--bgDark);
   }
 </style>

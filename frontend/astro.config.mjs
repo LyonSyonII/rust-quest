@@ -55,5 +55,5 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [],
     extendDefaultPlugins: true,
-  }
+  },
 });
