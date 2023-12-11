@@ -1,5 +1,5 @@
-import { translation } from "@i18n/CodeBlock";
-import type { Langs } from "@i18n/langs";
+import { translation } from "@i18n/_CodeBlock";
+import type { Langs } from "@i18n/_langs";
 
 export async function evaluate(
   code: string,
