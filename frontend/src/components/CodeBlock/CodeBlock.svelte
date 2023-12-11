@@ -7,7 +7,7 @@
   import { derived, writable } from "svelte/store";
   import { translation } from "@i18n/CodeBlock.ts";
   import { type Langs } from "@i18n/langs";
-  
+
   /** Id of the CodeBlock. If provided, when the output's last line is "SUCCESS", a local-storage entry will be created with this id */
   export let id: string = "";
   /** Code that will be sent to the playground, replaces __VALUE__ with the code in the editor */
@@ -30,7 +30,7 @@
   export let lang: Langs = "en";
 
   $: l = translation(lang);
-  
+
   let value = code;
   let running = false;
   let focused = false;
@@ -38,8 +38,7 @@
   const setResponse = async (response: string) => {
     const out = response.replace("SUCCESS\n", "");
     if (id && response.length !== out.length) {
-      const { checkpointStore } = await import("../Checkpoint/checkpoint");
-      checkpointStore.update(s => { s.add(id); return s})
+      (await import("../Checkpoint/checkpoint")).add(id);
     }
     playgroundResponse = out;
   };
@@ -63,10 +62,10 @@
     if (!force_focus && !focused) {
       return;
     }
-    
+
     running = true;
     playgroundResponse = l.compiling;
-    
+
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 125));
 
@@ -85,7 +84,7 @@
     )}\n }`;
 
     const { evaluate } = await import("./evaluate");
-    
+
     const result = await evaluate(code, lang, errorMsg);
     await setResponse(result);
     running = false;
@@ -115,7 +114,7 @@
       lang={lang.rust()}
       {theme}
       basic={showLineNumbers}
-      editable={editable}
+      {editable}
       readonly={!editable || running}
       placeholder={placeholder || l.placeholder}
     />
