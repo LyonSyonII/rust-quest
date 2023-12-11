@@ -4,6 +4,8 @@ import svelte from "@astrojs/svelte";
 import { visualizer } from "rollup-plugin-visualizer";
 import compress from "astro-compress";
 
+import robotsTxt from "astro-robots-txt";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://rust-quest.com",
@@ -16,7 +18,6 @@ export default defineConfig({
         src: "./src/assets/ferris.svg",
         // replacesTitle: true,
       },
-
       social: {
         github: "https://github.com/lyonsyonii/rust-quest",
       },
@@ -48,6 +49,7 @@ export default defineConfig({
     }),
     svelte(),
     compress(),
+    robotsTxt(),
   ],
   vite: {
     plugins: [visualizer()],

@@ -5,8 +5,8 @@
   import { onThemeChange } from "src/utils/onThemeChange";
   import { onDestroy, onMount } from "svelte";
   import { derived, writable } from "svelte/store";
-  import { translation } from "@i18n/CodeBlock.ts";
-  import { type Langs } from "@i18n/langs";
+  import { translation } from "@i18n/_CodeBlock";
+  import { type Langs } from "@i18n/_langs";
 
   /** Id of the CodeBlock. If provided, when the output's last line is "SUCCESS", a local-storage entry will be created with this id */
   export let id: string = "";

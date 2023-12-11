@@ -4,16 +4,16 @@
   export let id: string;
   export let total: number;
   export let confetti: boolean = true;
-  
+
   let value: number = 0;
   onMount(async () => {
     const confettis = await import("confettis");
     const checkpoints = await import("./Checkpoint/checkpoint");
-    checkpoints.subscribe(id, checkpoint => {
+    checkpoints.subscribe(id, (checkpoint) => {
       value = checkpoint.size < total ? checkpoint.size : total;
       if (confetti && value === total && !checkpoint.has(`${id}-confetti`)) {
         confettis.create({
-          y: 2
+          y: 2,
         });
         checkpoints.add(`${id}-confetti`);
       }
