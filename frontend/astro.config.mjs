@@ -10,45 +10,52 @@ import robotsTxt from "astro-robots-txt";
 export default defineConfig({
   site: "https://rust-quest.com",
   /* base: "/rust-quest", */
-  integrations: [starlight({
-    title: "Rust Quest",
-    tableOfContents: false,
-    logo: {
-      src: "./src/assets/ferris.svg"
-      // replacesTitle: true,
-    },
-    social: {
-      github: "https://github.com/lyonsyonii/rust-quest"
-    },
-    sidebar: [{
-      label: "First Steps",
-      translations: {
-        es: "Primeros Pasos",
-        ca: "Primeres Passes"
+  integrations: [
+    starlight({
+      title: "Rust Quest",
+      tableOfContents: false,
+      logo: {
+        src: "./src/assets/ferris.svg",
+        // replacesTitle: true,
       },
-      autogenerate: {
-        directory: "first-steps"
-      }
-    }],
-    customCss: ["./src/styles/custom.css"],
-    defaultLocale: "en",
-    locales: {
-      en: {
-        label: "English"
+      social: {
+        github: "https://github.com/lyonsyonii/rust-quest",
       },
-      es: {
-        label: "Español"
+      sidebar: [
+        {
+          label: "First Steps",
+          translations: {
+            es: "Primeros Pasos",
+            ca: "Primeres Passes",
+          },
+          autogenerate: {
+            directory: "first-steps",
+          },
+        },
+      ],
+      customCss: ["./src/styles/custom.css"],
+      defaultLocale: "en",
+      locales: {
+        en: {
+          label: "English",
+        },
+        es: {
+          label: "Español",
+        },
+        ca: {
+          label: "Català",
+        },
       },
-      ca: {
-        label: "Català"
-      }
-    }
-  }), svelte(), compress(), robotsTxt()],
+    }),
+    svelte(),
+    compress(),
+    robotsTxt(),
+  ],
   vite: {
-    plugins: [visualizer()]
+    plugins: [visualizer()],
   },
   markdown: {
     remarkPlugins: [],
-    extendDefaultPlugins: true
-  }
+    extendDefaultPlugins: true,
+  },
 });

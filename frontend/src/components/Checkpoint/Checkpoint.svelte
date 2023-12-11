@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
 
   /** Id of the checkpoint.
-   * 
+   *
    * The children of this component will only be shown when "id" is present in LocalStorage. */
   export let id: string;
   export let scroll: boolean = true;
