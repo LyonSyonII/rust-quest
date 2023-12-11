@@ -4,56 +4,51 @@ import svelte from "@astrojs/svelte";
 import { visualizer } from "rollup-plugin-visualizer";
 import compress from "astro-compress";
 
+import robotsTxt from "astro-robots-txt";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://rust-quest.com",
   /* base: "/rust-quest", */
-  integrations: [
-    starlight({
-      title: "Rust Quest",
-      tableOfContents: false,
-      logo: {
-        src: "./src/assets/ferris.svg",
-        // replacesTitle: true,
+  integrations: [starlight({
+    title: "Rust Quest",
+    tableOfContents: false,
+    logo: {
+      src: "./src/assets/ferris.svg"
+      // replacesTitle: true,
+    },
+    social: {
+      github: "https://github.com/lyonsyonii/rust-quest"
+    },
+    sidebar: [{
+      label: "First Steps",
+      translations: {
+        es: "Primeros Pasos",
+        ca: "Primeres Passes"
       },
-
-      social: {
-        github: "https://github.com/lyonsyonii/rust-quest",
+      autogenerate: {
+        directory: "first-steps"
+      }
+    }],
+    customCss: ["./src/styles/custom.css"],
+    defaultLocale: "en",
+    locales: {
+      en: {
+        label: "English"
       },
-      sidebar: [
-        {
-          label: "First Steps",
-          translations: {
-            es: "Primeros Pasos",
-            ca: "Primeres Passes",
-          },
-          autogenerate: {
-            directory: "first-steps",
-          },
-        },
-      ],
-      customCss: ["./src/styles/custom.css"],
-      defaultLocale: "en",
-      locales: {
-        en: {
-          label: "English",
-        },
-        es: {
-          label: "Español",
-        },
-        ca: {
-          label: "Català",
-        },
+      es: {
+        label: "Español"
       },
-    }),
-    svelte(),
-    compress(),
-  ],
+      ca: {
+        label: "Català"
+      }
+    }
+  }), svelte(), compress(), robotsTxt()],
   vite: {
-    plugins: [visualizer()],
+    plugins: [visualizer()]
   },
   markdown: {
     remarkPlugins: [],
-    extendDefaultPlugins: true,
-  },
+    extendDefaultPlugins: true
+  }
 });
