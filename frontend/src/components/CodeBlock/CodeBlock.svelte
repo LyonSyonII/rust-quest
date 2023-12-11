@@ -54,7 +54,7 @@
   onMount(async () => {
     theme.set(document.documentElement.dataset.theme || "light");
     observer = onThemeChange((t) => theme.set(t));
-    lang = window.location.pathname.split("/")[2] as Langs;
+    lang = window.location.pathname.split("/")[1] as Langs;
   });
   onDestroy(() => observer?.disconnect());
 
