@@ -7,11 +7,12 @@
   
   let value: number = 0;
   onMount(async () => {
+    const confettis = await import("confettis");
     const checkpoints = await import("./Checkpoint/checkpoint");
-    checkpoints.subscribe(id, async (checkpoint) => {
+    checkpoints.subscribe(id, checkpoint => {
       value = checkpoint.size < total ? checkpoint.size : total;
       if (confetti && value === total && !checkpoint.has(`${id}-confetti`)) {
-        (await import("confettis")).create({
+        confettis.create({
           y: 2
         });
         checkpoints.add(`${id}-confetti`);
