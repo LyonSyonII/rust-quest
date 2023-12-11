@@ -6,8 +6,8 @@ import compress from "astro-compress";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://garriga.dev",
-  base: "/rust-quest",
+  site: "https://rust-quest.com",
+  /* base: "/rust-quest", */
   integrations: [
     starlight({
       title: "Rust Quest",
@@ -55,5 +55,5 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [],
     extendDefaultPlugins: true,
-  }
+  },
 });

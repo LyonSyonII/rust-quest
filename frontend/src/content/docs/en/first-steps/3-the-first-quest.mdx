@@ -9,6 +9,7 @@ import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
+import Progress from "@components/Progress.svelte";
 
 export function Grocer(props) {
   return (
@@ -172,7 +173,7 @@ Sure enough, the panel is red, and says: <Highlight bg={colors.red}>Anti-theft p
 
 `mut` what? What does that mean? Why does a grocery store have anti-theft magical boxes?
 
-Knowing that you are making the owner wait, you hurry and try to fix it.
+Knowing that you are making the owner wait, you hurry and try to fix it.  
 The grocer before said `let` to activate the box, maybe you need to do the same with this `mut` thing?
 { /* TODO: Test if a single ? is enough. If not, put two */ }
 <CodeQuestion
@@ -197,7 +198,7 @@ const secondLine = v.substring(v.indexOf(";")).trim();
 return value.includes("?") && \`${replace}\`
     || value.includes("letmut") && "Good guess! But each directive should be on its own, maybe try adding a space?"
     || v.includes("mutlet") && "Almost! But the panel says to 'add' the directive, so maybe you need to use it in another order?"
-    || v.startsWith("mutapples") && "You're nearly there, but remember the first magical word!\\nThe panel says to 'add mut', not replace."
+    || v.startsWith("mutapples") && "You're nearly there, but remember the first magical word 'let'!\\nThe panel says to 'add mut', not replace."
     || v.startsWith("letapples") && "The box still doesn't let you take the apples!\\nRemember what the panel says 'add the \`mut\` directive'"
     || secondLine.includes("let") && "Looks like you've modified the second line, replace only the ? part!"
     || undefined
@@ -268,3 +269,5 @@ I'll tell the Adventurer's Guild about your excellent assistance, see you again!
 This seems like mission complete!  
 Satisfied with your work, you return to the nearby inn and retire early to be ready for whatever comes tomorrow.
 </Checkpoint>
+
+<Progress client:visible id="3" total={5} />

@@ -6,6 +6,7 @@ description: The hero registers into the Adventurer's Guild.
 import CodeQuestion from "@components/CodeQuestion.astro";
 import Portrait from "@components/Portrait/PortraitCard.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.svelte";
+import Progress from "@components/Progress.svelte";
 
 export const code_mess =
 `Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
@@ -189,8 +190,9 @@ export function Q({}) {
   return (
     <CodeQuestion
       question=""
+      id="2-8"
       code={'let name = "?";'}
-      setup={`__VALUE__; println!("{name}, welcome to the Adventurer's Guild!")`}
+      setup={`__VALUE__; println!("{name}, welcome to the Adventurer's Guild!\nSUCCESS")`}
       validator={`(value) => value.includes("?") && "Hint: Just replace ? with your name!" || undefined`}
     />
   )
@@ -199,3 +201,5 @@ export function Q({}) {
 <Checkpoint client:only id="2-7">
   <Q />
 </Checkpoint>
+
+<Progress client:visible id="2" total={8} />

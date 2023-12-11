@@ -7,9 +7,12 @@ export async function evaluate(
   errorMsg?: string,
 ): Promise<string> {
   const error = errorMsg || translation(lang).error;
-  
+
   if (import.meta.env.MODE.includes("dev")) {
-    return Promise.race([godbolt(code, error), playground(code, error) /* , server(code, error) */]);
+    return Promise.race([
+      godbolt(code, error),
+      playground(code, error) /* , server(code, error) */,
+    ]);
   }
 
   return Promise.race([
@@ -19,7 +22,7 @@ export async function evaluate(
     new Promise((resolve, _) =>
       setTimeout(() => resolve("Execution timed out, please try again."), 3000),
     ) as Promise<string>,
-  ]);
+  ]).catch(() => "There was an error, please try again.");
 }
 
 async function server(code: string, error: string): Promise<string> {
