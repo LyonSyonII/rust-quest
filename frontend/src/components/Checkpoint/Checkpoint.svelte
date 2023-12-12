@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fade } from "svelte/transition";
+  import { scale } from "svelte/transition";
   import { onMount } from "svelte";
 
   /** Id of the checkpoint.
@@ -31,7 +31,7 @@
 </script>
 
 {#if show}
-  <div in:fade>
+  <div in:scale>
     <slot />
   </div>
 {/if}
