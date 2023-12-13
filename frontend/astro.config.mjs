@@ -3,7 +3,6 @@ import { defineConfig } from "astro/config";
 import svelte from "@astrojs/svelte";
 import { visualizer } from "rollup-plugin-visualizer";
 import compress from "astro-compress";
-
 import robotsTxt from "astro-robots-txt";
 
 // https://astro.build/config
@@ -55,7 +54,6 @@ export default defineConfig({
     plugins: [visualizer()],
   },
   markdown: {
-    remarkPlugins: [],
-    extendDefaultPlugins: true,
+    remarkPlugins: []
   },
 });
