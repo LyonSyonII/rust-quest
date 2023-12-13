@@ -13,33 +13,25 @@ interface Props {
   editable?: boolean;
   lang?: Langs;
   id?: string;
+  onsuccess?: string;
 }
 
 const {
   question = "",
-  setup = "__VALUE__",
-  validator = "(_) => undefined",
   code,
   errorMsg = "",
   placeholder = "",
-  showLineNumbers = true,
-  editable = true,
-  lang = "en",
-  id = "",
+  ...other
 } = Astro.props;
 ---
 
 <QuestionCard question={question}>
   <CodeBlock
     client:visible
-    {setup}
-    {validator}
+    
     code={code.trim()}
     errorMsg={errorMsg.trim()}
     placeholder={placeholder.trim()}
-    {showLineNumbers}
-    {editable}
-    {lang}
-    {id}
+    {...other}
   />
 </QuestionCard>
