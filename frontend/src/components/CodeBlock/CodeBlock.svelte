@@ -16,6 +16,7 @@
    *
    * If the return value is a string, it will be displayed in the editor */
   export let validator: string = "return undefined";
+  export let onsuccess: string = "return undefined";
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
@@ -39,6 +40,7 @@
     const out = response.replace("SUCCESS\n", "");
     if (id && response.length !== out.length) {
       (await import("../Checkpoint/checkpoint")).add(id);
+      Function("value", onsuccess)(out);
     }
     playgroundResponse = out;
   };
