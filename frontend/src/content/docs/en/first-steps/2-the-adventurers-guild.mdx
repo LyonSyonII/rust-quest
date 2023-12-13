@@ -14,6 +14,12 @@ Remember to only modify the ? symbol.`
 export const replace = "Replace ? with your answer."
 export const wrong_answer = "Wrong answer, try again!"
 
+export function Guild(props) {
+  return <Portrait 
+    src="guild-girl" 
+    {...props} 
+  />
+}
 export function SimpleQuestion({
   question,
   code,
@@ -76,9 +82,9 @@ If you mess up the code, click the "Reset" button to return it to its original s
 />
 
 <Checkpoint client:only id="2-1">
-  <Portrait src="guild-girl">
+  <Guild>
   Well done! Let's continue.
-  </Portrait>
+  </Guild>
   
   <SimpleQuestion
     question="What's negative one minus one?"
@@ -91,9 +97,9 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint client:only id="2-2">
-  <Portrait src="guild-girl">
+  <Guild>
   All right, let's up the challenge a bit.
-  </Portrait>
+  </Guild>
 
   <SimpleQuestion
     question="What's the number that multiplied by two equals sixteen divided by four?"
@@ -106,12 +112,12 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint client:only id="2-3">
-  <Portrait src="guild-girl">
+  <Guild>
   Well, well, Mx. Calculator knows their math!  
   Just kidding, I promised this would be pretty easy ;)
   
   Now we'll do some comparisons, simple stuff.
-  </Portrait>
+  </Guild>
 
   <FreeQuestion
     question="Write any number greater than 200."
@@ -177,11 +183,11 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
   :::
   
-  <Portrait src="guild-girl">
+  <Guild>
   Excellent!  
     
   Now please sign here, and you'll be ready to take your first quest.
-  </Portrait>
+  </Guild>
 
 </Checkpoint>
 
