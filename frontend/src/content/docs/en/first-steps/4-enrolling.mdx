@@ -2,5 +2,34 @@
 title: Enrolling
 description: Before you can start the real adventure, you have to officially register on the Adventurer's Guild...
 ---
+import CodeQuestion from "@components/CodeQuestion.astro";
+import Portrait from "@components/Portrait/PortraitCard.astro";
+import { colors } from "@components/Portrait/portraits";
+import PText from "@components/Portrait/PortraitText.astro";
+import Highlight from "@components/Highlight.astro";
+import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
+import Progress from "@components/Progress.svelte";
 
-You wake up, eat a 
+export function Guild(props) {
+    return <Portrait 
+        src="guild-girl" 
+        {...props} 
+    />
+}
+
+export const replace = "Replace ? with your answer.";
+
+You wake up, eat a nutritious breakfast, and head to the Guild to recieve your next mission.
+
+<Guild>
+Morning! Have you slept well?
+
+I'm sorry, but now that you've completed your first mission you have to register officially, meaning... More paperwork!
+
+Please, fill in the blanks with your data:
+</Guild>
+
+:::caution[Data collection?]
+**DATA WILL NOT BE COLLECTED** in any way, it's just an exercise.  
+If you worry about it, use dummy values that don't correspond to your real data.
+:::
