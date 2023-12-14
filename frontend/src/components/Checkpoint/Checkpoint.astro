@@ -5,11 +5,16 @@ interface Props {
 }
 const { id, scroll = true } = Astro.props;
 ---
- 
-<x-checkpoint class="scale" style="display: none" data-id={id} data-scroll={`${scroll}`} >
+
+<x-checkpoint
+  class="scale"
+  style="display: none"
+  data-id={id}
+  data-scroll={`${scroll}`}
+>
   <slot />
 </x-checkpoint>
- 
+
 <style>
   @keyframes scaleanimation {
     0% {
@@ -19,38 +24,37 @@ const { id, scroll = true } = Astro.props;
       transform: scale(1);
     }
   }
-  
+
   .scale {
     animation: scaleanimation 0.4s ease-in-out;
   }
-  
+
   .scale {
     margin-top: 5rem;
   }
 </style>
- 
+
 <script>
   import { subscribe } from "./checkpoint";
-  
-  class Checkpoint extends HTMLElement {
 
+  class Checkpoint extends HTMLElement {
     constructor() {
       super();
       const id = this.dataset.id as string;
       const scroll = this.dataset.scroll === "true";
-      
+
       let loaded = false;
-      
+
       subscribe(id, async (s) => {
         if (!s.has(id)) {
           loaded = true;
           return;
         }
-        
+
         // console.log({scroll, loaded, dataId: this.dataset.id, dataScroll: this.dataset.scroll});
 
         this.style.display = "block";
-        
+
         // Avoid scrolling if it's not the first time
         if (loaded) {
           loaded = false;

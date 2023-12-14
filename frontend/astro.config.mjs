@@ -4,6 +4,7 @@ import svelte from "@astrojs/svelte";
 import { visualizer } from "rollup-plugin-visualizer";
 import compress from "astro-compress";
 import robotsTxt from "astro-robots-txt";
+import webmanifest from "astro-webmanifest";
 
 // https://astro.build/config
 export default defineConfig({
@@ -47,6 +48,15 @@ export default defineConfig({
       },
     }),
     svelte(),
+    // TODO: Does not work at the moment
+/*     webmanifest({
+      name: "Rust Quest",
+      icon: "src/assets/ferris.svg",
+      short_name: "Rust Quest",
+      description: "Learn programming in a new way!",
+      start_url: "/",
+      display: "standalone"
+    }), */
     compress(),
     robotsTxt(),
   ],
@@ -54,6 +64,6 @@ export default defineConfig({
     plugins: [visualizer()],
   },
   markdown: {
-    remarkPlugins: []
+    remarkPlugins: [],
   },
 });

@@ -40,6 +40,6 @@ export function remove(id: string) {
   }
   checkpointStore.update((checkpoints) => {
     checkpoints.delete(k);
-    return checkpoints
-  })
+    return checkpoints;
+  });
 }

@@ -25,7 +25,10 @@
   <label for={id}>{value} / {total}</label>
   <progress {id} max={total} {value} />
   {#if import.meta.env.DEV}
-     <button on:click={async () => ((await import("./Checkpoint/checkpoint")).remove(id))}>Reset</button>
+    <button
+      on:click={async () =>
+        (await import("./Checkpoint/checkpoint")).remove(id)}>Reset</button
+    >
   {/if}
 </div>
 

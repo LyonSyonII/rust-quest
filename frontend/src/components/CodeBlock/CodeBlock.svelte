@@ -70,7 +70,7 @@
 
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 125));
-    
+
     const v = Function("value", validator)(value);
 
     if (v !== undefined) {
