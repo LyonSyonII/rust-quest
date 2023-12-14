@@ -32,3 +32,14 @@ export function subscribe(id: string, run: (checkpoint: Set<string>) => void) {
     run(checkpoints.get(k) as Set<string>);
   });
 }
+
+export function remove(id: string) {
+  const k = id.split("-")[0];
+  if (k === undefined) {
+    throw "Invalid id";
+  }
+  checkpointStore.update((checkpoints) => {
+    checkpoints.delete(k);
+    return checkpoints
+  })
+}
