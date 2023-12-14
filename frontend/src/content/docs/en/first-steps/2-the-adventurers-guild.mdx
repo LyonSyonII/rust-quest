@@ -192,13 +192,13 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint id="2-7">
-    <CodeQuestion
-      question=""
-      id="2-8"
-      code={'let name = "?";'}
-      setup={`__VALUE__; println!("{name}, welcome to the Adventurer's Guild!\nSUCCESS")`}
-      validator={`return value.includes("?") && "Hint: Just replace ? with your name!" || undefined`}
-    />
+  <CodeQuestion
+    question=""
+    id="2-8"
+    code={'let name = "?";'}
+    setup={`__VALUE__; println!("{name}, welcome to the Adventurer's Guild!\nSUCCESS")`}
+    validator={`return value.includes("?") && "Hint: Just replace ? with your name!" || undefined`}
+  />
 </Checkpoint>
 
-<Progress client:visible id="2" total={8} />
+<Progress client:idle id="2" total={8} />
