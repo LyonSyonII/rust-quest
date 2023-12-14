@@ -5,7 +5,7 @@ description: The hero registers into the Adventurer's Guild.
 
 import CodeQuestion from "@components/CodeQuestion.astro";
 import Portrait from "@components/Portrait/PortraitCard.astro";
-import Checkpoint from "@components/Checkpoint/Checkpoint.svelte";
+import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.svelte";
 
 export const code_mess =
@@ -81,7 +81,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
   id="2-1"
 />
 
-<Checkpoint client:only id="2-1">
+<Checkpoint id="2-1">
   <Guild>
   Well done! Let's continue.
   </Guild>
@@ -96,7 +96,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
 </Checkpoint>
 
-<Checkpoint client:only id="2-2">
+<Checkpoint id="2-2">
   <Guild>
   All right, let's up the challenge a bit.
   </Guild>
@@ -111,7 +111,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
 </Checkpoint>
 
-<Checkpoint client:only id="2-3">
+<Checkpoint id="2-3">
   <Guild>
   Well, well, Mx. Calculator knows their math!  
   Just kidding, I promised this would be pretty easy ;)
@@ -127,7 +127,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
 </Checkpoint>
 
-<Checkpoint client:only id="2-4">
+<Checkpoint id="2-4">
   <FreeQuestion
     question="Okay... Now a number smaller than 200."
     code="200 > ?"
@@ -136,7 +136,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
 </Checkpoint>
 
-<Checkpoint client:only id="2-5">
+<Checkpoint id="2-5">
   <FreeQuestion
     question="Now one that's smaller or equal than 0."
     code="0 >= ?"
@@ -145,7 +145,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
 </Checkpoint>
 
-<Checkpoint client:only id="2-6">
+<Checkpoint id="2-6">
   <FreeQuestion
     question="And finally one that's greater or equal than 0."
     code="0 <= ?"
@@ -154,7 +154,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
   />
 </Checkpoint>
 
-<Checkpoint client:only id="2-7">
+<Checkpoint id="2-7">
   :::tip[Exercise]
   See what we're doing here?  
   Try rewriting the code of the exercises above, exactly how the question is formulated.
@@ -191,21 +191,14 @@ If you mess up the code, click the "Reset" button to return it to its original s
 
 </Checkpoint>
 
-{ /** TODO! Circumvent bug: If not defined in a function, all Svelte components will not load */}
-export function Q({}) {
-  return (
+<Checkpoint id="2-7">
     <CodeQuestion
       question=""
       id="2-8"
       code={'let name = "?";'}
       setup={`__VALUE__; println!("{name}, welcome to the Adventurer's Guild!\nSUCCESS")`}
-      validator={`(value) => value.includes("?") && "Hint: Just replace ? with your name!" || undefined`}
+      validator={`return value.includes("?") && "Hint: Just replace ? with your name!" || undefined`}
     />
-  )
-}
-
-<Checkpoint client:only id="2-7">
-  <Q />
 </Checkpoint>
 
 <Progress client:visible id="2" total={8} />
