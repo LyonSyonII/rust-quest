@@ -105,7 +105,7 @@ async function godbolt(code: string, error: string): Promise<string> {
 
   const execution = response.indexOf("# Exec");
   const stdout_idx = response.indexOf("# Standard out:", execution);
-  console.log({ execution, stdout_idx });
+  
   if (stdout_idx !== -1) {
     return response.substring(stdout_idx + " Standard out:\n".length + 1);
   }
