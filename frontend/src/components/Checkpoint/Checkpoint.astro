@@ -1,16 +1,13 @@
 ---
 interface Props {
   id: string;
-  scroll?: boolean;
 }
-const { id, scroll = true } = Astro.props;
+const { id } = Astro.props;
 ---
 
 <x-checkpoint
-  class="scale"
   style="display: none"
   data-id={id}
-  data-scroll={`${scroll}`}
 >
   <slot />
 </x-checkpoint>
@@ -24,13 +21,9 @@ const { id, scroll = true } = Astro.props;
       transform: scale(1);
     }
   }
-
-  .scale {
+  
+  x-checkpoint {
     animation: scaleanimation 0.4s ease-in-out;
-  }
-
-  .scale {
-    margin-top: 5rem;
   }
 </style>
 
@@ -41,27 +34,15 @@ const { id, scroll = true } = Astro.props;
     constructor() {
       super();
       const id = this.dataset.id as string;
-      const scroll = this.dataset.scroll === "true";
-
-      let loaded = false;
 
       subscribe(id, async (s) => {
         if (!s.has(id)) {
-          loaded = true;
           return;
         }
 
         // console.log({scroll, loaded, dataId: this.dataset.id, dataScroll: this.dataset.scroll});
 
         this.style.display = "block";
-
-        // Avoid scrolling if it's not the first time
-        if (loaded) {
-          loaded = false;
-          await new Promise((resolve) => setTimeout(resolve, 400));
-          scroll && scrollBy({ top: 400, behavior: "smooth" });
-          return;
-        }
       });
     }
   }
