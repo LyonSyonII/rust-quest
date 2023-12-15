@@ -5,15 +5,12 @@ interface Props {
 const { id } = Astro.props;
 ---
 
-<x-checkpoint
-  style="display: none"
-  data-id={id}
->
+<x-checkpoint style="display: none" data-id={id}>
   <slot />
 </x-checkpoint>
 
 <style>
-  @keyframes scaleanimation {
+  @keyframes scale {
     0% {
       transform: scale(0);
     }
@@ -21,9 +18,24 @@ const { id } = Astro.props;
       transform: scale(1);
     }
   }
-  
+
+  @keyframes dissolve {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
   x-checkpoint {
-    animation: scaleanimation 0.4s ease-in-out;
+    animation: scale 0.4s ease-in-out;
+  }
+
+  @media (prefers-reduced-motion) {
+    x-checkpoint {
+      animation: dissolve 0.4s ease-in-out;
+    }
   }
 </style>
 
