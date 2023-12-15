@@ -1,10 +1,10 @@
 ---
 title: Introduction
-description: An introduction to Rust Quest
+description: An introduction to the Rust Quest interactive book.
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
-import Checkpoint from "@components/Checkpoint/Checkpoint.svelte";
+import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 
 Thank you for reading Rust Quest!  
 This book is designed for people with zero experience in Rust or programming in general, so don't worry, I'm sure you'll leave having learned something!
@@ -33,9 +33,15 @@ If you've mistakenly messed up the code, click the "Reset" button to return it b
   showLineNumbers={false}
   errorMsg={errorMsg}
   id="1-1"
+  onsuccess={`
+  let name = value.replace("Hello ", "").replace("!", "").replaceAll("\\n", "");
+  if (name === "World") { name = "Hero"; }
+  console.log({name});
+  localStorage.setItem("name", name);
+  `}
 />
 
-<Checkpoint client:only id="1-1">
+<Checkpoint id="1-1">
 :::tip[Exercise]
 Well... Your name isn't _World_, right?  
 Try changing the line to say `Hello {YourName}!` instead.  

@@ -6,7 +6,7 @@ interface Props {
 const { question } = Astro.props;
 ---
 
-<article class="card">
+<article>
   {question && <p id={question}>{question}</p>}
   <slot />
 </article>
@@ -18,9 +18,9 @@ const { question } = Astro.props;
     display: flex;
     border: 1px solid var(--sl-color-gray-5);
     background-color: var(--sl-color-black);
-    padding: clamp(1rem, calc(0.125rem + 3vw), 1rem);
     flex-direction: column;
-    gap: clamp(0.5rem, calc(0.125rem + 1vw), 1rem);
+    padding: var(--card-padding);
+    gap: var(--card-padding);;
     overflow: auto;
   }
 </style>

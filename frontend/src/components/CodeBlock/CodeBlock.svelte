@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
   import { clickoutside } from "@svelte-put/clickoutside";
   import { shortcut } from "@svelte-put/shortcut";
   import { onThemeChange } from "src/utils/onThemeChange";
@@ -16,6 +15,7 @@
    *
    * If the return value is a string, it will be displayed in the editor */
   export let validator: string = "return undefined";
+  export let onsuccess: string = "return undefined";
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
@@ -39,6 +39,7 @@
     const out = response.replace("SUCCESS\n", "");
     if (id && response.length !== out.length) {
       (await import("../Checkpoint/checkpoint")).add(id);
+      Function("value", onsuccess)(out);
     }
     playgroundResponse = out;
   };
@@ -69,9 +70,8 @@
     // Wait for the editor to update `value`
     await new Promise((resolve) => setTimeout(resolve, 125));
 
-    console.log({ value, validator });
     const v = Function("value", validator)(value);
-    console.log({ v });
+
     if (v !== undefined) {
       running = false;
       await setResponse(v);
@@ -106,7 +106,7 @@
   on:clickoutside={() => (focused = false)}
 >
   {#await Promise.all( [import("svelte-codemirror-editor"), $getTheme, import("@codemirror/lang-rust")], )}
-    <pre>{value || placeholder || l.placeholder}</pre>
+    <pre class="not-content">{value || placeholder || l.placeholder}</pre>
   {:then [CodeMirror, theme, lang]}
     <CodeMirror.default
       class="not-content"
@@ -119,24 +119,26 @@
       placeholder={placeholder || l.placeholder}
     />
   {/await}
-
-  <button
-    class="not-content"
-    title="Run (Shift+Enter)"
-    disabled={running}
-    on:click={() => handleRun(true)}
-  >
-    <Icon icon="carbon:run" width={24} />
-  </button>
-
-  <button title="Reset code" on:click={() => (value = code)}>
-    <Icon icon="carbon:reset" width={24} />
-  </button>
+  
+  <div class="buttons">
+    <button
+      title="Run (Shift+Enter)"
+      disabled={running}
+      on:click={() => handleRun(true)}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="currentColor" d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8"/><path fill="currentColor" d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z"/><path fill="currentColor" d="M19 19v6l5-3z"/></svg>
+    </button>
+    
+    <button title="Reset code" on:click={() => (value = code)}>
+      <!-- carbon:reset -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="currentColor" d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z"/></svg>
+    </button>
+  </div>
 
   {#if playgroundResponse}
-    <div class="response">
+    <output>
       <p>{playgroundResponse}</p>
-    </div>
+    </output>
   {/if}
 </div>
 
@@ -148,8 +150,8 @@
     --accent: var(--sl-color-accent);
   }
   pre {
-    height: 33.4px;
     color: gray;
+    line-height: 1.4;
   }
   .wrapper {
     display: grid;
@@ -157,15 +159,18 @@
     margin: 0rem;
 
     font-size: 0.9rem;
-    grid-template-columns: 80% auto auto;
+    grid-template-columns: auto 60px;
+  }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-left: var(--card-padding);
   }
   @media only screen and (min-width: 768px) {
     .wrapper {
       font-size: 1rem;
-      grid-template-columns: 90% auto auto;
-    }
-    button {
-      margin-left: 0.5rem;
+      grid-template-columns: 90% auto;
     }
   }
   button {
@@ -173,15 +178,15 @@
     color: var(--sl-color-white);
     cursor: pointer;
     border: 0px;
-    margin-left: 0rem;
-    padding-bottom: 0px;
+    margin: 0rem;
+    padding: 0px;
     height: fit-content;
-    transition: color 0.25s ease;
+    transition: opacity 0.25s ease;
   }
   button:disabled {
-    color: color-mix(in srgb, var(--sl-color-white), transparent 80%);
+    opacity: 0.2;
   }
-  .response {
+  output {
     font-size: 1rem;
     font-family: monospace;
     border-width: 1px;

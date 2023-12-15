@@ -1,12 +1,62 @@
 ---
-import C from "./Checkpoint.svelte";
-
 interface Props {
   id: string;
-  scroll?: boolean;
 }
+const { id } = Astro.props;
 ---
 
-<C client:only {...Astro.props}>
+<x-checkpoint style="display: none" data-id={id}>
   <slot />
-</C>
+</x-checkpoint>
+
+<style>
+  @keyframes scale {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes dissolve {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  x-checkpoint {
+    animation: scale 0.4s ease-in-out;
+  }
+
+  @media (prefers-reduced-motion) {
+    x-checkpoint {
+      animation: dissolve 0.4s ease-in-out;
+    }
+  }
+</style>
+
+<script>
+  import { subscribe } from "./checkpoint";
+
+  class Checkpoint extends HTMLElement {
+    constructor() {
+      super();
+      const id = this.dataset.id as string;
+
+      subscribe(id, async (s) => {
+        if (!s.has(id)) {
+          return;
+        }
+
+        // console.log({scroll, loaded, dataId: this.dataset.id, dataScroll: this.dataset.scroll});
+
+        this.style.display = "block";
+      });
+    }
+  }
+  customElements.define("x-checkpoint", Checkpoint);
+</script>

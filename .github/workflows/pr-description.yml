@@ -24,3 +24,17 @@ jobs:
         with:
           body: ${{ steps.pr-description.outputs.pull_request_description }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
+# "FEA": "### New features",
+# "ENH": "### Enhancements",
+# "FIX": "### Fixes",
+# "OPS": "### Operations",
+# "DEP": "### Dependencies",
+# "REF": "### Refactoring",
+# "TST": "### Testing",
+# "REV": "### Reversions",
+# "CHO": "### Chores",
+# "STY": "### Style",
+# "MRG": OTHER_SECTION_HEADING,
+# "WIP": OTHER_SECTION_HEADING,
+# "DOC": OTHER_SECTION_HEADING,

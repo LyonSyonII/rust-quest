@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
-
+  
   export let id: string;
   export let total: number;
   export let confetti: boolean = true;
-
+  
   let value: number = 0;
   onMount(async () => {
     const confettis = await import("confettis");
@@ -24,6 +24,12 @@
 <div>
   <label for={id}>{value} / {total}</label>
   <progress {id} max={total} {value} />
+  {#if import.meta.env.DEV}
+    <button
+      on:click={async () =>
+        (await import("./Checkpoint/checkpoint")).remove(id)}>Reset</button
+    >
+  {/if}
 </div>
 
 <style>
