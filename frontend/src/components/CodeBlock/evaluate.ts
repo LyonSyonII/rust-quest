@@ -25,34 +25,6 @@ export async function evaluate(
   ]).catch(() => "There was an error, please try again.");
 }
 
-async function server(code: string, error: string): Promise<string> {
-  const params = {
-    code,
-  };
-
-  return fetch("https://rust-quest-runner.fly.dev/evaluate.json", {
-    headers: {
-      "Content-Type": "application/json",
-      // "authorization": auth || "",
-    },
-    method: "POST",
-    body: JSON.stringify(params),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      console.log({ params, response });
-      return response;
-    })
-    .then((response) => {
-      if (response.ok) {
-        return response.ok.stdout;
-      } else {
-        return error || response.err.stderr;
-      }
-    })
-    .catch((error) => error || error.message);
-}
-
 async function godbolt(code: string, error: string): Promise<string> {
   const params = {
     source: code,
@@ -105,7 +77,7 @@ async function godbolt(code: string, error: string): Promise<string> {
 
   const execution = response.indexOf("# Exec");
   const stdout_idx = response.indexOf("# Standard out:", execution);
-
+  
   if (stdout_idx !== -1) {
     return response.substring(stdout_idx + " Standard out:\n".length + 1);
   }
