@@ -159,7 +159,7 @@
     margin: 0rem;
 
     font-size: 0.9rem;
-    grid-template-columns: auto 60px;
+    grid-template-columns: minmax(0px, 1fr) 60px;
   }
   .buttons {
     display: flex;
