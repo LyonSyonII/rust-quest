@@ -50,7 +50,7 @@ export default defineConfig({
     svelte(),
     // TODO: Does not work at the moment
     // https://github.com/alextim/astro-lib/tree/main/packages/astro-webmanifest
-/*     webmanifest({
+    /* webmanifest({
       name: "Rust Quest",
       icon: "src/assets/ferris.svg",
       short_name: "Rust Quest",
