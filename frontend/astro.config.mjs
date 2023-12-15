@@ -16,7 +16,6 @@ export default defineConfig({
       tableOfContents: false,
       logo: {
         src: "./src/assets/ferris.svg",
-        // replacesTitle: true,
       },
       social: {
         github: "https://github.com/lyonsyonii/rust-quest",
