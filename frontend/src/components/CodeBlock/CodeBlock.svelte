@@ -135,9 +135,11 @@
   </button>
 
   {#if playgroundResponse}
-    <div class="response">
+    <output>
       <p>{playgroundResponse}</p>
-    </div>
+    </output>
+  
+  
   {/if}
 </div>
 
@@ -180,9 +182,9 @@
     transition: color 0.25s ease;
   }
   button:disabled {
-    color: color-mix(in srgb, var(--sl-color-white), transparent 80%);
+    opacity: 0.8;
   }
-  .response {
+  output {
     font-size: 1rem;
     font-family: monospace;
     border-width: 1px;
