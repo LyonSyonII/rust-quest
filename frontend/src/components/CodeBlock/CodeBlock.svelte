@@ -164,7 +164,7 @@
   .buttons {
     display: flex;
     justify-content: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
     margin-left: var(--card-padding);
   }
   @media only screen and (min-width: 768px) {
@@ -177,9 +177,9 @@
     background-color: rgba(0, 0, 0, 0);
     color: var(--sl-color-white);
     cursor: pointer;
-    border: 0px;
+    border: 0;
     margin: 0rem;
-    padding: 0px;
+    padding: 0;
     height: fit-content;
     transition: opacity 0.25s ease;
   }
