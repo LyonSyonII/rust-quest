@@ -18,7 +18,7 @@
   /** Executed when "SUCCESS" is recieved from the playground or validator */
   export let onsuccess: string = "return undefined";
   /** Replaces all occurrences of each $VAR in both "setup" and "code" with the value of "localStorage.getItem(VAR)" */
-  export let vars: Array<[string, string?]> = []
+  export let vars: Array<{ v: string; d?: string; c?: string }> = [];
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
@@ -31,10 +31,10 @@
   export let editable = true;
   /** Language used by the editor */
   export let lang: Langs = "en";
-  
-  $: l = translation(lang);
-  
+
   $: value = code;
+  $: l = translation(lang);
+
   let running = false;
   let focused = false;
   let playgroundResponse = "";
@@ -54,10 +54,19 @@
       : (await import("../../codemirror-themes/github-dark")).githubDark,
   );
   let observer: MutationObserver | undefined = undefined;
-  
+
   onMount(async () => {
-    code = vars.reduce((acc, [v, d]) => acc.replaceAll(`$${v}`, localStorage.getItem(v) || d || "?"), code);
-    setup = vars.reduce((acc, [v, d]) => acc.replaceAll(`$${v}`, localStorage.getItem(v) || d || "?"), setup);
+    const replaceVars = (r: string) =>
+      vars.reduce(
+        (acc, { v, d = "?", c = "return v" }) =>
+          acc.replaceAll(
+            `$${v}`,
+            Function("v", c)(localStorage.getItem(v) || d),
+          ),
+        r,
+      );
+    code = replaceVars(code);
+    setup = replaceVars(setup);
 
     theme.set(document.documentElement.dataset.theme || "light");
     observer = onThemeChange((t) => theme.set(t));
@@ -125,19 +134,40 @@
       placeholder={placeholder || l.placeholder}
     />
   {/await}
-  
+
   <div class="buttons">
     <button
       title="Run (Shift+Enter)"
       disabled={running}
       on:click={() => handleRun(true)}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="currentColor" d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8"/><path fill="currentColor" d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z"/><path fill="currentColor" d="M19 19v6l5-3z"/></svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 32 32"
+        ><path
+          fill="currentColor"
+          d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8"
+        /><path
+          fill="currentColor"
+          d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z"
+        /><path fill="currentColor" d="M19 19v6l5-3z" /></svg
+      >
     </button>
-    
+
     <button title="Reset code" on:click={() => (value = code)}>
       <!-- carbon:reset -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="currentColor" d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z"/></svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 32 32"
+        ><path
+          fill="currentColor"
+          d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z"
+        /></svg
+      >
     </button>
   </div>
 

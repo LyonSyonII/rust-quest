@@ -197,7 +197,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
     question=""
     id="2-8"
     code={'let name = "$NAME";'}
-    vars={[ ["NAME", "?"] ]}
+    vars={[ {v: "NAME", d: "?"} ]}
     setup={`__VALUE__; println!("{name}, welcome to the Adventurer's Guild!\nSUCCESS")`}
     validator={`return value.includes("?") && "Hint: Just replace ? with your name!" || undefined`}
     onsuccess={`

@@ -14,7 +14,7 @@ interface Props {
   lang?: Langs;
   id?: string;
   onsuccess?: string;
-  vars?: Array<[string, string?]>;
+  vars?: Array<{ v: string; d?: string; c?: string }>;
 }
 
 const {
