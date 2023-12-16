@@ -4,7 +4,7 @@
   export let id: string;
   export let total: number;
   export let confetti: boolean = true;
-  
+
   let value: number = 0;
   onMount(async () => {
     const confettis = await import("confettis");
