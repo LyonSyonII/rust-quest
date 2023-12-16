@@ -185,8 +185,9 @@ If you mess up the code, click the "Reset" button to return it to its original s
   
   <Guild>
   Excellent!  
-    
   Now please sign here, and you'll be ready to take your first quest.
+  
+  (This name will be saved in your browser's local storage for future use)
   </Guild>
 
 </Checkpoint>
@@ -195,9 +196,14 @@ If you mess up the code, click the "Reset" button to return it to its original s
   <CodeQuestion
     question=""
     id="2-8"
-    code={'let name = "?";'}
+    code={'let name = "$NAME";'}
+    vars={[ ["NAME", "?"] ]}
     setup={`__VALUE__; println!("{name}, welcome to the Adventurer's Guild!\nSUCCESS")`}
     validator={`return value.includes("?") && "Hint: Just replace ? with your name!" || undefined`}
+    onsuccess={`
+      let name = stdout.substring(0, stdout.indexOf(","));
+      localStorage.setItem("NAME", name);
+    `}
   />
 </Checkpoint>
 
