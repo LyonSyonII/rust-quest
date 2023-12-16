@@ -22,17 +22,49 @@ export const replace = "Replace ? with your answer.";
 
 <WIP />
 
-You wake up, eat a nutritious breakfast, and head to the Guild to recieve your next mission.
+You wake up, eat a nutritious breakfast, and head to the guild to receive your next mission.
 
 <Guild>
-Morning! Have you slept well?
+Morning! Did you sleep well?
 
-I'm sorry, but now that you've completed your first mission you have to register officially, meaning... More paperwork!
+I'm sorry, but now that you've completed your first mission, you need to officially register, which means... More paperwork!
 
-Please, fill in the blanks with your data:
+Please fill in the remaining information in the blanks provided:
 </Guild>
 
 :::caution[Data collection?]
 **DATA WILL NOT BE COLLECTED** in any way, it's just an exercise.  
-If you worry about it, use dummy values that don't correspond to your real data.
+If you're worried about it, use dummy values that don't match your real data.
 :::
+
+<CodeQuestion 
+id="4-1"
+question="Fill in your name and age:"
+code={`
+let name = "$NAME";
+let surname = ?;
+let age = ?;
+`}
+vars={[ ["NAME", "Hero"] ]}
+setup={`__VALUE__ println!("Welcome, {name} {surname}!\\nYou're {age} years old.");`}
+validator={`
+const getAnswer = (s) => { 
+    const f = value.indexOf(s) + s.length;
+    return value.substring(f, value.indexOf(";", f)).trim(); 
+}
+const surname = getAnswer("surname = ");
+const age = getAnswer("age = ");
+return surname.includes("?") && "Fill in your surname!"
+    || !surname.includes('"') && "Something is wrong with your surname.\\nLook closely to how 'name' is written!"
+    || age.includes("?") && "Fill in your age!"
+    || Number(age) < 18 && "You must be at least 15 years old to go adventuring!"
+    || value.includes("?") && \`${replace}\`
+    || undefined
+`}
+/>
+
+<Checkpoint id="4-1">
+<Guild>
+
+</Guild>
+</Checkpoint>
