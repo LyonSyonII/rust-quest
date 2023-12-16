@@ -15,7 +15,10 @@
    *
    * If the return value is a string, it will be displayed in the editor */
   export let validator: string = "return undefined";
+  /** Executed when "SUCCESS" is recieved from the playground or validator */
   export let onsuccess: string = "return undefined";
+  /** Replaces all occurrences of each $VAR in both "setup" and "code" with the value of "localStorage.getItem(VAR)" */
+  export let vars: Array<[string, string?]> = []
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
@@ -28,10 +31,10 @@
   export let editable = true;
   /** Language used by the editor */
   export let lang: Langs = "en";
-
+  
   $: l = translation(lang);
-
-  let value = code;
+  
+  $: value = code;
   let running = false;
   let focused = false;
   let playgroundResponse = "";
@@ -39,7 +42,7 @@
     const out = response.replace("SUCCESS\n", "");
     if (id && response.length !== out.length) {
       (await import("../Checkpoint/checkpoint")).add(id);
-      Function("value", onsuccess)(out);
+      Function("stdout", "value", onsuccess)(out, value);
     }
     playgroundResponse = out;
   };
@@ -51,8 +54,11 @@
       : (await import("../../codemirror-themes/github-dark")).githubDark,
   );
   let observer: MutationObserver | undefined = undefined;
-
+  
   onMount(async () => {
+    code = vars.reduce((acc, [v, d]) => acc.replaceAll(`$${v}`, localStorage.getItem(v) || d || "?"), code);
+    setup = vars.reduce((acc, [v, d]) => acc.replaceAll(`$${v}`, localStorage.getItem(v) || d || "?"), setup);
+
     theme.set(document.documentElement.dataset.theme || "light");
     observer = onThemeChange((t) => theme.set(t));
     lang = window.location.pathname.split("/")[1] as Langs;
