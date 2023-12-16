@@ -19,6 +19,12 @@ export function Guild(props) {
 }
 
 export const replace = "Replace ? with your answer.";
+export const getAnswer = `
+const getAnswer = (s) => {
+    const f = value.indexOf(s) + s.length;
+    return value.substring(f, value.indexOf(";", f)).trim();
+}
+`;
 
 <WIP />
 
@@ -43,28 +49,82 @@ question="Fill in your name and age:"
 code={`
 let name = "$NAME";
 let surname = ?;
-let age = ?;
+let mut age = ?;
 `}
-vars={[ ["NAME", "Hero"] ]}
-setup={`__VALUE__ println!("Welcome, {name} {surname}!\\nYou're {age} years old.");`}
+vars={[ {v: "NAME", d: "Hero"} ]}
+setup={`__VALUE__ println!("Welcome, {name} {surname}!\\nYou're {age} years old.SUCCESS");`}
 validator={`
-const getAnswer = (s) => { 
-    const f = value.indexOf(s) + s.length;
-    return value.substring(f, value.indexOf(";", f)).trim(); 
-}
+${getAnswer};
 const surname = getAnswer("surname = ");
 const age = getAnswer("age = ");
 return surname.includes("?") && "Fill in your surname!"
     || !surname.includes('"') && "Something is wrong with your surname.\\nLook closely to how 'name' is written!"
     || age.includes("?") && "Fill in your age!"
-    || Number(age) < 18 && "You must be at least 15 years old to go adventuring!"
+    || Number(age) < 0 && "Age can't be negative, can it? 😉"
+    || Number(age) < 15 && "You must be at least 15 years old to go adventuring!"
+    || value.includes("?") && \`${replace}\`
+    || undefined
+`}
+onsuccess={`${getAnswer};localStorage.setItem("NAME", getAnswer("name = ").slice(1, -1));`}
+/>
+:::note[Why is age mutable?]
+Well, you'll get older, right?  
+
+What you need to understand about `mut` is that it also has a semantic meaning.  
+If a variable has it, it means it WILL change, if not (or you're unsure), make it immutable, you can always add the `mut` later.
+:::
+
+<Checkpoint id="4-1">
+<Guild>
+Thought that was all? We're just getting started!
+</Guild>
+{ /* 
+  TODO: Experiment without examples, if people get stuck add them
+  // meters    (eg: 1.75)
+  // kilograms (eg: 64.3)
+ */ }
+<CodeQuestion 
+id="4-2"
+question="Enter your height (meters) and weight (kilograms):"
+code={`
+let mut height = ?; 
+let mut weight = ?; 
+let mut money = 12.50;
+`}
+setup={`__VALUE__ println!("Your height is {height} meters, your weight is {weight} kilograms and you have {money} coins.\\nSUCCESS");`}
+validator={`
+${getAnswer};
+const height = getAnswer("height = ");
+const weight = getAnswer("weight = ");
+return height.includes("?") && "Fill in your height!"
+    || !height.includes(".") && "Wow, that's a very round height!\\nTry adding some decimals to make it more precise."
+    || weight.includes("?") && "Fill in your weight!"
     || value.includes("?") && \`${replace}\`
     || undefined
 `}
 />
+</Checkpoint>
 
-<Checkpoint id="4-1">
+<Checkpoint id="4-2">
 <Guild>
+Why do we need your weight?  
+We've had some problems with traps before, you know, the "step on a pressure plate and a giant boulder crushes you" ones...  
 
+*Ahem*, shall we continue?
 </Guild>
+<CodeQuestion 
+id="4-3"
+question="Enter your initials and gender (M / F / X):"
+code={`
+let initial1 = '$NAME';
+let initial2 = ?;
+let mut gender = ?;
+`}
+vars={[ {v: "NAME", d: "Hero", c: "return v[0]"} ]}
+setup={``}
+validator={`
+return value.includes("?") && \`${replace}\`
+    || undefined
+`}
+/>
 </Checkpoint>
