@@ -10,8 +10,10 @@ const { src } = Astro.props;
 const { img, bg, bgDark } = portrait(src);
 ---
 
-<article class="card" id="article">
-  <Image src={img} alt="portrait" class="portrait" />
+<article id="article">
+  <div id="portrait-wrapper">
+    <Image src={img} alt="portrait" class="portrait" />
+  </div>
   <div id="text">
     <slot />
   </div>
@@ -30,6 +32,7 @@ const { img, bg, bgDark } = portrait(src);
   article {
     display: grid;
     grid-template-columns: auto;
+
     margin-top: 0rem;
     border: 1px;
     border-radius: 0.25em;
@@ -48,9 +51,19 @@ const { img, bg, bgDark } = portrait(src);
       grid-template-columns: var(--portrait-size) auto;
       margin-left: calc(-1 * var(--portrait-size));
     }
+    #portrait-wrapper {
+      display: grid;
+      container-type: size;
+      min-height: calc(80px + 0.5rem); /* 80px (image) + margins (0.25rem each) */
+    }
     .portrait {
       margin-top: 0.25rem;
       margin-bottom: 0.25rem;
+    }
+    @container (height < 120px) {
+      .portrait {
+        align-self: center;
+      }
     }
     #text {
       padding: 1rem;
