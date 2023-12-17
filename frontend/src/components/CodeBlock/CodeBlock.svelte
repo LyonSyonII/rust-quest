@@ -14,11 +14,11 @@
   /** Validator executed before the code is sent to the playground.
    *
    * If the return value is a string, it will be displayed in the editor */
-  export let validator: string = "return undefined";
+  export let validator: string;
   /** Executed when "SUCCESS" is recieved from the playground or validator */
-  export let onsuccess: string = "return undefined";
+  export let onsuccess: string;
   /** Replaces all occurrences of each $VAR in both "setup" and "code" with the value of "localStorage.getItem(VAR)" */
-  export let vars: Array<{ v: string; d?: string; c?: string }> = [];
+  export let vars: Array<{ v: string; d: string; c: string }> = [];
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
@@ -58,7 +58,7 @@
   onMount(async () => {
     const replaceVars = (r: string) =>
       vars.reduce(
-        (acc, { v, d = "?", c = "return v" }) =>
+        (acc, { v, d, c }) =>
           acc.replaceAll(
             `$${v}`,
             Function("v", c)(localStorage.getItem(v) || d),

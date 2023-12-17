@@ -68,4 +68,7 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [],
   },
+  experimental: {
+    optimizeHoistedScript: true
+  }
 });
