@@ -141,33 +141,15 @@
       disabled={running}
       on:click={() => handleRun(true)}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 32 32"
-        ><path
-          fill="currentColor"
-          d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8"
-        /><path
-          fill="currentColor"
-          d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z"
-        /><path fill="currentColor" d="M19 19v6l5-3z" /></svg
-      >
+      <!-- carbon:run -->
+      <!-- prettier-ignore -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8" /><path fill="currentColor" d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z" /><path fill="currentColor" d="M19 19v6l5-3z" /></svg >
     </button>
 
     <button title="Reset code" on:click={() => (value = code)}>
       <!-- carbon:reset -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 32 32"
-        ><path
-          fill="currentColor"
-          d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z"
-        /></svg
-      >
+      <!-- prettier-ignore -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z" /></svg >
     </button>
   </div>
 
