@@ -33,12 +33,6 @@ If you've mistakenly messed up the code, click the "Reset" button to return it b
   showLineNumbers={false}
   errorMsg={errorMsg}
   id="1-1"
-  onsuccess={`
-  let name = value.replace("Hello ", "").replace("!", "").replaceAll("\\n", "");
-  if (name === "World") { name = "Hero"; }
-  console.log({name});
-  localStorage.setItem("name", name);
-  `}
 />
 
 <Checkpoint id="1-1">

@@ -15,7 +15,10 @@
    *
    * If the return value is a string, it will be displayed in the editor */
   export let validator: string = "return undefined";
+  /** Executed when "SUCCESS" is recieved from the playground or validator */
   export let onsuccess: string = "return undefined";
+  /** Replaces all occurrences of each $VAR in both "setup" and "code" with the value of "localStorage.getItem(VAR)" */
+  export let vars: Array<{ v: string; d?: string; c?: string }> = [];
   /** Code visible in the editor */
   export let code = "";
   /** Error message in case the code doesn't compile */
@@ -29,9 +32,9 @@
   /** Language used by the editor */
   export let lang: Langs = "en";
 
+  $: value = code;
   $: l = translation(lang);
 
-  let value = code;
   let running = false;
   let focused = false;
   let playgroundResponse = "";
@@ -39,7 +42,7 @@
     const out = response.replace("SUCCESS\n", "");
     if (id && response.length !== out.length) {
       (await import("../Checkpoint/checkpoint")).add(id);
-      Function("value", onsuccess)(out);
+      Function("stdout", "value", onsuccess)(out, value);
     }
     playgroundResponse = out;
   };
@@ -53,6 +56,18 @@
   let observer: MutationObserver | undefined = undefined;
 
   onMount(async () => {
+    const replaceVars = (r: string) =>
+      vars.reduce(
+        (acc, { v, d = "?", c = "return v" }) =>
+          acc.replaceAll(
+            `$${v}`,
+            Function("v", c)(localStorage.getItem(v) || d),
+          ),
+        r,
+      );
+    code = replaceVars(code);
+    setup = replaceVars(setup);
+
     theme.set(document.documentElement.dataset.theme || "light");
     observer = onThemeChange((t) => theme.set(t));
     lang = window.location.pathname.split("/")[1] as Langs;
@@ -119,19 +134,22 @@
       placeholder={placeholder || l.placeholder}
     />
   {/await}
-  
+
   <div class="buttons">
     <button
       title="Run (Shift+Enter)"
       disabled={running}
       on:click={() => handleRun(true)}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="currentColor" d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8"/><path fill="currentColor" d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z"/><path fill="currentColor" d="M19 19v6l5-3z"/></svg>
+      <!-- carbon:run -->
+      <!-- prettier-ignore -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8" /><path fill="currentColor" d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z" /><path fill="currentColor" d="M19 19v6l5-3z" /></svg >
     </button>
-    
+
     <button title="Reset code" on:click={() => (value = code)}>
       <!-- carbon:reset -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="currentColor" d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z"/></svg>
+      <!-- prettier-ignore -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z" /></svg >
     </button>
   </div>
 

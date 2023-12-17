@@ -8,19 +8,19 @@ interface Props {
 const { src } = Astro.props;
 
 const { img, bg, bgDark } = portrait(src);
+const portraitSize = 80;
 ---
 
-<article class="card" id="article">
-  <Image src={img} alt="portrait" class="portrait" />
+<article id="article">
+  <div id="portrait-wrapper">
+    <Image src={img} alt="portrait" class="portrait" width={portraitSize} />
+  </div>
   <div id="text">
     <slot />
   </div>
 </article>
 
-<style define:vars={{ bg, bgDark }}>
-  :root {
-    --portrait-size: 80px;
-  }
+<style define:vars={{ bg, bgDark, portraitSize: `${portraitSize}px` }}>
   :root article {
     background-color: var(--bg);
   }
@@ -30,12 +30,10 @@ const { img, bg, bgDark } = portrait(src);
   article {
     display: grid;
     grid-template-columns: auto;
-    margin-top: 1.5rem;
+
+    margin-top: 0rem;
     border: 1px;
     border-radius: 0.25em;
-  }
-  .portrait {
-    width: var(--portrait-size);
   }
   #text {
     color: var(--sl-color-gray-1);
@@ -45,12 +43,24 @@ const { img, bg, bgDark } = portrait(src);
   }
   @media only screen and (min-width: 1152px) {
     article {
-      grid-template-columns: var(--portrait-size) auto;
-      margin-left: calc(-1 * var(--portrait-size));
+      grid-template-columns: var(--portraitSize) auto;
+      margin-left: calc(-1 * var(--portraitSize));
+    }
+    #portrait-wrapper {
+      display: grid;
+      container-type: size;
+      min-height: calc(
+        80px + 0.5rem
+      ); /* 80px (image) + margins (0.25rem each) */
     }
     .portrait {
       margin-top: 0.25rem;
       margin-bottom: 0.25rem;
+    }
+    @container (height < 120px) {
+      .portrait {
+        align-self: center;
+      }
     }
     #text {
       padding: 1rem;
