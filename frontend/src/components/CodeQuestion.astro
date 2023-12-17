@@ -2,10 +2,11 @@
 import type { Langs } from "@i18n/_langs";
 import CodeBlock from "./CodeBlock/CodeBlock.svelte";
 import QuestionCard from "./QuestionCard.astro";
+import { minify } from "terser";
+
 interface Props {
   question?: string;
   setup?: string;
-  validator?: string;
   code: string;
   errorMsg?: string;
   placeholder?: string;
@@ -13,6 +14,7 @@ interface Props {
   editable?: boolean;
   lang?: Langs;
   id?: string;
+  validator?: string;
   onsuccess?: string;
   vars?: Array<{ v: string; d?: string; c?: string }>;
 }
@@ -24,14 +26,23 @@ const {
   placeholder = "",
   ...other
 } = Astro.props;
+
+const mini = async (code: string) => (await minify(code, {parse: {bare_returns: true}})).code || code;
+const validator = await mini(other.validator || "return undefined");
+const onsuccess = await mini(other.onsuccess || "return undefined");
+const vars = await Promise.all(other.vars?.map( async ({v, d = "?", c = "return v"}) => ({ v, d, c: await mini(c) }) ) || []);
+console.log({ validator, onsuccess, vars });
 ---
 
 <QuestionCard question={question}>
   <CodeBlock
+    {...other}
     client:idle
     code={code.trim()}
     errorMsg={errorMsg.trim()}
     placeholder={placeholder.trim()}
-    {...other}
+    validator={validator}
+    onsuccess={onsuccess}
+    vars={vars}
   />
 </QuestionCard>
