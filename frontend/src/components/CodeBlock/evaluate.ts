@@ -77,14 +77,13 @@ async function godbolt(code: string, error: string): Promise<string> {
 
   const execution = response.indexOf("# Exec");
   const stdout_idx = response.indexOf("# Standard out:", execution);
-
+  
   if (stdout_idx !== -1) {
     return response.substring(stdout_idx + " Standard out:\n".length + 1);
   }
 
   const compilation = response.indexOf("# Compiler");
   const stderr_idx = response.indexOf("\nStandard error:", compilation);
-  console.log({ compilation, stderr_idx });
   if (stderr_idx !== -1) {
     return (
       error || response.substring(stderr_idx + "Standard error:\n".length + 1)
