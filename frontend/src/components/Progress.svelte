@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  
+
   export let id: string;
   export let total: number;
   export let confetti: boolean = true;

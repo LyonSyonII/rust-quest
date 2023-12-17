@@ -11,42 +11,46 @@ import compressor from "astro-compressor";
 export default defineConfig({
   site: "https://rust-quest.com",
   /* base: "/rust-quest", */
-  integrations: [starlight({
-    title: "Rust Quest",
-    tableOfContents: false,
-    logo: {
-      src: "./src/assets/ferris.svg"
-    },
-    social: {
-      github: "https://github.com/lyonsyonii/rust-quest"
-    },
-    sidebar: [{
-      label: "First Steps",
-      translations: {
-        es: "Primeros Pasos",
-        ca: "Primeres Passes"
+  integrations: [
+    starlight({
+      title: "Rust Quest",
+      tableOfContents: false,
+      logo: {
+        src: "./src/assets/ferris.svg",
       },
-      autogenerate: {
-        directory: "first-steps"
-      }
-    }],
-    customCss: ["./src/styles/custom.css"],
-    defaultLocale: "en",
-    locales: {
-      en: {
-        label: "English"
+      social: {
+        github: "https://github.com/lyonsyonii/rust-quest",
       },
-      es: {
-        label: "Español"
+      sidebar: [
+        {
+          label: "First Steps",
+          translations: {
+            es: "Primeros Pasos",
+            ca: "Primeres Passes",
+          },
+          autogenerate: {
+            directory: "first-steps",
+          },
+        },
+      ],
+      customCss: ["./src/styles/custom.css"],
+      defaultLocale: "en",
+      locales: {
+        en: {
+          label: "English",
+        },
+        es: {
+          label: "Español",
+        },
+        ca: {
+          label: "Català",
+        },
       },
-      ca: {
-        label: "Català"
-      }
-    }
-  }), svelte(),
-  // TODO: Does not work at the moment
-  // https://github.com/alextim/astro-lib/tree/main/packages/astro-webmanifest
-  /* webmanifest({
+    }),
+    svelte(),
+    // TODO: Does not work at the moment
+    // https://github.com/alextim/astro-lib/tree/main/packages/astro-webmanifest
+    /* webmanifest({
     name: "Rust Quest",
     icon: "src/assets/ferris.svg",
     short_name: "Rust Quest",
@@ -54,11 +58,14 @@ export default defineConfig({
     start_url: "/",
     display: "standalone"
   }), */
-  compress(), robotsTxt(), compressor()],
+    compress(),
+    robotsTxt(),
+    compressor(),
+  ],
   vite: {
-    plugins: [visualizer()]
+    plugins: [visualizer()],
   },
   markdown: {
-    remarkPlugins: []
-  }
+    remarkPlugins: [],
+  },
 });
