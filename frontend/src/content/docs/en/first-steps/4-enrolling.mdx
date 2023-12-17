@@ -57,11 +57,11 @@ validator={`
 ${getAnswer};
 const surname = getAnswer("surname = ");
 const age = getAnswer("age = ");
-return surname.includes("?") && "Fill in your surname!"
-    || !surname.includes('"') && "Something is wrong with your surname.\\nLook closely to how 'name' is written!"
-    || age.includes("?") && "Fill in your age!"
-    || Number(age) < 0 && "Age can't be negative, can it? 😉"
-    || Number(age) < 15 && "You must be at least 15 years old to go adventuring!"
+return surname.includes("?") && "[surname] Fill in your surname!"
+    || !surname.includes('"') && "[surname] Something is wrong with your surname.\\nLook closely to how 'name' is written!"
+    || age.includes("?") && "[age] Fill in your age!"
+    || Number(age) < 0 && "[age] Age can't be negative, can it? 😉"
+    || Number(age) < 15 && "[age] You must be at least 15 years old to go adventuring!"
     || value.includes("?") && \`${replace}\`
     || undefined
 `}
@@ -85,7 +85,7 @@ Thought that was all? We're just getting started!
  */ }
 <CodeQuestion 
 id="4-2"
-question="Enter your height (meters) and weight (kilograms):"
+question="Enter your height (meters), weight (kilograms) and current money:"
 code={`
 let mut height = ?; 
 let mut weight = ?; 
@@ -96,9 +96,9 @@ validator={`
 ${getAnswer};
 const height = getAnswer("height = ");
 const weight = getAnswer("weight = ");
-return height.includes("?") && "Fill in your height!"
-    || !height.includes(".") && "Wow, that's a very round height!\\nTry adding some decimals to make it more precise."
-    || weight.includes("?") && "Fill in your weight!"
+return height.includes("?") && "[height] Fill in your height!"
+    || !height.includes(".") && "[height] Wow, that's a very round height!\\nTry adding some decimals to make it more precise."
+    || weight.includes("?") && "[weight] Fill in your weight!"
     || value.includes("?") && \`${replace}\`
     || undefined
 `}
@@ -106,6 +106,15 @@ return height.includes("?") && "Fill in your height!"
 </Checkpoint>
 
 <Checkpoint id="4-2">
+:::note[Numbers]
+In the last two exercises, two types of numbers have appeared.  
+First `age`, which is an integer number (without decimal point), and second `money`, which is a decimal number.  
+
+In Rust, these numbers are completely different from each other, and cannot be mixed in any way.  
+For example, if you try `2 + 1.5`, an error will be raised, indicating that you can't add an integer and a decimal.
+
+You don't need to worry about this at the moment, but keep it in mind.
+:::
 <Guild>
 Why do we need your weight?  
 We've had some problems with traps before, you know, the "step on a pressure plate and a giant boulder crushes you" ones...  
@@ -114,16 +123,95 @@ We've had some problems with traps before, you know, the "step on a pressure pla
 </Guild>
 <CodeQuestion 
 id="4-3"
-question="Enter your initials and gender (M / F / X):"
+question="Enter your initials and your favourite cardinal point (N / S / E / W):"
 code={`
 let initial1 = '$NAME';
 let initial2 = ?;
-let mut gender = ?;
+let mut cardinal = ?;
 `}
-vars={[ {v: "NAME", d: "Hero", c: "return v[0]"} ]}
-setup={``}
+vars={[ {v: "NAME", d: "Hero", c: "return v[0].toUpperCase()"} ]}
+setup={`
+__VALUE__
+let cardinal = match cardinal {
+    'N' => "North",
+    'S' => "South",
+    'E' => "East",
+    'W' => "West",
+    _ => unreachable!()
+};
+println!("Your initials are {initial1}.{initial2}. and your favourite cardinal point is {cardinal}.\\nSUCCESS");
+`}
 validator={`
-return value.includes("?") && \`${replace}\`
+${getAnswer};
+const charegex = /'.'/;
+const initial2 = getAnswer("initial2 = ");
+const cardinal = getAnswer("cardinal = ");
+return !test(/let initial1 = '.';/) && "Seems like you've messed up the first line, click the 'Reset' button to return it back to its original state."
+    || !test(/let initial2 = .*;/) && "Seems like you've messed up the second line, click the 'Reset' button to return it back to its original state."
+    || !test(/let mut cardinal = .*;/) && "Seems like you've messed up the third line, click the 'Reset' button to return it back to its original state."
+    || value.match(/\\n/g).length + 1 !== 3 && "Seems like you've messed up the lines, click the 'Reset' button to return it back to its original state."
+    || initial2.includes("?") && "[initial2] Fill in your second initial!"
+    || initial2.includes('"') && "[initial2] You're almost there, but an initial has only one character, so there's a better way to write it!\\nLook closely at how 'initial1' is written."
+    || !charegex.test(initial2) && "[initial2] Something is wrong with your second initial.\\nLook closely at how 'initial1' is written!"
+    || initial2.length > 3 && "[initial2] An initial has only one character!"
+    || initial2.toUpperCase() !== initial2 && "[initial2] An initial should be uppercase!"
+    || cardinal.includes("?") && "[cardinal] Fill in your favourite cardinal point!"
+    || cardinal.includes('"') && "[cardinal] You're almost there, but a cardinal point has only one character, so there's a better way to write it!\\nLook closely at how 'initial1' is written."
+    || !charegex.test(cardinal) && "[cardinal] Something is wrong with your cardinal point.\\nLook closely at how 'initial1' is written!"
+    || !(/'[nsew]'/i).test(cardinal) && \`[cardinal] \${cardinal} is not a cardinal point! Try 'N', 'S', 'E' or 'W'.\`
+    || value.includes("?") && \`${replace}\`
+    || undefined
+`}
+/>
+</Checkpoint>
+
+<Checkpoint id="4-3">
+:::note[Have you noticed?]
+Every time we needed to write text with more than one character, we used double quotes `"`, and when it was only one, we used single ones `'`.
+
+This is because, again, Rust considers those different things.  
+When you use `"`, you're declaring a `string`, and when you use `'`, you're declaring a `char`.
+
+I know, that's a lot of concepts, but don't fret, it's all you need to know for now.
+:::
+<Guild>
+Huh? Asking for a favourite cardinal direction is strange?  
+Well... I can't really argue with that.
+
+Most unfortunately, there's only one form left, let's get to it!
+</Guild>
+<CodeQuestion 
+id="4-4"
+question="Answer with 'true' or 'false' to the following questions:"
+code={`
+let is_human = true;
+let mut registered = false;
+let mut dead = ?;
+let mut wears_glasses = ?;
+`}
+setup={`
+__VALUE__;
+let glasses = match wears_glasses {
+    true => "I also wear glasses, we match!",
+    false => "Good! As an adventurer, it's better if you don't need glasses."
+}
+println!("I'm glad you're not dead!\\n{glasses}\\nSUCCESS");
+`}
+validator={`
+${getAnswer};
+const dead = getAnswer("dead = ");
+const wears_glasses = getAnswer("wears_glasses = ");
+const wrong = " The answer has to be 'true' or 'false', look closely at the previous values.";
+return !test(/let is_human = (true|false);/) && "Seems like you've messed up the first line, click the 'Reset' button to return it back to its original state."
+    || !test(/let mut registered = (true|false);/) && "Seems like you've messed up the second line, click the 'Reset' button to return it back to its original state."
+    || !test(/let mut dead = .*;/) && "Seems like you've messed up the third line, click the 'Reset' button to return it back to its original state."
+    || !test(/let mut wears_glasses = .*;/) && "Seems like you've messed up the fourth line, click the 'Reset' button to return it back to its original state."
+    || !test(/^let is_human = .*;\\nlet mut registered = .*;\\nlet mut dead = .*;\\nlet mut wears_glasses = .*;$/) && "Seems like you've messed up the lines, click the 'Reset' button to return it back to its original state."
+    || dead.includes("?") && "[dead] Are you dead or alive?"
+    || dead === "true" && "[dead] Are you sure you're dead? How are you answering this question?"
+    || dead !== "false" && "[dead]" + wrong
+    || wears_glasses.includes("?") && "[wears_glasses] Do you have glasses?"
+    || !(/true|false/).test(wears_glasses) && "[wears_glasses]" + wrong
     || undefined
 `}
 />
