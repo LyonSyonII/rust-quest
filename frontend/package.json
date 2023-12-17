@@ -17,6 +17,7 @@
     "@codemirror/state": "^6.3.3",
     "@codemirror/view": "^6.22.3",
     "@lezer/highlight": "^1.2.0",
+    "astro-compressor": "^0.4.1",
     "confettis": "^0.3.0"
   },
   "devDependencies": {
