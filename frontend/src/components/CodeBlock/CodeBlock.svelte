@@ -82,10 +82,10 @@
     running = true;
     playgroundResponse = l.compiling;
 
-    // Wait for the editor to update `value`
-    await new Promise((resolve) => setTimeout(resolve, 125));
-
-    const v = Function("value", validator)(value);
+    // Wait some time to emphasize that the code is executing
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    
+    const v = Function("value", "test", validator)(value, (regex: RegExp) => regex.test(value));
 
     if (v !== undefined) {
       running = false;
@@ -125,6 +125,7 @@
   {:then [CodeMirror, theme, lang]}
     <CodeMirror.default
       class="not-content"
+      nodebounce
       bind:value
       lang={lang.rust()}
       {theme}
