@@ -26,14 +26,17 @@ const getAnswer = (s) => {
 }
 `;
 
-<WIP />
+:::danger[Page in testing phase]
+This page should be finished, but there might be some bugs or things that are hard to understand.  
+Proceed with caution!
+:::
 
-You wake up, eat a nutritious breakfast, and head to the guild to receive your next mission.
+You wake up, eat a nutritious breakfast, and head to the guild to get your next mission.
 
 <Guild>
 Morning! Did you sleep well?
 
-I'm sorry, but now that you've completed your first mission, you need to officially register, which means... More paperwork!
+I'm sorry, but now that you've completed your first quest, you need to officially register, which means... More paperwork!
 
 Please fill in the remaining information in the blanks provided:
 </Guild>
@@ -68,15 +71,15 @@ return surname.includes("?") && "[surname] Fill in your surname!"
 onsuccess={`${getAnswer};localStorage.setItem("NAME", getAnswer("name = ").slice(1, -1));`}
 />
 :::note[Why is age mutable?]
-Well, you'll get older, right?  
+Well, you are getting older, right?  
 
 What you need to understand about `mut` is that it also has a semantic meaning.  
-If a variable has it, it means it WILL change, if not (or you're unsure), make it immutable, you can always add the `mut` later.
+If a variable has it, it means it WILL change, if not (or you're not sure), make it immutable, you can always add the `mut` later.
 :::
 
 <Checkpoint id="4-1">
 <Guild>
-Thought that was all? We're just getting started!
+Thought that was it? We're just getting started!
 </Guild>
 { /* 
   TODO: Experiment without examples, if people get stuck add them
@@ -107,11 +110,11 @@ return height.includes("?") && "[height] Fill in your height!"
 
 <Checkpoint id="4-2">
 :::note[Numbers]
-In the last two exercises, two types of numbers have appeared.  
-First `age`, which is an integer number (without decimal point), and second `money`, which is a decimal number.  
+In the last two exercises, there were two types of numbers.  
+First, `age`, which is an integer number (without a decimal point), and second, `money`, which is a decimal number.  
 
-In Rust, these numbers are completely different from each other, and cannot be mixed in any way.  
-For example, if you try `2 + 1.5`, an error will be raised, indicating that you can't add an integer and a decimal.
+In Rust, these numbers are completely different and cannot be mixed in any way.  
+For example, if you try to do `2 + 1.5`, you will get an error saying that you can't add an integer and a decimal.
 
 You don't need to worry about this at the moment, but keep it in mind.
 :::
@@ -167,22 +170,22 @@ return !test(/let initial1 = '.';/) && "Seems like you've messed up the first li
 
 <Checkpoint id="4-3">
 :::note[Have you noticed?]
-Every time we needed to write text with more than one character, we used double quotes `"`, and when it was only one, we used single ones `'`.
+Whenever we needed to write text with more than one character, we used double quotes `"`, and when it was only one, we used single quotes `'`.
 
-This is because, again, Rust considers those different things.  
-When you use `"`, you're declaring a `string`, and when you use `'`, you're declaring a `char`.
+This is because, again, Rust distinguishes between the two.  
+Double quotes `"` declare a `string`, while single quotes `'` declare a `char`.
 
-I know, that's a lot of concepts, but don't fret, it's all you need to know for now.
+I know, that's a lot of concepts, but don't worry, that's all you need to know for now.
 :::
 <Guild>
-Huh? Asking for a favourite cardinal direction is strange?  
+Huh? Asking for a favorite cardinal direction is wierd?  
 Well... I can't really argue with that.
 
-Most unfortunately, there's only one form left, let's get to it!
+Unfortunately, there's only one form left, let's get to it!
 </Guild>
 <CodeQuestion 
 id="4-4"
-question="Answer with 'true' or 'false' to the following questions:"
+question="Answer with true or false to the following questions:"
 code={`
 let is_human = true;
 let mut registered = false;
@@ -192,9 +195,9 @@ let mut wears_glasses = ?;
 setup={`
 __VALUE__;
 let glasses = match wears_glasses {
-    true => "I also wear glasses, we match!",
-    false => "Good! As an adventurer, it's better if you don't need glasses."
-}
+    true => "And I also wear glasses, we match!",
+    false => "And good! As an adventurer, it's better if you don't need glasses."
+};
 println!("I'm glad you're not dead!\\n{glasses}\\nSUCCESS");
 `}
 validator={`
@@ -216,3 +219,28 @@ return !test(/let is_human = (true|false);/) && "Seems like you've messed up the
 `}
 />
 </Checkpoint>
+
+<Checkpoint id="4-4">
+:::note[Why I don't need to use quotes this time?]
+While text is written in double quotes, `true` and `false` are special values that aren't considered text.  
+Instead, they're called `booleans`, and can **only** be either `true` or `false`.  
+
+The name comes from 'George Boole', a mathematician who invented them.
+
+Remember the "Adventurer's Guild" chapter? We were doing Boolean logic back then.  
+When you evaluate an expression like `200 < 1000`, it returns a boolean value (in this case `true`), because the expression can only be `true` or `false`.
+:::
+<Guild>
+And... We're done!  
+
+I have to finish your registration, so I don't think I'll be able to give you a quest for today.  
+Please come back tomorrow.
+
+See you later!
+</Guild>
+
+Finally, the paperwork is over!  
+You're exhausted after filling out all those forms, so you return to the inn and fall right into bed.
+</Checkpoint>
+
+<Progress client:idle id="4" total={4} />
