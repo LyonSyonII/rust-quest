@@ -9,7 +9,7 @@ import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
-import Progress from "@components/Progress.svelte";
+import Progress from "@components/Progress.astro";
 
 export function Grocer(props) {
   return (
@@ -270,4 +270,4 @@ This seems like mission complete!
 Satisfied with your work, you return to the nearby inn and retire early to be ready for whatever comes tomorrow.
 </Checkpoint>
 
-<Progress client:idle id="3" total={5} />
+<Progress id="3" total={5} />
