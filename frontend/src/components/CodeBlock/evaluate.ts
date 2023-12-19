@@ -8,7 +8,7 @@ export async function evaluate(
 ): Promise<string> {
   const error = errorMsg || translation(lang).error;
 
-  if (import.meta.env.MODE.includes("dev")) {
+  if (import.meta.env.DEV) {
     return Promise.race([
       godbolt(code, error),
       playground(code, error) /* , server(code, error) */,
@@ -77,7 +77,7 @@ async function godbolt(code: string, error: string): Promise<string> {
 
   const execution = response.indexOf("# Exec");
   const stdout_idx = response.indexOf("# Standard out:", execution);
-
+  
   if (stdout_idx !== -1) {
     return response.substring(stdout_idx + " Standard out:\n".length + 1);
   }
