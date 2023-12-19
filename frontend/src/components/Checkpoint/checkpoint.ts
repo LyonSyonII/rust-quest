@@ -1,21 +1,23 @@
-type Checkpoints = Map<string, Set<string>>
+type Checkpoints = Map<string, Set<string>>;
 
 class Persistent {
   persistent: Checkpoints = new Map<string, Set<string>>();
-  subscribers:  Array<(checkpoints: Checkpoints) => void> = [];
+  subscribers: Array<(checkpoints: Checkpoints) => void> = [];
 
   constructor() {
     this.persistent = this.deserialize();
   }
 
   private serialize() {
-    const serialized: Array<[string, string[]]> = [...this.persistent.entries()].map(([k, v]) => [k, Array.from(v)]);
+    const serialized: Array<[string, string[]]> = [
+      ...this.persistent.entries(),
+    ].map(([k, v]) => [k, Array.from(v)]);
     localStorage.setItem("checkpoints", JSON.stringify(serialized));
   }
-  
+
   private deserialize(): Checkpoints {
     const item = localStorage.getItem("checkpoints") as string;
-    const parsed: Array<[string, string[]]> = item && JSON.parse(item) || [];
+    const parsed: Array<[string, string[]]> = (item && JSON.parse(item)) || [];
     return new Map(parsed.map(([k, v]) => [k, new Set(v)]));
   }
 

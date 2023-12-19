@@ -10,7 +10,7 @@ const { id, total, confetti = true } = Astro.props;
 
 <x-progress data-confetti={`${confetti}`}>
   <label for={id}>0 / {total}</label>
-  <progress {id} max={total} />
+  <progress {id} max={total}></progress>
   {import.meta.env.DEV && <button>Reset</button>}
 </x-progress>
 
@@ -39,7 +39,7 @@ const { id, total, confetti = true } = Astro.props;
       const confetti: boolean = this.dataset.confetti === "true";
       const id: string = progress.id;
       const total: number = progress.max;
-      
+
       subscribe(id, async (checkpoint) => {
         const value = checkpoint.size < total ? checkpoint.size : total;
         label.innerText = `${value} / ${total}`;

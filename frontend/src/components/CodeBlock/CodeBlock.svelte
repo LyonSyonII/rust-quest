@@ -84,7 +84,7 @@
 
     // Wait some time to emphasize that the code is executing
     await new Promise((resolve) => setTimeout(resolve, 25));
-    
+
     const v = Function(
       "value",
       "test",
