@@ -84,8 +84,12 @@
 
     // Wait some time to emphasize that the code is executing
     await new Promise((resolve) => setTimeout(resolve, 25));
-    
-    const v = Function("value", "test", validator)(value, (regex: RegExp) => regex.test(value));
+
+    const v = Function(
+      "value",
+      "test",
+      validator,
+    )(value, (regex: RegExp) => regex.test(value));
 
     if (v !== undefined) {
       running = false;

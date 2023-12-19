@@ -1,0 +1,63 @@
+---
+type Props = {
+  id: string;
+  total: number;
+  confetti: boolean;
+};
+
+const { id, total, confetti = true } = Astro.props;
+---
+
+<x-progress data-confetti={`${confetti}`}>
+  <label for={id}>0 / {total}</label>
+  <progress {id} max={total}></progress>
+  {import.meta.env.DEV && <button>Reset</button>}
+</x-progress>
+
+<style>
+  x-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: -1rem;
+  }
+  progress {
+    margin: 0 !important;
+  }
+</style>
+
+<script>
+  import { subscribe, add, remove } from "./Checkpoint/checkpoint";
+
+  class Progress extends HTMLElement {
+    constructor() {
+      super();
+
+      const progress = this.querySelector("progress") as HTMLProgressElement;
+      const label = this.querySelector("label") as HTMLLabelElement;
+      const confetti: boolean = this.dataset.confetti === "true";
+      const id: string = progress.id;
+      const total: number = progress.max;
+
+      subscribe(id, async (checkpoint) => {
+        const value = checkpoint.size < total ? checkpoint.size : total;
+        label.innerText = `${value} / ${total}`;
+        progress.value = value;
+        if (!confetti || value !== total || checkpoint.has(`${id}-confetti`)) {
+          return;
+        }
+        const confettis = await import("confettis");
+        confettis.create({ y: 2 });
+        add(`${id}-confetti`);
+      });
+
+      if (import.meta.env.DEV) {
+        const button = this.querySelector("button") as HTMLButtonElement;
+        button.addEventListener("click", () => remove(id));
+      }
+    }
+  }
+
+  customElements.define("x-progress", Progress);
+</script>

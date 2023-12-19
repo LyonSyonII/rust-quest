@@ -8,7 +8,7 @@ import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
-import Progress from "@components/Progress.svelte";
+import Progress from "@components/Progress.astro";
 import { Content as WIP } from "@components/WIP.mdx";
 
 export function Guild(props) {
@@ -243,4 +243,4 @@ Finally, the paperwork is over!
 You're exhausted after filling out all those forms, so you return to the inn and fall right into bed.
 </Checkpoint>
 
-<Progress client:idle id="4" total={4} />
+<Progress id="4" total={4} />

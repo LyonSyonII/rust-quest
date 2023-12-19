@@ -8,7 +8,7 @@ export async function evaluate(
 ): Promise<string> {
   const error = errorMsg || translation(lang).error;
 
-  if (import.meta.env.MODE.includes("dev")) {
+  if (import.meta.env.DEV) {
     return Promise.race([
       godbolt(code, error),
       playground(code, error) /* , server(code, error) */,
