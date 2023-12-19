@@ -51,9 +51,7 @@ const { id } = Astro.props;
         if (!s.has(id)) {
           return;
         }
-
-        // console.log({scroll, loaded, dataId: this.dataset.id, dataScroll: this.dataset.scroll});
-
+        
         this.style.display = "block";
       });
     }

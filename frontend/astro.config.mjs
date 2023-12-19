@@ -69,6 +69,6 @@ export default defineConfig({
     remarkPlugins: [],
   },
   experimental: {
-    optimizeHoistedScript: true
-  }
+    optimizeHoistedScript: true,
+  },
 });
