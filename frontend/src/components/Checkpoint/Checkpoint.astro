@@ -5,7 +5,7 @@ interface Props {
 const { id } = Astro.props;
 ---
 
-<x-checkpoint style="display: none" data-id={id}>
+<x-checkpoint id={id} style="display: none">
   <slot />
 </x-checkpoint>
 
@@ -45,7 +45,10 @@ const { id } = Astro.props;
   class Checkpoint extends HTMLElement {
     constructor() {
       super();
-      const id = this.dataset.id as string;
+    }
+
+    connectedCallback() {
+      const id = this.getAttribute("id") as string;
 
       subscribe(id, async (s) => {
         if (!s.has(id)) {
