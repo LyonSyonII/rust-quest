@@ -22,7 +22,7 @@ class Persistent {
     const item = localStorage.getItem("checkpoints") as string;
     const parsed: Array<[string, string[]]> = (item && JSON.parse(item)) || [];
     if (!Array.isArray(parsed)) {
-      window.alert("Failed to load checkpoints, resetting progress.")
+      window.alert("Failed to load checkpoints, resetting progress.");
       return new Map();
     }
     return new Map(parsed.map(([k, v]) => [k, new Set(v)]));
