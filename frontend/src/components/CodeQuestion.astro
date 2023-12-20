@@ -1,10 +1,10 @@
 ---
 import type { Langs } from "@i18n/_langs";
-import CodeBlock from "./CodeBlock/CodeBlock.svelte";
+import CodeBlock from "./CodeBlock/CodeBlock.astro";
 import QuestionCard from "./QuestionCard.astro";
 import { minify } from "terser";
 
-interface Props {
+type Props = {
   question?: string;
   setup?: string;
   code: string;
@@ -17,15 +17,9 @@ interface Props {
   validator?: string;
   onsuccess?: string;
   vars?: Array<{ v: string; d?: string; c?: string }>;
-}
+};
 
-const {
-  question = "",
-  code,
-  errorMsg = "",
-  placeholder = "",
-  ...other
-} = Astro.props;
+const { question = "", code, ...other } = Astro.props;
 
 const mini = async (code: string) =>
   (import.meta.env.PROD &&
@@ -46,10 +40,7 @@ import.meta.env.PROD && console.log({ validator, onsuccess, vars });
 <QuestionCard question={question}>
   <CodeBlock
     {...other}
-    client:idle
     code={code.trim()}
-    errorMsg={errorMsg.trim()}
-    placeholder={placeholder.trim()}
     validator={validator}
     onsuccess={onsuccess}
     vars={vars}
