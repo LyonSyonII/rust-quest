@@ -1,6 +1,5 @@
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
-import svelte from "@astrojs/svelte";
 import { visualizer } from "rollup-plugin-visualizer";
 import compress from "astro-compress";
 import robotsTxt from "astro-robots-txt";
@@ -47,7 +46,6 @@ export default defineConfig({
         },
       },
     }),
-    svelte(),
     // TODO: Does not work at the moment
     // https://github.com/alextim/astro-lib/tree/main/packages/astro-webmanifest
     /* webmanifest({

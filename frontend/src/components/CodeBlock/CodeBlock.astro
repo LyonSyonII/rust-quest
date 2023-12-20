@@ -1,0 +1,325 @@
+---
+import { translation } from "@i18n/_CodeBlock";
+import type { Langs } from "@i18n/_langs";
+type Props = {
+  id?: string;
+  setup?: string;
+  validator: string;
+  onsuccess: string;
+  vars?: Array<{ v: string; d: string; c: string }>;
+  placeholder?: string;
+  code?: string;
+  errorMsg?: string;
+  showLineNumbers?: boolean;
+  editable?: boolean;
+};
+
+const l = translation(Astro.url.pathname.split("/")[1] as Langs);
+const {
+  id = "",
+  setup = "__VALUE__",
+  validator,
+  onsuccess,
+  vars = [],
+  placeholder = l.placeholder,
+  code = "",
+  errorMsg = l.error,
+  showLineNumbers = true,
+  editable = true,
+} = Astro.props;
+const props = {
+  id,
+  setup,
+  validator,
+  onsuccess,
+  vars: JSON.stringify(vars),
+  placeholder,
+  code,
+  errorMsg,
+  showLineNumbers: showLineNumbers.toString(),
+  editable: editable.toString(),
+};
+---
+
+<x-code-block class="not-content" {...props}>
+  <pre>{code || placeholder}</pre>
+  <div class="buttons">
+    <button class="run" title="Run (Shift+Enter)">
+      <!-- carbon:run -->
+      <!-- prettier-ignore -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8" /><path fill="currentColor" d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z" /><path fill="currentColor" d="M19 19v6l5-3z" /></svg>
+    </button>
+
+    <button class="reset" title="Reset code">
+      <!-- carbon:reset -->
+      <!-- prettier-ignore -->
+      <svg xmlns=svgtp://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z" /></svg>
+    </button>
+  </div>
+  <output>
+    <p></p>
+  </output>
+
+  <style>
+    x-code-block {
+      display: grid;
+      margin: 0 !important;
+      font-size: 1rem;
+      grid-template-columns: minmax(0px, 1fr) 60px;
+    }
+
+    @media only screen and (min-width: 1020px) {
+      x-code-block {
+        font-size: 1rem;
+        grid-template-columns: 90% auto;
+      }
+    }
+    pre {
+      color: gray;
+      line-height: 1.4;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-left: var(--card-padding);
+    }
+    button {
+      background-color: rgba(0, 0, 0, 0);
+      color: var(--sl-color-white);
+      cursor: pointer;
+      border: 0;
+      margin: 0rem;
+      padding: 0;
+      height: fit-content;
+      transition: opacity 0.25s ease;
+    }
+    button:disabled {
+      opacity: 0.2;
+    }
+    output {
+      font-size: 1rem;
+      font-family: monospace;
+      border-width: 1px;
+      border-style: solid;
+      border-color: color-mix(in srgb, var(--sl-color-white), transparent 90%);
+      border-radius: 6px;
+      padding: 1rem;
+      grid-column: span 3;
+      margin-top: 1rem;
+      white-space: pre-line;
+
+      display: none;
+    }
+  </style>
+
+  <script>
+    import { EditorState, Compartment } from "@codemirror/state";
+    import { EditorView, keymap, placeholder, highlightActiveLine, rectangularSelection, highlightActiveLineGutter, lineNumbers } from "@codemirror/view";
+    import { indentOnInput, bracketMatching, foldGutter, foldKeymap } from "@codemirror/language";
+    import { indentWithTab, defaultKeymap, history, historyKeymap } from "@codemirror/commands";
+    import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+    import { highlightSelectionMatches } from "@codemirror/search";
+    import { rust } from "@codemirror/lang-rust";
+    import { githubLight } from "src/codemirror-themes/github-light";
+    import { githubDark } from "src/codemirror-themes/github-dark";
+    import { onThemeChange } from "src/utils/onThemeChange";
+
+    class CodeBlock extends HTMLElement {
+      output: HTMLOutputElement;
+      runButton: HTMLButtonElement;
+      resetButton: HTMLButtonElement;
+
+      code: string;
+      setup: string;
+      errorMsg: string;
+      validator: (
+        value: string,
+        test: (regex: RegExp) => boolean,
+      ) => string | undefined;
+      onsuccess: (stdout: string, value: string) => void;
+
+      editor: EditorView;
+      readonly: Compartment;
+      theme: Compartment;
+      themeObserver: MutationObserver;
+
+      constructor() {
+        super();
+
+        this.output = this.querySelector("output")!;
+        this.runButton = this.querySelector(".run")!;
+        this.resetButton = this.querySelector(".reset")!;
+        this.runButton.addEventListener("click", () => {
+          this.handleRun();
+        });
+        this.resetButton.addEventListener("click", () => {
+          this.setValue(this.code);
+        });
+
+        const vars: Array<{ v: string; d: string; c: string }> = JSON.parse(
+          this.getAttribute("vars")!,
+        );
+        const replaceVars = (r: string) =>
+          vars.reduce(
+            (acc, { v, d, c }) =>
+              acc.replaceAll(
+                `$${v}`,
+                Function("v", c)(localStorage.getItem(v) || d),
+              ),
+            r,
+          );
+        this.code = replaceVars(this.getAttribute("code")!);
+        this.setup = replaceVars(this.getAttribute("setup")!);
+        this.errorMsg = this.getAttribute("errorMsg")!;
+        this.validator = Function(
+          "value",
+          "test",
+          this.getAttribute("validator")!,
+        ) as any;
+        this.onsuccess = Function(
+          "stdout",
+          "value",
+          this.getAttribute("onsuccess")!,
+        ) as any;
+
+        this.readonly = new Compartment();
+        this.theme = new Compartment();
+        this.themeObserver = onThemeChange((theme) => {
+          this.setTheme(theme);
+        });
+        const lineNums = this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
+        const basicSetup = [
+          lineNums,
+          highlightActiveLineGutter(),
+          history(),
+          foldGutter(),
+          EditorState.allowMultipleSelections.of(true),
+          indentOnInput(),
+          bracketMatching(),
+          closeBrackets(),
+          rectangularSelection(),
+          highlightActiveLine(),
+          highlightSelectionMatches(),
+          keymap.of([
+            ...closeBracketsKeymap,
+            ...defaultKeymap,
+            ...historyKeymap,
+            ...foldKeymap,
+          ])
+        ];
+
+
+        const runKeymap = keymap.of([
+          {
+            key: "Shift-Enter",
+            run: () => {
+              this.handleRun();
+              return true;
+            },
+            stopPropagation: true,
+            preventDefault: true,
+          },
+          indentWithTab,
+        ]);
+        const editable = this.getAttribute("editable") === "true";
+        const theme = document.documentElement.dataset.theme || "light";
+
+        this.editor = new EditorView({
+          state: EditorState.create({
+            doc: this.code,
+            extensions: [
+              basicSetup,
+              rust(),
+              runKeymap,
+              placeholder(this.getAttribute("placeholder")!),
+              this.theme.of(theme === "light" ? githubLight : githubDark),
+              EditorView.editable.of(editable),
+              this.readonly.of(EditorState.readOnly.of(!editable)),
+            ],
+          }),
+        });
+
+        this.editor.dom.style.outline = "none";
+
+        this.querySelector("pre")?.replaceWith(this.editor.dom);
+        // To avoid line gutter collapsing
+        setTimeout(() => this.editor.requestMeasure(), 300);
+      }
+
+      getValue(): string {
+        return this.editor.state.doc.toString();
+      }
+
+      setValue(value: string) {
+        this.editor.dispatch({
+          changes: { from: 0, to: this.editor.state.doc.length, insert: value },
+        });
+      }
+
+      setReadonly(readonly: boolean) {
+        this.editor.dispatch({
+          effects: this.readonly.reconfigure(EditorState.readOnly.of(readonly)),
+        });
+      }
+
+      setTheme(theme: "light" | "dark") {
+        this.editor.dispatch({
+          effects: this.theme.reconfigure(
+            theme === "light" ? githubLight : githubDark,
+          ),
+        });
+      }
+
+      setRunning(running: boolean) {
+        if (running) {
+          this.setReadonly(true);
+          this.runButton.disabled = true;
+          this.resetButton.disabled = true;
+        } else {
+          this.setReadonly(false);
+          this.runButton.disabled = false;
+          this.resetButton.disabled = false;
+        }
+      }
+
+      async handleRun() {
+        await this.setResponse("Compiling...");
+        this.setRunning(true);
+
+        const value = this.getValue();
+        const v = this.validator(value, (regex: RegExp) => regex.test(value));
+        if (v !== undefined) {
+          // Wait a bit to emphasize that the code is running
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          await this.setResponse(v);
+          this.setRunning(false);
+          return;
+        }
+
+        const setup = this.setup.replaceAll("__VALUE__", value);
+        const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
+
+        const result = await import("./evaluate").then(({ evaluate }) =>
+          evaluate(code, this.errorMsg),
+        );
+        await this.setResponse(result);
+        this.setRunning(false);
+      }
+
+      async setResponse(response: string): Promise<boolean> {
+        const out = response.replace("SUCCESS\n", "");
+        if (this.id && response.length !== out.length) {
+          (await import("../Checkpoint/checkpoint")).add(this.id);
+          this.onsuccess(out, this.getValue());
+        }
+
+        this.output.querySelector("p")!.innerText = out;
+        this.output.style.display = "block";
+        return true;
+      }
+    }
+
+    customElements.define("x-code-block", CodeBlock);
+  </script>
+</x-code-block>
