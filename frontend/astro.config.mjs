@@ -67,6 +67,6 @@ export default defineConfig({
     remarkPlugins: [],
   },
   experimental: {
-    optimizeHoistedScript: true,
+    optimizeHoistedScript: false, /* Disables some Starlight components */
   },
 });
