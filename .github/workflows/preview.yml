@@ -1,0 +1,27 @@
+name: 🔂 Surge PR Preview
+
+on: 
+    pull_request:
+    push:
+        branches: [testing]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # allow surge-preview to create/update PR comments
+    steps:
+      - uses: actions/checkout@v2
+      - uses: afc163/surge-preview@v1
+        id: preview_step
+        with:
+          github_token: ${{ github.token }}
+          surge_token: ${{ secrets.SURGE_TOKEN }}
+          dist: frontend/dist
+          teardown: true
+          failOnError: true
+          build: |
+            npm install
+            npm run build
+      - name: Get the preview_url
+        run: echo "url => ${{ steps.preview_step.outputs.preview_url }}"
