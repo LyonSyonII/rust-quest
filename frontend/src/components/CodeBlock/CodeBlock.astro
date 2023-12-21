@@ -77,6 +77,7 @@ const props = {
     pre {
       color: gray;
       line-height: 1.4;
+      margin-bottom: 8px; /* 75.2px */
     }
     .buttons {
       display: flex;
@@ -89,7 +90,7 @@ const props = {
       color: var(--sl-color-white);
       cursor: pointer;
       border: 0;
-      margin: 0rem;
+      margin: 0;
       padding: 0;
       height: fit-content;
       transition: opacity 0.25s ease;
@@ -150,9 +151,7 @@ const props = {
         this.output = this.querySelector("output")!;
         this.runButton = this.querySelector(".run")!;
         this.resetButton = this.querySelector(".reset")!;
-        this.runButton.addEventListener("click", () => {
-          this.handleRun();
-        });
+        this.runButton.addEventListener("click", () => this.handleRun());
         this.resetButton.addEventListener("click", () => {
           this.setValue(this.code);
         });
@@ -206,6 +205,7 @@ const props = {
             ...defaultKeymap,
             ...historyKeymap,
             ...foldKeymap,
+            indentWithTab
           ])
         ];
 
@@ -219,8 +219,7 @@ const props = {
             },
             stopPropagation: true,
             preventDefault: true,
-          },
-          indentWithTab,
+          }
         ]);
         const editable = this.getAttribute("editable") === "true";
         const theme = document.documentElement.dataset.theme || "light";
@@ -239,9 +238,8 @@ const props = {
             ],
           }),
         });
-
+        // Can't disable outline in any other way
         this.editor.dom.style.outline = "none";
-
         this.querySelector("pre")?.replaceWith(this.editor.dom);
         // To avoid line gutter collapsing
         setTimeout(() => this.editor.requestMeasure(), 300);
@@ -274,12 +272,10 @@ const props = {
       setRunning(running: boolean) {
         if (running) {
           this.setReadonly(true);
-          this.runButton.disabled = true;
-          this.resetButton.disabled = true;
+          this.runButton.disabled = this.resetButton.disabled = true;
         } else {
           this.setReadonly(false);
-          this.runButton.disabled = false;
-          this.resetButton.disabled = false;
+          this.runButton.disabled = this.resetButton.disabled = false;
         }
       }
 
