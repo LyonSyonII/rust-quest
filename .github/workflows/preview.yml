@@ -21,8 +21,6 @@ jobs:
           teardown: true
           failOnError: true
           build: |
-            cd frontend
-            npm install
-            npm run build
+            bash -c "cd frontend && npm install && npm run build"
       - name: Get the preview_url
         run: echo "url => ${{ steps.preview_step.outputs.preview_url }}"
