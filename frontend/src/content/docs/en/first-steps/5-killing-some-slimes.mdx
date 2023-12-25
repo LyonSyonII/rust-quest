@@ -9,7 +9,8 @@ import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
-import Progress from "@components/Progress.svelte";
+import Progress from "@components/Progress.astro";
+import RobotGame from "@components/RobotGame/RobotGame.astro";
 
 After long days of paperwork and chores, you've finally recieved your first real quest!
 You can't contain the excitement and quickly open the letter:
@@ -35,7 +36,7 @@ Good luck!
   showLineNumbers={false}
 />
 
-<Checkpoint id="5-1-">
+<Checkpoint id="5-1">
 Okay... Time to read those instructions.  
 Let's see.
 
@@ -66,5 +67,8 @@ The robot has a total of X possible actions:
 
 Remember to consult the warranty for any technical issues and reach out to our customer support for further assistance.  
 We wish you a happy slime extermination!
+
+
+<RobotGame rows={5} cols={5} start={[0, 0]} enemies={[[1, 1], [2, 2], [3, 3], [4, 4]]}/>
 </Checkpoint>
 

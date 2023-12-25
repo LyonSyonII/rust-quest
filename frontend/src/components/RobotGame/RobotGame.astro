@@ -1,0 +1,46 @@
+---
+type Props = {
+  rows: number;
+  cols: number;
+  start: [number, number];
+  enemies: [number, number][];
+};
+const { rows, cols, start = [0, 0], enemies = [] } = Astro.props;
+
+import { Image } from "astro:assets";
+import Slime from "@assets/Slime.svg";
+
+const isPosEq = (p1: number[], p2: number[]) => p1[0] == p2[0] && p1[1] == p2[1];
+const robotSize = "2.5rem";
+const slimeWidth = (32/2) * Number(robotSize.replace("rem", ""));
+const cellWidth = `5rem`;
+const cellHeight = `5rem`;
+/* const cellWidth = `${100/cols}%`;
+const cellHeight = `${100/rows}%`; */
+---
+
+<table>
+  {
+    [...Array(rows)].map((_, i) => (
+      <tr>{[...Array(cols)].map((_, j) => <td>{isPosEq(start, [i, j]) ? "🤖" : enemies.some((v) => isPosEq(v, [i, j])) ? <Image src={Slime} width={slimeWidth} alt="slime"/> : " "}</td>)}</tr>
+    ))
+  }
+</table>
+
+<style define:vars={{ robotSize, cellWidth, cellHeight }} >
+  table {
+    table-layout: fixed;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  tr {
+    background-color: white !important;
+  }
+  td {
+    font-size: var(--robotSize);
+    width: var(--cellWidth);
+    height: var(--cellHeight);
+    /* TODO: Center slimes */
+  }
+</style>
