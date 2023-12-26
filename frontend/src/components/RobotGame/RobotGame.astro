@@ -8,24 +8,27 @@ type Props = {
 const { rows, cols, start = [0, 0], enemies = [] } = Astro.props;
 
 import { Image } from "astro:assets";
-import Slime from "@assets/Slime.svg";
+import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
+import Robot from "@assets/robot.svg";
+
+const slimes = (await Astro.glob<Record<string, ImageMetadata>>("/src/assets/monsters/slime/*")).map(v => v.default!);
+const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 
 const isPosEq = (p1: number[], p2: number[]) => p1[0] == p2[0] && p1[1] == p2[1];
-const robotSize = "2.5rem";
-const slimeWidth = (32/2) * Number(robotSize.replace("rem", ""));
+const robotSize = 70;
+const slimeWidth = 70;
 const cellWidth = `5rem`;
 const cellHeight = `5rem`;
-/* const cellWidth = `${100/cols}%`;
-const cellHeight = `${100/rows}%`; */
 ---
 
 <table>
   {
     [...Array(rows)].map((_, i) => (
-      <tr>{[...Array(cols)].map((_, j) => <td>{isPosEq(start, [i, j]) ? "🤖" : enemies.some((v) => isPosEq(v, [i, j])) ? <Image src={Slime} width={slimeWidth} alt="slime"/> : " "}</td>)}</tr>
+      <tr>{[...Array(cols)].map((_, j) => <td>{isPosEq(start, [i, j]) ? <Image src={Robot} width={robotSize} alt="robot"/> : enemies.some((v) => isPosEq(v, [i, j])) ? <Image src={getRandomSlime()} width={slimeWidth} alt="slime"/> : " "}</td>)}</tr>
     ))
   }
 </table>
+<CodeBlock validator="return 'SUCCESS\\n'" onsuccess="return 'hola'" />
 
 <style define:vars={{ robotSize, cellWidth, cellHeight }} >
   table {
@@ -38,9 +41,11 @@ const cellHeight = `${100/rows}%`; */
     background-color: white !important;
   }
   td {
-    font-size: var(--robotSize);
     width: var(--cellWidth);
     height: var(--cellHeight);
-    /* TODO: Center slimes */
+  }
+  td > * {
+    margin-left: auto;
+    margin-right: auto;
   }
 </style>
