@@ -34,6 +34,7 @@ const vars = await Promise.all(
     c: await mini(c),
   })) || [],
 );
+// Log resulting code when building
 import.meta.env.PROD && console.log({ validator, onsuccess, vars });
 ---
 
