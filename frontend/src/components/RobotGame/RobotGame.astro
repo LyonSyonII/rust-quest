@@ -2,10 +2,10 @@
 type Props = {
   rows: number;
   cols: number;
-  start: [number, number];
-  enemies: [number, number][];
+  start: number;
+  enemies: number[];
 };
-const { rows, cols, start = [0, 0], enemies = [] } = Astro.props;
+const { rows, cols, start = 0, enemies = [] } = Astro.props;
 
 import { Image } from "astro:assets";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
@@ -18,27 +18,23 @@ const slimes = (
 ).map((v) => v.default!);
 const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 
-const isPosEq = (p1: number[], p2: number[]) =>
-  p1[0] == p2[0] && p1[1] == p2[1];
+const isPosEq = (p1: number, [i, j]: [number, number]) => p1 == i * cols + j;
 const robotSize = 70;
 const slimeWidth = 70;
-const cellWidth = `5rem`;
-const cellHeight = `5rem`;
+const cellSize = `5rem`;
 ---
 
-<x-robot-game>
+<x-robot-game rows={rows} cols={cols} start={start} enemies={enemies}>
   <table>
     {
       [...Array(rows)].map((_, i) => (
         <tr>
           {[...Array(cols)].map((_, j) => (
             <td>
-              {isPosEq(start, [i, j]) ? (
-                <Image src={Robot} width={robotSize} alt="robot" />
-              ) : enemies.some((v) => isPosEq(v, [i, j])) ? (
-                <Image src={getRandomSlime()} width={slimeWidth} alt="slime" />
+              {enemies.some((v) => isPosEq(v, [i, j])) ? (
+                <Image src={getRandomSlime()} width={slimeWidth} alt="slime" id="slime" />
               ) : (
-                " "
+                <b>{i*cols + j}</b>
               )}
             </td>
           ))}
@@ -46,10 +42,11 @@ const cellHeight = `5rem`;
       ))
     }
   </table>
+  <Image src={Robot} width={robotSize} alt="robot" id="robot" />
   <CodeBlock />
 </x-robot-game>
 
-<style define:vars={{ robotSize, cellWidth, cellHeight }}>
+<style define:vars={{ robotSize, cellSize }}>
   table {
     table-layout: fixed;
     width: fit-content;
@@ -60,26 +57,63 @@ const cellHeight = `5rem`;
     background-color: white !important;
   }
   td {
-    width: var(--cellWidth);
-    height: var(--cellHeight);
+    width: var(--cellSize);
+    height: var(--cellSize);
+    text-align: center;
   }
-  td > * {
-    margin-left: auto;
-    margin-right: auto;
+  b {
+    opacity: 0.5;
+  }
+  #robot {
+    transition: transform 0.5s ease;
+    position: absolute;
   }
 </style>
 
 <script>
   class RobotGame extends HTMLElement {
+    readonly robot: HTMLImageElement;
+    readonly cells: NodeListOf<HTMLTableCellElement>;
+    readonly rows: number;
+    readonly cols: number;
+    currentCell: number;
+
     constructor() {
       super();
 
+      this.cells = this.querySelectorAll("td");
+      this.robot = this.querySelector("#robot")!;
+      this.rows = +this.getAttribute("rows")!;
+      this.cols = +this.getAttribute("cols")!;
+      this.currentCell = +this.getAttribute("start")!;
+      // this.setPos(this.currentCell);
+
       const codeblock: CodeBlock =
         this.querySelector<CodeBlock>("x-code-block")!;
-      codeblock?.addEventListener("response", (e) => {
+      codeblock?.addEventListener("response", async (e) => {
         e.preventDefault();
-        console.log({ response: e.response });
+        for (const c of e.response.split("\n")) {
+          switch (c) {
+            case "UP":
+              this.up();
+          }
+          await new Promise((resolve) => setTimeout(resolve, 250));
+        }
       });
+    }
+
+    up() {
+      if (this.currentCell - this.cols < 0) return;
+      this.setPos(this.currentCell - this.cols);
+    }
+
+    setPos(cell: number) {
+      // this.cells[this.currentCell]!.innerHTML = `<b>${this.currentCell}</b>`;
+      this.currentCell = cell;
+      // i*c + j
+      const rect = this.cells[cell]!.getBoundingClientRect();
+      this.robot.style.top = rect.top + window.scrollY + "px";
+      this.robot.style.left = rect.left + "px";
     }
   }
   customElements.define("x-robot-game", RobotGame);
