@@ -310,9 +310,19 @@ const props = {
         this.runButton.disabled = this.resetButton.disabled = false;
       }
     }
+    
+    public setOutput(output: string) {
+      this.output.querySelector("p")!.innerText = output;
+      this.output.style.display = "block";
+    }
+    
+    public hideOutput() {
+      this.output.querySelector("p")!.innerText = "";
+      this.output.style.display = "none";
+    }
 
     async handleRun() {
-      await this.setOutput("Compiling...");
+      this.setOutput("Compiling...");
       this.setRunning(true);
 
       const value = this.getValue();
@@ -364,16 +374,6 @@ const props = {
       }
 
       return true;
-    }
-
-    public setOutput(output: string) {
-      this.output.querySelector("p")!.innerText = output;
-      this.output.style.display = "block";
-    }
-
-    public hideOutput() {
-      this.output.querySelector("p")!.innerText = "";
-      this.output.style.display = "none";
     }
   }
 

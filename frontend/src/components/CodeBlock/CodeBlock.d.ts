@@ -1,4 +1,10 @@
 class CodeBlock extends HTMLElement {
+  
+  public getValue(): string;
+  public setValue(value: string);
+  public setReadonly(readonly: boolean);
+  public setTheme(theme: "light" | "dark");
+  public setRunning(running: boolean);  
   public setOutput(output: string);
   public hideOutput();
 
