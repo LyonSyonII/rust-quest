@@ -11,26 +11,45 @@ import { Image } from "astro:assets";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
 import Robot from "@assets/robot.svg";
 
-const slimes = (await Astro.glob<Record<string, ImageMetadata>>("/src/assets/monsters/slime/*")).map(v => v.default!);
+const slimes = (
+  await Astro.glob<Record<string, ImageMetadata>>(
+    "/src/assets/monsters/slime/*",
+  )
+).map((v) => v.default!);
 const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 
-const isPosEq = (p1: number[], p2: number[]) => p1[0] == p2[0] && p1[1] == p2[1];
+const isPosEq = (p1: number[], p2: number[]) =>
+  p1[0] == p2[0] && p1[1] == p2[1];
 const robotSize = 70;
 const slimeWidth = 70;
 const cellWidth = `5rem`;
 const cellHeight = `5rem`;
 ---
 
-<table>
-  {
-    [...Array(rows)].map((_, i) => (
-      <tr>{[...Array(cols)].map((_, j) => <td>{isPosEq(start, [i, j]) ? <Image src={Robot} width={robotSize} alt="robot"/> : enemies.some((v) => isPosEq(v, [i, j])) ? <Image src={getRandomSlime()} width={slimeWidth} alt="slime"/> : " "}</td>)}</tr>
-    ))
-  }
-</table>
-<CodeBlock validator="return 'SUCCESS\\n'" onsuccess="return 'hola'" />
+<x-robot-game>
+  <table>
+    {
+      [...Array(rows)].map((_, i) => (
+        <tr>
+          {[...Array(cols)].map((_, j) => (
+            <td>
+              {isPosEq(start, [i, j]) ? (
+                <Image src={Robot} width={robotSize} alt="robot" />
+              ) : enemies.some((v) => isPosEq(v, [i, j])) ? (
+                <Image src={getRandomSlime()} width={slimeWidth} alt="slime" />
+              ) : (
+                " "
+              )}
+            </td>
+          ))}
+        </tr>
+      ))
+    }
+  </table>
+  <CodeBlock />
+</x-robot-game>
 
-<style define:vars={{ robotSize, cellWidth, cellHeight }} >
+<style define:vars={{ robotSize, cellWidth, cellHeight }}>
   table {
     table-layout: fixed;
     width: fit-content;
@@ -49,3 +68,19 @@ const cellHeight = `5rem`;
     margin-right: auto;
   }
 </style>
+
+<script>
+
+  class RobotGame extends HTMLElement {
+    constructor() {
+      super();
+
+      const codeblock: CodeBlock = this.querySelector<CodeBlock>("x-code-block")!;
+      codeblock?.addEventListener("response", (e) => {
+        e.preventDefault();
+        console.log({response: e.response})
+      });
+    }
+  }
+  customElements.define("x-robot-game", RobotGame);
+</script>

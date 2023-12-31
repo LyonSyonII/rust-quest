@@ -1,32 +1,44 @@
 ---
 import { translation } from "@i18n/_CodeBlock";
 import type { Langs } from "@i18n/_langs";
-type Props = {
+
+export type Props = {
+  /** Checkpoint that will be activated when "SUCCESS" is returned. */ 
   id?: string;
+  /** Invisible part of the code. All instances of `__VALUE__` will be replaced with the current editor value. */
   setup?: string;
-  validator: string;
-  onsuccess: string;
+  /** `(value: string, test: (regex: RegExp) => boolean) => string | undefined`  
+   *  Function to validate the code.  
+   *  If it returns a string, it will be displayed in the output and the code will not be executed. */
+  validator?: string;
+  /** `(stdout: string, value: string) => undefined`
+   *  Callback that will be called when "SUCCESS" is returned. */
+  onsuccess?: string;
   vars?: Array<{ v: string; d: string; c: string }>;
   placeholder?: string;
   code?: string;
   errorMsg?: string;
   showLineNumbers?: boolean;
   editable?: boolean;
+  showOutput?: boolean;
 };
 
 const l = translation(Astro.url.pathname.split("/")[1] as Langs);
+
 const {
   id = "",
   setup = "__VALUE__",
-  validator,
-  onsuccess,
+  validator = "return undefined",
+  onsuccess = "return undefined",
   vars = [],
   placeholder = l.placeholder,
   code = "",
   errorMsg = l.error,
   showLineNumbers = true,
   editable = true,
+  showOutput
 } = Astro.props;
+
 const props = {
   id,
   setup,
@@ -38,6 +50,7 @@ const props = {
   errorMsg,
   showLineNumbers: showLineNumbers.toString(),
   editable: editable.toString(),
+  showOutput
 };
 ---
 
@@ -59,263 +72,310 @@ const props = {
   <output>
     <p></p>
   </output>
-
-  <style>
-    x-code-block {
-      display: grid;
-      margin: 0 !important;
-      font-size: 1rem;
-      grid-template-columns: minmax(0px, 1fr) 60px;
-    }
-
-    @media only screen and (min-width: 1020px) {
-      x-code-block {
-        font-size: 1rem;
-        grid-template-columns: 90% auto;
-      }
-    }
-    pre {
-      color: gray;
-      line-height: 1.4;
-      margin-bottom: 8px; /* 75.2px */
-    }
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-left: var(--card-padding);
-    }
-    button {
-      background-color: rgba(0, 0, 0, 0);
-      color: var(--sl-color-white);
-      cursor: pointer;
-      border: 0;
-      margin: 0;
-      padding: 0;
-      height: fit-content;
-      transition: opacity 0.25s ease;
-    }
-    button:disabled {
-      opacity: 0.2;
-    }
-    output {
-      font-size: 1rem;
-      font-family: monospace;
-      border-width: 1px;
-      border-style: solid;
-      border-color: color-mix(in srgb, var(--sl-color-white), transparent 90%);
-      border-radius: 6px;
-      padding: 1rem;
-      grid-column: span 3;
-      margin-top: 1rem;
-      white-space: pre-line;
-
-      display: none;
-    }
-  </style>
-
-  <script>
-    import { EditorState, Compartment } from "@codemirror/state";
-    import { EditorView, keymap, placeholder, highlightActiveLine, rectangularSelection, highlightActiveLineGutter, lineNumbers } from "@codemirror/view";
-    import { indentOnInput, bracketMatching, foldGutter, foldKeymap } from "@codemirror/language";
-    import { indentWithTab, defaultKeymap, history, historyKeymap } from "@codemirror/commands";
-    import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
-    import { highlightSelectionMatches } from "@codemirror/search";
-    import { rust } from "@codemirror/lang-rust";
-    import { githubLight } from "src/codemirror-themes/github-light";
-    import { githubDark } from "src/codemirror-themes/github-dark";
-    import { onThemeChange } from "src/utils/onThemeChange";
-
-    class CodeBlock extends HTMLElement {
-      output: HTMLOutputElement;
-      runButton: HTMLButtonElement;
-      resetButton: HTMLButtonElement;
-
-      code: string;
-      setup: string;
-      errorMsg: string;
-      validator: (
-        value: string,
-        test: (regex: RegExp) => boolean,
-      ) => string | undefined;
-      onsuccess: (stdout: string, value: string) => void;
-
-      editor: EditorView;
-      readonly: Compartment;
-      theme: Compartment;
-      themeObserver: MutationObserver;
-
-      constructor() {
-        super();
-
-        this.output = this.querySelector("output")!;
-        this.runButton = this.querySelector(".run")!;
-        this.resetButton = this.querySelector(".reset")!;
-        this.runButton.addEventListener("click", () => this.handleRun());
-        this.resetButton.addEventListener("click", () => {
-          this.setValue(this.code);
-        });
-
-        const vars: Array<{ v: string; d: string; c: string }> = JSON.parse(
-          this.getAttribute("vars")!,
-        );
-        const replaceVars = (r: string) =>
-          vars.reduce(
-            (acc, { v, d, c }) =>
-              acc.replaceAll(
-                `$${v}`,
-                Function("v", c)(localStorage.getItem(v) || d),
-              ),
-            r,
-          );
-        this.code = replaceVars(this.getAttribute("code")!);
-        this.setup = replaceVars(this.getAttribute("setup")!);
-        this.errorMsg = this.getAttribute("errorMsg")!;
-        this.validator = Function(
-          "value",
-          "test",
-          this.getAttribute("validator")!,
-        ) as any;
-        this.onsuccess = Function(
-          "stdout",
-          "value",
-          this.getAttribute("onsuccess")!,
-        ) as any;
-
-        this.readonly = new Compartment();
-        this.theme = new Compartment();
-        this.themeObserver = onThemeChange((theme) => {
-          this.setTheme(theme);
-        });
-        const lineNums = this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
-        const basicSetup = [
-          lineNums,
-          highlightActiveLineGutter(),
-          history(),
-          foldGutter(),
-          EditorState.allowMultipleSelections.of(true),
-          indentOnInput(),
-          bracketMatching(),
-          closeBrackets(),
-          rectangularSelection(),
-          highlightActiveLine(),
-          highlightSelectionMatches(),
-          keymap.of([
-            ...closeBracketsKeymap,
-            ...defaultKeymap,
-            ...historyKeymap,
-            ...foldKeymap,
-            indentWithTab
-          ])
-        ];
-
-
-        const runKeymap = keymap.of([
-          {
-            key: "Shift-Enter",
-            run: () => {
-              this.handleRun();
-              return true;
-            },
-            stopPropagation: true,
-            preventDefault: true,
-          }
-        ]);
-        const editable = this.getAttribute("editable") === "true";
-        const theme = document.documentElement.dataset.theme || "light";
-
-        this.editor = new EditorView({
-          state: EditorState.create({
-            doc: this.code,
-            extensions: [
-              basicSetup,
-              rust(),
-              runKeymap,
-              placeholder(this.getAttribute("placeholder")!),
-              this.theme.of(theme === "light" ? githubLight : githubDark),
-              EditorView.editable.of(editable),
-              this.readonly.of(EditorState.readOnly.of(!editable)),
-            ],
-          }),
-        });
-        // Can't disable outline in any other way
-        this.editor.dom.style.outline = "none";
-        this.querySelector("pre")?.replaceWith(this.editor.dom);
-        // To avoid line gutter collapsing
-        setTimeout(() => this.editor.requestMeasure(), 300);
-      }
-
-      getValue(): string {
-        return this.editor.state.doc.toString();
-      }
-
-      setValue(value: string) {
-        this.editor.dispatch({
-          changes: { from: 0, to: this.editor.state.doc.length, insert: value },
-        });
-      }
-
-      setReadonly(readonly: boolean) {
-        this.editor.dispatch({
-          effects: this.readonly.reconfigure(EditorState.readOnly.of(readonly)),
-        });
-      }
-
-      setTheme(theme: "light" | "dark") {
-        this.editor.dispatch({
-          effects: this.theme.reconfigure(
-            theme === "light" ? githubLight : githubDark,
-          ),
-        });
-      }
-
-      setRunning(running: boolean) {
-        if (running) {
-          this.setReadonly(true);
-          this.runButton.disabled = this.resetButton.disabled = true;
-        } else {
-          this.setReadonly(false);
-          this.runButton.disabled = this.resetButton.disabled = false;
-        }
-      }
-
-      async handleRun() {
-        await this.setResponse("Compiling...");
-        this.setRunning(true);
-
-        const value = this.getValue();
-        const v = this.validator(value, (regex: RegExp) => regex.test(value));
-        if (v !== undefined) {
-          // Wait a bit to emphasize that the code is running
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          await this.setResponse(v);
-          this.setRunning(false);
-          return;
-        }
-
-        const setup = this.setup.replaceAll("__VALUE__", value);
-        const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
-
-        const result = await import("./evaluate").then(({ evaluate }) =>
-          evaluate(code, this.errorMsg),
-        );
-        await this.setResponse(result);
-        this.setRunning(false);
-      }
-
-      async setResponse(response: string): Promise<boolean> {
-        const out = response.replace("SUCCESS\n", "");
-        if (this.id && response.length !== out.length) {
-          (await import("../Checkpoint/checkpoint")).add(this.id);
-          this.onsuccess(out, this.getValue());
-        }
-
-        this.output.querySelector("p")!.innerText = out;
-        this.output.style.display = "block";
-        return true;
-      }
-    }
-
-    customElements.define("x-code-block", CodeBlock);
-  </script>
 </x-code-block>
+
+<style>
+  x-code-block {
+    display: grid;
+    margin: 0 !important;
+    font-size: 1rem;
+    grid-template-columns: minmax(0px, 1fr) 60px;
+  }
+
+  @media only screen and (min-width: 1020px) {
+    x-code-block {
+      font-size: 1rem;
+      grid-template-columns: 90% auto;
+    }
+  }
+  pre {
+    color: gray;
+    line-height: 1.4;
+    margin-bottom: 8px; /* 75.2px */
+  }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-left: var(--card-padding);
+  }
+  button {
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--sl-color-white);
+    cursor: pointer;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    height: fit-content;
+    transition: opacity 0.25s ease;
+  }
+  button:disabled {
+    opacity: 0.2;
+  }
+  output {
+    font-size: 1rem;
+    font-family: monospace;
+    border-width: 1px;
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--sl-color-white), transparent 90%);
+    border-radius: 6px;
+    padding: 1rem;
+    grid-column: span 3;
+    margin-top: 1rem;
+    white-space: pre-line;
+
+    display: none;
+  }
+</style>
+
+<script>
+  import { EditorState, Compartment } from "@codemirror/state";
+  import {
+    EditorView,
+    keymap,
+    placeholder,
+    highlightActiveLine,
+    rectangularSelection,
+    highlightActiveLineGutter,
+    lineNumbers,
+  } from "@codemirror/view";
+  import {
+    indentOnInput,
+    bracketMatching,
+    foldGutter,
+    foldKeymap,
+  } from "@codemirror/language";
+  import {
+    indentWithTab,
+    defaultKeymap,
+    history,
+    historyKeymap,
+  } from "@codemirror/commands";
+  import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+  import { highlightSelectionMatches } from "@codemirror/search";
+  import { rust } from "@codemirror/lang-rust";
+  import { githubLight } from "src/codemirror-themes/github-light";
+  import { githubDark } from "src/codemirror-themes/github-dark";
+  import { onThemeChange } from "src/utils/onThemeChange";
+
+  class CodeBlock extends HTMLElement {
+    output: HTMLOutputElement;
+    runButton: HTMLButtonElement;
+    resetButton: HTMLButtonElement;
+    
+    code: string;
+    setup: string;
+    errorMsg: string;
+    validator: (
+      value: string,
+      test: (regex: RegExp) => boolean,
+    ) => string | undefined;
+    onsuccess: (stdout: string, value: string) => void;
+    
+    editor: EditorView;
+    readonly: Compartment;
+    theme: Compartment;
+    themeObserver: MutationObserver;
+
+    constructor() {
+      super();
+
+      this.output = this.querySelector("output")!;
+      this.runButton = this.querySelector(".run")!;
+      this.resetButton = this.querySelector(".reset")!;
+      this.runButton.addEventListener("click", () => this.handleRun());
+      this.resetButton.addEventListener("click", () => {
+        this.setValue(this.code);
+      });
+
+      const vars: Array<{ v: string; d: string; c: string }> = JSON.parse(
+        this.getAttribute("vars")!,
+      );
+      const replaceVars = (r: string) =>
+        vars.reduce(
+          (acc, { v, d, c }) =>
+            acc.replaceAll(
+              `$${v}`,
+              Function("v", c)(localStorage.getItem(v) || d),
+            ),
+          r,
+        );
+      this.code = replaceVars(this.getAttribute("code")!);
+      this.setup = replaceVars(this.getAttribute("setup")!);
+      this.errorMsg = this.getAttribute("errorMsg")!;
+      this.validator = Function(
+        "value",
+        "test",
+        this.getAttribute("validator")!,
+      ) as any;
+      this.onsuccess = Function(
+        "stdout",
+        "value",
+        this.getAttribute("onsuccess")!,
+      ) as any;
+
+      this.readonly = new Compartment();
+      this.theme = new Compartment();
+      this.themeObserver = onThemeChange((theme) => {
+        this.setTheme(theme);
+      });
+      const lineNums =
+        this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
+      const basicSetup = [
+        lineNums,
+        highlightActiveLineGutter(),
+        history(),
+        foldGutter(),
+        EditorState.allowMultipleSelections.of(true),
+        indentOnInput(),
+        bracketMatching(),
+        closeBrackets(),
+        rectangularSelection(),
+        highlightActiveLine(),
+        highlightSelectionMatches(),
+        keymap.of([
+          ...closeBracketsKeymap,
+          ...defaultKeymap,
+          ...historyKeymap,
+          ...foldKeymap,
+          indentWithTab,
+        ]),
+      ];
+
+      const runKeymap = keymap.of([
+        {
+          key: "Shift-Enter",
+          run: () => {
+            this.handleRun();
+            return true;
+          },
+          stopPropagation: true,
+          preventDefault: true,
+        },
+      ]);
+      const editable = this.getAttribute("editable") === "true";
+      const theme = document.documentElement.dataset.theme || "light";
+
+      this.editor = new EditorView({
+        state: EditorState.create({
+          doc: this.code,
+          extensions: [
+            basicSetup,
+            rust(),
+            runKeymap,
+            placeholder(this.getAttribute("placeholder")!),
+            this.theme.of(theme === "light" ? githubLight : githubDark),
+            EditorView.editable.of(editable),
+            this.readonly.of(EditorState.readOnly.of(!editable)),
+          ],
+        }),
+      });
+      // Can't disable outline in any other way
+      this.editor.dom.style.outline = "none";
+      this.querySelector("pre")?.replaceWith(this.editor.dom);
+      // To avoid line gutter collapsing
+      setTimeout(() => this.editor.requestMeasure(), 300);
+    }
+
+    public getValue(): string {
+      return this.editor.state.doc.toString();
+    }
+
+    public setValue(value: string) {
+      this.editor.dispatch({
+        changes: { from: 0, to: this.editor.state.doc.length, insert: value },
+      });
+    }
+
+    public setReadonly(readonly: boolean) {
+      this.editor.dispatch({
+        effects: this.readonly.reconfigure(EditorState.readOnly.of(readonly)),
+      });
+    }
+
+    public setTheme(theme: "light" | "dark") {
+      this.editor.dispatch({
+        effects: this.theme.reconfigure(
+          theme === "light" ? githubLight : githubDark,
+        ),
+      });
+    }
+
+    public setRunning(running: boolean) {
+      if (running) {
+        this.setReadonly(true);
+        this.runButton.disabled = this.resetButton.disabled = true;
+      } else {
+        this.setReadonly(false);
+        this.runButton.disabled = this.resetButton.disabled = false;
+      }
+    }
+
+    async handleRun() {
+      await this.setOutput("Compiling...");
+      this.setRunning(true);
+
+      const value = this.getValue();
+      const v = this.validator(value, (regex: RegExp) => regex.test(value));
+      if (v !== undefined) {
+        // Wait a bit to emphasize that the code is running
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        await this.setResponse(v);
+        this.setRunning(false);
+        return;
+      }
+
+      const setup = this.setup.replaceAll("__VALUE__", value);
+      const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
+
+      const result = await import("./evaluate").then(({ evaluate }) =>
+        evaluate(code, this.errorMsg),
+      );
+      await this.setResponse(result);
+      this.setRunning(false);
+    }
+    
+    async setResponse(response: string): Promise<boolean> {
+      const out = response.replace("SUCCESS\n", "");
+      if (this.id && response.length !== out.length) {
+        (await import("../Checkpoint/checkpoint")).add(this.id);
+        this.onsuccess(out, this.getValue());
+      }
+      
+      class ResponseEvent extends Event {
+        readonly codeBlock: CodeBlock;
+        readonly response: string;
+
+        constructor(cb: CodeBlock, response: string) {
+          super("response", {
+            bubbles: true,
+            cancelable: true
+          });
+          this.codeBlock = cb;
+          this.response = response;
+        }
+      }
+
+      this.hideOutput();
+      
+      // Only show output if there is something or event isn't cancelled
+      if (this.dispatchEvent(new ResponseEvent(this, out)) && out) {
+        this.setOutput(out);
+      }
+      
+      return true;
+    }
+
+    public setOutput(output: string) {
+      this.output.querySelector("p")!.innerText = output;
+      this.output.style.display = "block";
+    }
+
+    public hideOutput() {
+      this.output.querySelector("p")!.innerText = "";
+      this.output.style.display = "none";
+    }
+  }
+
+  customElements.define("x-code-block", CodeBlock);
+</script>
