@@ -1,16 +1,18 @@
 class CodeBlock extends HTMLElement {
-    public setOutput(output: string)
-    public hideOutput();
+  public setOutput(output: string);
+  public hideOutput();
 
-    public addEventListener<K extends keyof CustomEventMap>(type: K,
-        listener: (this: HTMLElement, ev: CustomEventMap[K]) => void): void;
+  public addEventListener<K extends keyof CustomEventMap>(
+    type: K,
+    listener: (this: HTMLElement, ev: CustomEventMap[K]) => void,
+  ): void;
 }
 
 interface CustomEventMap {
-    "response": ResponseEvent;
+  response: ResponseEvent;
 }
 
 class ResponseEvent extends Event {
-    readonly codeBlock: CodeBlock;
-    readonly response: string;
+  readonly codeBlock: CodeBlock;
+  readonly response: string;
 }

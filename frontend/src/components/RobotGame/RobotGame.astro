@@ -70,15 +70,15 @@ const cellHeight = `5rem`;
 </style>
 
 <script>
-
   class RobotGame extends HTMLElement {
     constructor() {
       super();
 
-      const codeblock: CodeBlock = this.querySelector<CodeBlock>("x-code-block")!;
+      const codeblock: CodeBlock =
+        this.querySelector<CodeBlock>("x-code-block")!;
       codeblock?.addEventListener("response", (e) => {
         e.preventDefault();
-        console.log({response: e.response})
+        console.log({ response: e.response });
       });
     }
   }
