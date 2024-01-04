@@ -157,6 +157,32 @@ const props = {
   import { githubLight } from "src/codemirror-themes/github-light";
   import { githubDark } from "src/codemirror-themes/github-dark";
   import { onThemeChange } from "src/utils/onThemeChange";
+  
+  class ResponseEvent extends Event {
+    readonly codeBlock: CodeBlock;
+    readonly response: string;
+    
+    constructor(cb: CodeBlock, response: string) {
+      super("response", {
+        bubbles: true,
+        cancelable: true,
+      });
+      this.codeBlock = cb;
+      this.response = response;
+    }
+  }
+
+  class ResetEvent extends Event {
+    readonly codeBlock: CodeBlock;
+
+    constructor(cb: CodeBlock) {
+      super("reset", {
+        bubbles: true,
+        cancelable: true,
+      });
+      this.codeBlock = cb;
+    }
+  }
 
   class CodeBlock extends HTMLElement {
     output: HTMLOutputElement;
@@ -186,6 +212,7 @@ const props = {
       this.runButton.addEventListener("click", () => this.handleRun());
       this.resetButton.addEventListener("click", () => {
         this.setValue(this.code);
+        this.dispatchEvent(new ResetEvent(this));
       });
 
       const vars: Array<{ v: string; d: string; c: string }> = JSON.parse(
@@ -310,12 +337,18 @@ const props = {
         this.runButton.disabled = this.resetButton.disabled = false;
       }
     }
-    
-    public setOutput(output: string) {
-      this.output.querySelector("p")!.innerText = output;
+
+    public async setOutput(output: string) {
+      const out = output.replace("SUCCESS\n", "");
+      if (this.id && output.length !== out.length) {
+        (await import("../Checkpoint/checkpoint")).add(this.id);
+        this.onsuccess(out, this.getValue());
+      }
+
+      this.output.querySelector("p")!.innerText = out;
       this.output.style.display = "block";
     }
-    
+
     public hideOutput() {
       this.output.querySelector("p")!.innerText = "";
       this.output.style.display = "none";
@@ -346,31 +379,11 @@ const props = {
     }
 
     async setResponse(response: string): Promise<boolean> {
-      const out = response.replace("SUCCESS\n", "");
-      if (this.id && response.length !== out.length) {
-        (await import("../Checkpoint/checkpoint")).add(this.id);
-        this.onsuccess(out, this.getValue());
-      }
-
-      class ResponseEvent extends Event {
-        readonly codeBlock: CodeBlock;
-        readonly response: string;
-
-        constructor(cb: CodeBlock, response: string) {
-          super("response", {
-            bubbles: true,
-            cancelable: true,
-          });
-          this.codeBlock = cb;
-          this.response = response;
-        }
-      }
-
       this.hideOutput();
 
-      // Only show output if there is something or event isn't cancelled
-      if (this.dispatchEvent(new ResponseEvent(this, out)) && out) {
-        this.setOutput(out);
+      // Only show output if there is something and event isn't cancelled
+      if (this.dispatchEvent(new ResponseEvent(this, response)) && response) {
+        this.setOutput(response);
       }
 
       return true;

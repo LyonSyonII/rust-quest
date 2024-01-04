@@ -1,10 +1,9 @@
 class CodeBlock extends HTMLElement {
-  
   public getValue(): string;
   public setValue(value: string);
   public setReadonly(readonly: boolean);
   public setTheme(theme: "light" | "dark");
-  public setRunning(running: boolean);  
+  public setRunning(running: boolean);
   public setOutput(output: string);
   public hideOutput();
 
@@ -16,9 +15,14 @@ class CodeBlock extends HTMLElement {
 
 interface CustomEventMap {
   response: ResponseEvent;
+  reset: ResetEvent;
 }
 
 class ResponseEvent extends Event {
   readonly codeBlock: CodeBlock;
   readonly response: string;
+}
+
+class ResetEvent extends Event {
+  readonly codeBlock: CodeBlock;
 }
