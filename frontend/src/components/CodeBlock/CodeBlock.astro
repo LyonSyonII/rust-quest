@@ -374,16 +374,16 @@ const props = {
       const result = await import("./evaluate").then(({ evaluate }) =>
         evaluate(code, this.errorMsg),
       );
-      await this.setResponse(result);
-      this.setRunning(false);
+      this.setResponse(result);
     }
 
-    async setResponse(response: string): Promise<boolean> {
+    setResponse(response: string): boolean {
       this.hideOutput();
 
       // Only show output if there is something and event isn't cancelled
       if (this.dispatchEvent(new ResponseEvent(this, response)) && response) {
         this.setOutput(response);
+        this.setRunning(false);
       }
 
       return true;
