@@ -8,7 +8,15 @@ type Props = {
   winText: string;
   loseText: string;
 };
-const { rows, cols, start = 0, enemies = [], id, winText = "You win!", loseText = "There are some Slimes left, try again!" } = Astro.props;
+const {
+  rows,
+  cols,
+  start = 0,
+  enemies = [],
+  id,
+  winText = "You win!",
+  loseText = "There are some Slimes left, try again!",
+} = Astro.props;
 
 import { Image } from "astro:assets";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
@@ -32,18 +40,32 @@ const setup = `
 `;
 ---
 
-<x-robot-game rows={rows} cols={cols} start={start} enemies={enemies} id={id} win={winText} lose={loseText} >
+<x-robot-game
+  rows={rows}
+  cols={cols}
+  start={start}
+  enemies={enemies}
+  id={id}
+  win={winText}
+  lose={loseText}
+>
   <table>
     {
       [...Array(rows)].map((_, i) => (
         <tr>
           {[...Array(cols)].map((_, j) => (
             <td>
-              {
-                start == (i * cols + j) && <Image src={Robot} width={robotSize} alt="robot" id="robot" />
-                || enemies.includes(i * cols + j) && <Image src={getRandomSlime()} width={slimeWidth} alt="slime" id="slime" />
-                || <p>{i * cols + j}</p>
-              }
+              {(start == i * cols + j && (
+                <Image src={Robot} width={robotSize} alt="robot" id="robot" />
+              )) ||
+                (enemies.includes(i * cols + j) && (
+                  <Image
+                    src={getRandomSlime()}
+                    width={slimeWidth}
+                    alt="slime"
+                    id="slime"
+                  />
+                )) || <p>{i * cols + j}</p>}
             </td>
           ))}
         </tr>
@@ -109,29 +131,31 @@ const setup = `
     readonly enemies: number;
     readonly winText: string;
     readonly loseText: string;
-    
+
     tableChanged: boolean;
     robot: HTMLImageElement;
-    
+
     constructor() {
       super();
 
       this.codeblock = this.querySelector<CodeBlock>("x-code-block")!;
-      this.startingBoard = this.querySelector("table")!.cloneNode(true) as HTMLTableElement;
-        
-        this.startPos = +this.getAttribute("start")!;
-        this.rows = +this.getAttribute("rows")!;
-        this.cols = +this.getAttribute("cols")!;
-        this.enemies = this.querySelectorAll("#slime").length;
+      this.startingBoard = this.querySelector("table")!.cloneNode(
+        true,
+      ) as HTMLTableElement;
 
-        this.winText = this.getAttribute("win")!;
-        this.loseText = this.getAttribute("lose")!;
+      this.startPos = +this.getAttribute("start")!;
+      this.rows = +this.getAttribute("rows")!;
+      this.cols = +this.getAttribute("cols")!;
+      this.enemies = this.querySelectorAll("#slime").length;
 
-        this.tableChanged = false;
+      this.winText = this.getAttribute("win")!;
+      this.loseText = this.getAttribute("lose")!;
+
+      this.tableChanged = false;
 
       this.robot = this.querySelector("#robot")!;
     }
-    
+
     async resetBoard() {
       if (!this.tableChanged) {
         return;
@@ -140,22 +164,24 @@ const setup = `
       this.querySelector("table")!.style.opacity = "0";
       wait(200);
       this.startingBoard.style.opacity = "0";
-      this.querySelector("table")!.replaceWith(this.startingBoard.cloneNode(true));
+      this.querySelector("table")!.replaceWith(
+        this.startingBoard.cloneNode(true),
+      );
       wait(10);
       this.querySelector("table")!.style.opacity = "1";
       this.robot = this.querySelector("#robot")!;
       wait(200);
     }
-    
+
     connectedCallback() {
-        this.codeblock.addEventListener("reset", (e) => { 
-          this.resetBoard();
-          e.codeBlock.hideOutput();
-        });
-        this.codeblock.addEventListener("response", async (e) => {
+      this.codeblock.addEventListener("reset", (e) => {
+        this.resetBoard();
+        e.codeBlock.hideOutput();
+      });
+      this.codeblock.addEventListener("response", async (e) => {
         e.preventDefault();
         await this.resetBoard();
-        
+
         const cells = this.querySelectorAll("td");
         let killedEnemies = 0;
         let currentPos = this.startPos;
@@ -165,7 +191,12 @@ const setup = `
           this.robot.classList.add(direction);
           await wait(350);
           this.robot.classList.remove(direction);
-          ({currentPos, killedEnemies} = this.setPos(currentPos, newPos, cells, killedEnemies));
+          ({ currentPos, killedEnemies } = this.setPos(
+            currentPos,
+            newPos,
+            cells,
+            killedEnemies,
+          ));
         };
 
         for (const c of e.response.split("\n")) {
@@ -199,15 +230,16 @@ const setup = `
               break;
             }
 
-            default: continue;
+            default:
+              continue;
           }
 
           await wait(150);
         }
-        
+
         if (killedEnemies === this.enemies) {
           this.codeblock.setOutput(this.winText);
-          confetti({count: 20});
+          confetti({ count: 20 });
         } else {
           this.codeblock.setOutput(this.loseText);
           await wait(1000);
@@ -217,21 +249,26 @@ const setup = `
       });
     }
 
-    setPos(currentPos: number, newPos: number, cells: NodeListOf<HTMLTableCellElement>, killedEnemies: number): { currentPos: number, killedEnemies: number } {
+    setPos(
+      currentPos: number,
+      newPos: number,
+      cells: NodeListOf<HTMLTableCellElement>,
+      killedEnemies: number,
+    ): { currentPos: number; killedEnemies: number } {
       const currentCell = cells[currentPos]!;
       const newCell = cells[newPos]!;
-      
+
       const child = newCell.firstElementChild!;
       if (child.id === "slime") {
         killedEnemies += 1;
       }
-      
+
       child.replaceWith(this.robot);
-      
+
       const newP = document.createElement("p");
       newP.textContent = currentPos.toString();
       currentCell.appendChild(newP);
-      
+
       return { currentPos: newPos, killedEnemies };
     }
   }

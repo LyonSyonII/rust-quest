@@ -48,7 +48,7 @@ const { id, total, confetti = true } = Astro.props;
         if (!launchConfetti || value !== total) {
           return;
         }
-        
+
         confetti();
         add(`${id}-confetti`);
       });

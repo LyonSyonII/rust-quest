@@ -157,11 +157,11 @@ const props = {
   import { githubLight } from "src/codemirror-themes/github-light";
   import { githubDark } from "src/codemirror-themes/github-dark";
   import { onThemeChange } from "src/utils/onThemeChange";
-  
+
   class ResponseEvent extends Event {
     readonly codeBlock: CodeBlock;
     readonly response: string;
-    
+
     constructor(cb: CodeBlock, response: string) {
       super("response", {
         bubbles: true,
