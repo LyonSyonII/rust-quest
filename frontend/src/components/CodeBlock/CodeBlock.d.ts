@@ -1,11 +1,11 @@
 class CodeBlock extends HTMLElement {
   public getValue(): string;
-  public setValue(value: string);
-  public setReadonly(readonly: boolean);
-  public setTheme(theme: "light" | "dark");
-  public setRunning(running: boolean);
-  public setOutput(output: string);
-  public hideOutput();
+  public setValue(value: string): void;
+  public setReadonly(readonly: boolean): void;
+  public setTheme(theme: "light" | "dark"): void;
+  public setRunning(running: boolean): void;
+  public setOutput(output: string): void;
+  public hideOutput(): void;
 
   public addEventListener<K extends keyof CustomEventMap>(
     type: K,
