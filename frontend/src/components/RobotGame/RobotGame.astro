@@ -96,6 +96,10 @@ const setup = `
 <script>
   import { confetti } from "src/utils/confetti";
 
+  function wait(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   class RobotGame extends HTMLElement {
     readonly codeblock: CodeBlock;
     readonly startingBoard: HTMLTableElement;
@@ -134,13 +138,13 @@ const setup = `
       }
       this.tableChanged = false;
       this.querySelector("table")!.style.opacity = "0";
-      await new Promise((r) => setTimeout(r, 200));
+      wait(200);
       this.startingBoard.style.opacity = "0";
       this.querySelector("table")!.replaceWith(this.startingBoard.cloneNode(true));
-      await new Promise((r) => setTimeout(r, 10));
+      wait(10);
       this.querySelector("table")!.style.opacity = "1";
       this.robot = this.querySelector("#robot")!;
-      await new Promise((r) => setTimeout(r, 200));
+      wait(200);
     }
     
     connectedCallback() {
@@ -155,8 +159,6 @@ const setup = `
         const cells = this.querySelectorAll("td");
         let killedEnemies = 0;
         let currentPos = this.startPos;
-        
-        const wait = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
         const setPos = async (newPos: number, direction: string) => {
           this.tableChanged = true;
