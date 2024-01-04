@@ -19,7 +19,7 @@ type Props = {
   vars?: Array<{ v: string; d?: string; c?: string }>;
 };
 
-const { question = "", code, ...other } = Astro.props;
+const { question, code, ...other } = Astro.props;
 
 const mini = async (code: string) =>
   (import.meta.env.PROD &&
@@ -41,7 +41,7 @@ import.meta.env.PROD && console.log({ validator, onsuccess, vars });
 <QuestionCard question={question}>
   <CodeBlock
     {...other}
-    code={code.trim()}
+    code={code?.trim()}
     validator={validator}
     onsuccess={onsuccess}
     vars={vars}

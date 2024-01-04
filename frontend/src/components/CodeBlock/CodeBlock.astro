@@ -338,10 +338,14 @@ const props = {
       }
     }
 
+    public async setSuccess() {
+      (await import("../Checkpoint/checkpoint")).add(this.id);
+    }
+    
     public async setOutput(output: string) {
       const out = output.replace("SUCCESS\n", "");
       if (this.id && output.length !== out.length) {
-        (await import("../Checkpoint/checkpoint")).add(this.id);
+        await this.setSuccess();
         this.onsuccess(out, this.getValue());
       }
 
@@ -363,7 +367,7 @@ const props = {
       if (v !== undefined) {
         // Wait a bit to emphasize that the code is running
         await new Promise((resolve) => setTimeout(resolve, 50));
-        await this.setResponse(v);
+        this.setResponse(v);
         this.setRunning(false);
         return;
       }

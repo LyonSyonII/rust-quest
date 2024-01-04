@@ -45,12 +45,13 @@ const { id, total, confetti = true } = Astro.props;
         const value = checkpoint.size < total ? checkpoint.size : total;
         label.innerText = `${value} / ${total}`;
         progress.value = value;
-        if (!launchConfetti || value !== total) {
+        const confettiId = `${id}-confetti`;
+        if (!launchConfetti || value !== total || checkpoint.has(confettiId)) {
           return;
         }
-
+        
         confetti();
-        add(`${id}-confetti`);
+        add(confettiId);
       });
 
       if (import.meta.env.DEV) {

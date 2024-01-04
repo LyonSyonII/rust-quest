@@ -1,5 +1,6 @@
 ---
 type Props = {
+  code?: string;
   rows: number;
   cols: number;
   start: number;
@@ -9,6 +10,7 @@ type Props = {
   loseText: string;
 };
 const {
+  code,
   rows,
   cols,
   start = 0,
@@ -32,12 +34,9 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 const robotSize = 70;
 const slimeWidth = 70;
 const setup = `
-  fn up() { println!("UP") }
-  fn down() { println!("DOWN") }
-  fn left() { println!("LEFT") }
-  fn right() { println!("RIGHT") }
-  __VALUE__
-`;
+struct Robot;impl Robot{fn new()->Self{Self}fn up(&self){println!("UP")}fn down(&self){println!("DOWN")}fn left(&self){println!("LEFT")}fn right(&self){println!("RIGHT")}}
+__VALUE__
+`.trim();
 ---
 
 <x-robot-game
@@ -72,7 +71,7 @@ const setup = `
       ))
     }
   </table>
-  <CodeBlock id={id} setup={setup} />
+  <CodeBlock id={id} setup={setup} code={code?.trim()} />
 </x-robot-game>
 
 <style>
@@ -137,7 +136,7 @@ const setup = `
 
     constructor() {
       super();
-
+      
       this.codeblock = this.querySelector<CodeBlock>("x-code-block")!;
       this.startingBoard = this.querySelector("table")!.cloneNode(
         true,
@@ -162,15 +161,15 @@ const setup = `
       }
       this.tableChanged = false;
       this.querySelector("table")!.style.opacity = "0";
-      wait(200);
+      await wait(200);
       this.startingBoard.style.opacity = "0";
       this.querySelector("table")!.replaceWith(
         this.startingBoard.cloneNode(true),
       );
-      wait(10);
+      await wait(20);
       this.querySelector("table")!.style.opacity = "1";
       this.robot = this.querySelector("#robot")!;
-      wait(200);
+      await wait(200);
     }
 
     connectedCallback() {
@@ -186,8 +185,9 @@ const setup = `
         let killedEnemies = 0;
         let currentPos = this.startPos;
 
+        this.tableChanged = true;
+
         const setPos = async (newPos: number, direction: string) => {
-          this.tableChanged = true;
           this.robot.classList.add(direction);
           await wait(350);
           this.robot.classList.remove(direction);
@@ -239,11 +239,12 @@ const setup = `
 
         if (killedEnemies === this.enemies) {
           this.codeblock.setOutput(this.winText);
+          this.codeblock.setSuccess();
           confetti({ count: 20 });
         } else {
           this.codeblock.setOutput(this.loseText);
           await wait(1000);
-          this.resetBoard();
+          await this.resetBoard();
         }
         this.codeblock.setRunning(false);
       });

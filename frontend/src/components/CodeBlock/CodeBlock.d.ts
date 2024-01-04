@@ -3,6 +3,7 @@ class CodeBlock extends HTMLElement {
   public setValue(value: string): void;
   public setReadonly(readonly: boolean): void;
   public setTheme(theme: "light" | "dark"): void;
+  public setSuccess(): void;
   public setRunning(running: boolean): void;
   public setOutput(output: string): void;
   public hideOutput(): void;

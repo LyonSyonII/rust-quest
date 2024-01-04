@@ -1,13 +1,14 @@
 ---
 interface Props {
-  question: string;
+  question: string | undefined;
+  children?: any;
 }
 
 const { question } = Astro.props;
 ---
 
 <article>
-  {question && <p id={question}>{question}</p>}
+  {question && <p>{question}</p>}
   <slot />
 </article>
 

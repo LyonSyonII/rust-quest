@@ -46,19 +46,20 @@ Let's see.
 Congratulations on acquiring our Monster-Killing Robot!  
 This manual provides essential instructions to ensure optimal performance and safety.
 
-#### 1. Activation
-- Ensure the summoning space is clear of obstacles and bystanders.
-- Utter the activation command `summon_robot()` clearly and confidently.
+#### 1. Summoning
+- Ensure the space is clear of obstacles and bystanders.
+- Utter the summoning command `Robot::new()` clearly and confidently.
 
 #### 2. Available functions
 The robot has a total of 4 possible functions:
 
-| Action           | Description                                 |
-| ---------------- | ------------------------------------------- |
-| `summon_robot()` | Activate the robot                          |
-| `move()`         | Move the robot on the direction it's facing |
-| `turn_left()`    | Rotate 90º to the left                      |
-| `turn_right()`   | Rotate 90º to the right                     |
+| Action          | Description                                                          |
+| --------------- | -------------------------------------------------------------------- |
+| `Robot::new()`  | Summons a new robot.<br/>Link it to a variable to be able to use it. |
+| `robot.up()`    | Move the robot up one space                                          |
+| `robot.down()`  | Move the robot down one space                                        |
+| `robot.left()`  | Move the robot left one space                                        |
+| `robot.right()` | Move the robot right one space                                       |
 
 
 #### 3. Legal and Ethical Considerations
@@ -69,6 +70,20 @@ Remember to consult the warranty for any technical issues and reach out to our c
 We wish you a happy monster extermination!
 
 
-<RobotGame rows={3} cols={3} start={7} enemies={[1]} />
+<RobotGame 
+  id="5-2" 
+  code={`
+let robot = Robot::new();
+robot. ? ;
+robot. ? ;
+`}
+  rows={3} 
+  cols={3} 
+  start={7} 
+  enemies={[1]} 
+/>
 </Checkpoint>
 
+<Checkpoint id="5-2">
+potato
+</Checkpoint>
