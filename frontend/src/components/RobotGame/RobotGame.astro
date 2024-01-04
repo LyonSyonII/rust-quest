@@ -5,8 +5,10 @@ type Props = {
   start: number;
   enemies: number[];
   id: number;
+  winText: string;
+  loseText: string;
 };
-const { rows, cols, start = 0, enemies = [], id } = Astro.props;
+const { rows, cols, start = 0, enemies = [], id, winText = "You win!", loseText = "There are some Slimes left, try again!" } = Astro.props;
 
 import { Image } from "astro:assets";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
@@ -30,7 +32,7 @@ const setup = `
 `;
 ---
 
-<x-robot-game rows={rows} cols={cols} start={start} enemies={enemies} id={id}>
+<x-robot-game rows={rows} cols={cols} start={start} enemies={enemies} id={id} win={winText} lose={loseText} >
   <table>
     {
       [...Array(rows)].map((_, i) => (
@@ -60,6 +62,7 @@ const setup = `
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
+    transition: opacity 0.2s ease-in-out;
   }
   tr {
     background-color: white !important;
@@ -74,7 +77,19 @@ const setup = `
     font-weight: bold;
   }
   #robot {
-    transition: transform 0.5s ease;
+    transition: transform 0.35s ease-out;
+  }
+  .up {
+    transform: translateY(-5rem);
+  }
+  .down {
+    transform: translateY(5rem);
+  }
+  .right {
+    transform: translateX(5rem);
+  }
+  .left {
+    transform: translateX(-5rem);
   }
 </style>
 
@@ -82,34 +97,50 @@ const setup = `
   import { confetti } from "src/utils/confetti";
 
   class RobotGame extends HTMLElement {
+    readonly codeblock: CodeBlock;
     readonly startingBoard: HTMLTableElement;
     readonly startPos: number;
     readonly rows: number;
     readonly cols: number;
-    readonly codeblock: CodeBlock;
     readonly enemies: number;
-
+    readonly winText: string;
+    readonly loseText: string;
+    
+    tableChanged: boolean;
     robot: HTMLImageElement;
     
     constructor() {
       super();
 
-      this.startingBoard = this.querySelector("table")!.cloneNode(true) as HTMLTableElement;
-      this.enemies = this.querySelectorAll("#slime").length;
       this.codeblock = this.querySelector<CodeBlock>("x-code-block")!;
+      this.startingBoard = this.querySelector("table")!.cloneNode(true) as HTMLTableElement;
+        
+        this.startPos = +this.getAttribute("start")!;
+        this.rows = +this.getAttribute("rows")!;
+        this.cols = +this.getAttribute("cols")!;
+        this.enemies = this.querySelectorAll("#slime").length;
 
-      this.rows = +this.getAttribute("rows")!;
-      this.cols = +this.getAttribute("cols")!;
-      this.startPos = +this.getAttribute("start")!;
+        this.winText = this.getAttribute("win")!;
+        this.loseText = this.getAttribute("lose")!;
+
+        this.tableChanged = false;
 
       this.robot = this.querySelector("#robot")!;
-
-      this.resetBoard();
     }
     
-    resetBoard() {
+    async resetBoard() {
+      if (!this.tableChanged) {
+        return;
+      }
+      this.tableChanged = false;
+      this.querySelector("table")!.style.opacity = "0";
+      await new Promise((r) => setTimeout(r, 200));
+      this.startingBoard.style.opacity = "0";
       this.querySelector("table")!.replaceWith(this.startingBoard.cloneNode(true));
+      await new Promise((r) => setTimeout(r, 10));
+      this.querySelector("table")!.style.opacity = "1";
       this.robot = this.querySelector("#robot")!;
+      await new Promise((r) => setTimeout(r, 200));
     }
     
     connectedCallback() {
@@ -117,56 +148,70 @@ const setup = `
           this.resetBoard();
           e.codeBlock.hideOutput();
         });
-        this.codeblock.addEventListener("response", async (e) => {        
+        this.codeblock.addEventListener("response", async (e) => {
         e.preventDefault();
-        this.resetBoard();
+        await this.resetBoard();
         
         const cells = this.querySelectorAll("td");
         let killedEnemies = 0;
         let currentPos = this.startPos;
         
-        const setPos = (newPos: number) => ({currentPos, killedEnemies} = this.setPos(currentPos, newPos, cells, killedEnemies));
-        
+        const wait = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        const setPos = async (newPos: number, direction: string) => {
+          this.tableChanged = true;
+          this.robot.classList.add(direction);
+          await wait(350);
+          this.robot.classList.remove(direction);
+          ({currentPos, killedEnemies} = this.setPos(currentPos, newPos, cells, killedEnemies));
+        };
+
         for (const c of e.response.split("\n")) {
           switch (c) {
             case "UP": {
               const newPos = currentPos - this.cols;
               if (newPos >= 0) {
-                setPos(newPos);
+                await setPos(newPos, "up");
               }
               break;
             }
             case "DOWN": {
               const newPos = currentPos + this.cols;
               if (newPos <= cells.length) {
-                setPos(newPos);
+                await setPos(newPos, "down");
               }
               break;
             }
             case "LEFT": {
               const newPos = currentPos - 1;
               if (currentPos % this.cols !== 0 && newPos >= 0) {
-                setPos(newPos);
+                await setPos(newPos, "left");
               }
               break;
             }
-            case "RIGHT":
+            case "RIGHT": {
               const newPos = currentPos + 1;
               if (newPos % this.cols !== 0 && newPos <= cells.length) {
-                setPos(newPos);
+                await setPos(newPos, "right");
               }
               break;
+            }
+
+            default: continue;
           }
-          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          await wait(150);
         }
         
         if (killedEnemies === this.enemies) {
-          this.codeblock.setOutput("You win!");
+          this.codeblock.setOutput(this.winText);
           confetti({count: 20});
         } else {
-          this.codeblock.setOutput("Some Slimes are still alive. Try again!");
+          this.codeblock.setOutput(this.loseText);
+          await wait(1000);
           this.resetBoard();
         }
+        this.codeblock.setRunning(false);
       });
     }
 
