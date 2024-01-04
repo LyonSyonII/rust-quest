@@ -29,6 +29,7 @@ const { id, total, confetti = true } = Astro.props;
 
 <script>
   import { subscribe, add, remove } from "./Checkpoint/checkpoint";
+  import { confetti } from "../utils/confetti";
 
   class Progress extends HTMLElement {
     constructor() {
@@ -36,7 +37,7 @@ const { id, total, confetti = true } = Astro.props;
 
       const progress = this.querySelector("progress") as HTMLProgressElement;
       const label = this.querySelector("label") as HTMLLabelElement;
-      const confetti: boolean = this.dataset.confetti === "true";
+      const launchConfetti: boolean = this.dataset.confetti === "true";
       const id: string = progress.id;
       const total: number = progress.max;
 
@@ -44,11 +45,11 @@ const { id, total, confetti = true } = Astro.props;
         const value = checkpoint.size < total ? checkpoint.size : total;
         label.innerText = `${value} / ${total}`;
         progress.value = value;
-        if (!confetti || value !== total || checkpoint.has(`${id}-confetti`)) {
+        if (!launchConfetti || value !== total) {
           return;
         }
-        const confettis = await import("confettis");
-        confettis.create({ y: 2 });
+        
+        confetti();
         add(`${id}-confetti`);
       });
 
