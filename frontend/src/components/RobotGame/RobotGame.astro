@@ -4,8 +4,9 @@ type Props = {
   cols: number;
   start: number;
   enemies: number[];
+  id: number;
 };
-const { rows, cols, start = 0, enemies = [] } = Astro.props;
+const { rows, cols, start = 0, enemies = [], id } = Astro.props;
 
 import { Image } from "astro:assets";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
@@ -18,35 +19,42 @@ const slimes = (
 ).map((v) => v.default!);
 const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 
-const isPosEq = (p1: number, [i, j]: [number, number]) => p1 == i * cols + j;
 const robotSize = 70;
 const slimeWidth = 70;
-const cellSize = `5rem`;
+const setup = `
+  fn up() { println!("UP") }
+  fn down() { println!("DOWN") }
+  fn left() { println!("LEFT") }
+  fn right() { println!("RIGHT") }
+  __VALUE__
+`;
 ---
 
-<x-robot-game rows={rows} cols={cols} start={start} enemies={enemies}>
+<x-robot-game rows={rows} cols={cols} start={start} enemies={enemies} id={id}>
   <table>
     {
       [...Array(rows)].map((_, i) => (
         <tr>
           {[...Array(cols)].map((_, j) => (
             <td>
-              {enemies.some((v) => isPosEq(v, [i, j])) ? (
-                <Image src={getRandomSlime()} width={slimeWidth} alt="slime" id="slime" />
-              ) : (
-                <b>{i*cols + j}</b>
-              )}
+              {
+                start == (i * cols + j) && <Image src={Robot} width={robotSize} alt="robot" id="robot" />
+                || enemies.includes(i * cols + j) && <Image src={getRandomSlime()} width={slimeWidth} alt="slime" id="slime" />
+                || <p>{i * cols + j}</p>
+              }
             </td>
           ))}
         </tr>
       ))
     }
   </table>
-  <Image src={Robot} width={robotSize} alt="robot" id="robot" />
-  <CodeBlock />
+  <CodeBlock id={id} setup={setup} />
 </x-robot-game>
 
-<style define:vars={{ robotSize, cellSize }}>
+<style>
+  :root {
+    --cellSize: 5rem;
+  }
   table {
     table-layout: fixed;
     width: fit-content;
@@ -61,59 +69,123 @@ const cellSize = `5rem`;
     height: var(--cellSize);
     text-align: center;
   }
-  b {
+  td > :global(p) {
     opacity: 0.5;
+    font-weight: bold;
   }
   #robot {
     transition: transform 0.5s ease;
-    position: absolute;
   }
 </style>
 
 <script>
+  import { confetti } from "src/utils/confetti";
+
   class RobotGame extends HTMLElement {
-    readonly robot: HTMLImageElement;
-    readonly cells: NodeListOf<HTMLTableCellElement>;
+    readonly startingBoard: HTMLTableElement;
+    readonly startPos: number;
     readonly rows: number;
     readonly cols: number;
-    currentCell: number;
+    readonly codeblock: CodeBlock;
+    readonly enemies: number;
 
+    robot: HTMLImageElement;
+    
     constructor() {
       super();
 
-      this.cells = this.querySelectorAll("td");
-      this.robot = this.querySelector("#robot")!;
+      this.startingBoard = this.querySelector("table")!.cloneNode(true) as HTMLTableElement;
+      this.enemies = this.querySelectorAll("#slime").length;
+      this.codeblock = this.querySelector<CodeBlock>("x-code-block")!;
+
       this.rows = +this.getAttribute("rows")!;
       this.cols = +this.getAttribute("cols")!;
-      this.currentCell = +this.getAttribute("start")!;
-      // this.setPos(this.currentCell);
+      this.startPos = +this.getAttribute("start")!;
 
-      const codeblock: CodeBlock =
-        this.querySelector<CodeBlock>("x-code-block")!;
-      codeblock?.addEventListener("response", async (e) => {
+      this.robot = this.querySelector("#robot")!;
+
+      this.resetBoard();
+    }
+    
+    resetBoard() {
+      this.querySelector("table")!.replaceWith(this.startingBoard.cloneNode(true));
+      this.robot = this.querySelector("#robot")!;
+    }
+    
+    connectedCallback() {
+        this.codeblock.addEventListener("reset", (e) => { 
+          this.resetBoard();
+          e.codeBlock.hideOutput();
+        });
+        this.codeblock.addEventListener("response", async (e) => {        
         e.preventDefault();
+        this.resetBoard();
+        
+        const cells = this.querySelectorAll("td");
+        let killedEnemies = 0;
+        let currentPos = this.startPos;
+        
+        const setPos = (newPos: number) => ({currentPos, killedEnemies} = this.setPos(currentPos, newPos, cells, killedEnemies));
+        
         for (const c of e.response.split("\n")) {
           switch (c) {
-            case "UP":
-              this.up();
+            case "UP": {
+              const newPos = currentPos - this.cols;
+              if (newPos >= 0) {
+                setPos(newPos);
+              }
+              break;
+            }
+            case "DOWN": {
+              const newPos = currentPos + this.cols;
+              if (newPos <= cells.length) {
+                setPos(newPos);
+              }
+              break;
+            }
+            case "LEFT": {
+              const newPos = currentPos - 1;
+              if (currentPos % this.cols !== 0 && newPos >= 0) {
+                setPos(newPos);
+              }
+              break;
+            }
+            case "RIGHT":
+              const newPos = currentPos + 1;
+              if (newPos % this.cols !== 0 && newPos <= cells.length) {
+                setPos(newPos);
+              }
+              break;
           }
-          await new Promise((resolve) => setTimeout(resolve, 250));
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+        
+        if (killedEnemies === this.enemies) {
+          this.codeblock.setOutput("You win!");
+          confetti({count: 20});
+        } else {
+          this.codeblock.setOutput("Some Slimes are still alive. Try again!");
+          this.resetBoard();
         }
       });
     }
 
-    up() {
-      if (this.currentCell - this.cols < 0) return;
-      this.setPos(this.currentCell - this.cols);
-    }
-
-    setPos(cell: number) {
-      // this.cells[this.currentCell]!.innerHTML = `<b>${this.currentCell}</b>`;
-      this.currentCell = cell;
-      // i*c + j
-      const rect = this.cells[cell]!.getBoundingClientRect();
-      this.robot.style.top = rect.top + window.scrollY + "px";
-      this.robot.style.left = rect.left + "px";
+    setPos(currentPos: number, newPos: number, cells: NodeListOf<HTMLTableCellElement>, killedEnemies: number): { currentPos: number, killedEnemies: number } {
+      const currentCell = cells[currentPos]!;
+      const newCell = cells[newPos]!;
+      
+      const child = newCell.firstElementChild!;
+      if (child.id === "slime") {
+        killedEnemies += 1;
+      }
+      
+      child.replaceWith(this.robot);
+      
+      const newP = document.createElement("p");
+      newP.textContent = currentPos.toString();
+      currentCell.appendChild(newP);
+      
+      return { currentPos: newPos, killedEnemies };
     }
   }
   customElements.define("x-robot-game", RobotGame);
