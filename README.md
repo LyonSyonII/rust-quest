@@ -24,7 +24,7 @@ Translations are also welcome.
 
 ## Tooling
 
-This book has been made possible thanks to [Astro](https://astro.build/), [Starlight](https://starlight.astro.build/) and [Svelte](https://svelte.dev/).
+This book has been made possible thanks to [Astro](https://astro.build/), [Starlight](https://starlight.astro.build/), the [Rust Playground](https://play.rust-lang.org/) and [Godbolt's Compiler Explorer](https://godbolt.org/).
 
 ## License
 
