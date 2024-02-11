@@ -66,7 +66,13 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [],
   },
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "viewport"
+  },
   experimental: {
     optimizeHoistedScript: false /* Disables some Starlight components */,
+    clientPrerender: true,
+    contentCollectionCache: true
   },
 });

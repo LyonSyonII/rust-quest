@@ -1,10 +1,21 @@
 ---
+export const enum Direction {
+  WAIT,
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT,
+}
+
 type Props = {
   code?: string;
   rows: number;
   cols: number;
   start: number;
-  enemies: number[];
+  enemies: {
+    pos: number;
+    move: Direction[];
+  }[];
   id: number;
   winText: string;
   loseText: string;
@@ -37,13 +48,14 @@ const setup = `
 struct Robot;impl Robot{fn new()->Self{Self}fn up(&self){println!("UP")}fn down(&self){println!("DOWN")}fn left(&self){println!("LEFT")}fn right(&self){println!("RIGHT")}}
 __VALUE__
 `.trim();
+// TODO: Add validation (no ?, etc);
 ---
 
 <x-robot-game
   rows={rows}
   cols={cols}
   start={start}
-  enemies={enemies}
+  enemies={JSON.stringify(enemies)}
   id={id}
   win={winText}
   lose={loseText}
@@ -57,7 +69,7 @@ __VALUE__
               {(start == i * cols + j && (
                 <Image src={Robot} width={robotSize} alt="robot" id="robot" />
               )) ||
-                (enemies.includes(i * cols + j) && (
+                (enemies.find(({pos}) => pos == i * cols + j) && (
                   <Image
                     src={getRandomSlime()}
                     width={slimeWidth}
@@ -98,7 +110,10 @@ __VALUE__
     font-weight: bold;
   }
   #robot {
-    transition: transform 0.35s ease-out;
+    transition: transform 0.35s ease;
+  }
+  #slime {
+    transition: transform 0.35s ease;
   }
   .up {
     transform: translateY(-5rem);
@@ -116,6 +131,7 @@ __VALUE__
 
 <script>
   import { confetti } from "src/utils/confetti";
+  import { Direction } from "./RobotGame.astro.wip";
 
   function wait(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -127,11 +143,15 @@ __VALUE__
     readonly startPos: number;
     readonly rows: number;
     readonly cols: number;
-    readonly enemies: number;
+    readonly enemies: {
+      pos: number;
+      move: number[];
+    }[];
     readonly winText: string;
     readonly loseText: string;
 
     tableChanged: boolean;
+    turn: number;
     robot: HTMLImageElement;
 
     constructor() {
@@ -145,12 +165,13 @@ __VALUE__
       this.startPos = +this.getAttribute("start")!;
       this.rows = +this.getAttribute("rows")!;
       this.cols = +this.getAttribute("cols")!;
-      this.enemies = this.querySelectorAll("#slime").length;
+      this.enemies = JSON.parse(this.getAttribute("enemies")!);
 
       this.winText = this.getAttribute("win")!;
       this.loseText = this.getAttribute("lose")!;
 
       this.tableChanged = false;
+      this.turn = 0;
 
       this.robot = this.querySelector("#robot")!;
     }
@@ -160,6 +181,8 @@ __VALUE__
         return;
       }
       this.tableChanged = false;
+      this.turn = 0;
+
       this.querySelector("table")!.style.opacity = "0";
       await wait(200);
       this.startingBoard.style.opacity = "0";
@@ -187,11 +210,12 @@ __VALUE__
 
         this.tableChanged = true;
 
-        const setPos = async (newPos: number, direction: string) => {
-          this.robot.classList.add(direction);
+        const setPos = async (element: Element, newPos: number, direction: string) => {
+          element.classList.add(direction);
           await wait(350);
-          this.robot.classList.remove(direction);
+          element.classList.remove(direction);
           ({ currentPos, killedEnemies } = this.setPos(
+            element,
             currentPos,
             newPos,
             cells,
@@ -204,40 +228,44 @@ __VALUE__
             case "UP": {
               const newPos = currentPos - this.cols;
               if (newPos >= 0) {
-                await setPos(newPos, "up");
+                await setPos(this.robot, newPos, "up");
               }
               break;
             }
             case "DOWN": {
               const newPos = currentPos + this.cols;
               if (newPos <= cells.length) {
-                await setPos(newPos, "down");
+                await setPos(this.robot, newPos, "down");
               }
               break;
             }
             case "LEFT": {
               const newPos = currentPos - 1;
               if (currentPos % this.cols !== 0 && newPos >= 0) {
-                await setPos(newPos, "left");
+                await setPos(this.robot, newPos, "left");
               }
               break;
             }
             case "RIGHT": {
               const newPos = currentPos + 1;
               if (newPos % this.cols !== 0 && newPos <= cells.length) {
-                await setPos(newPos, "right");
+                await setPos(this.robot, newPos, "right");
               }
               break;
             }
+            
+            case "WAIT":
+              break;
 
             default:
               continue;
           }
-
+          
+          this.moveEnemies(cells);
           await wait(150);
         }
 
-        if (killedEnemies === this.enemies) {
+        if (killedEnemies === this.enemies.length) {
           this.codeblock.setOutput(this.winText);
           this.codeblock.setSuccess();
           confetti({ count: 20 });
@@ -250,7 +278,56 @@ __VALUE__
       });
     }
 
+    moveEnemies(cells: NodeListOf<HTMLTableCellElement>) {
+      for (const enemy of this.enemies) {
+        const newPos = enemy.pos + enemy.move[this.turn % enemy.move.length - 1]!;
+        enemy.pos = newPos;
+        const newCell = cells[newPos]!;
+        
+      }
+    }
+    
+    async move(element: Element, currentPos: number, direction: Direction, cells: NodeListOf<HTMLTableCellElement>) {
+      switch (direction) {
+            case Direction.UP: {
+              const newPos = currentPos - this.cols;
+              if (newPos >= 0) {
+                await this.setPos(element, newPos, "UP", cells);
+              }
+              break;
+            }
+            case Direction.DOWN: {
+              const newPos = currentPos + this.cols;
+              if (newPos <= cells.length) {
+                await setPos(element, newPos, "down", cells);
+              }
+              break;
+            }
+            case Direction.LEFT: {
+              const newPos = currentPos - 1;
+              if (currentPos % this.cols !== 0 && newPos >= 0) {
+                await setPos(this.robot, newPos, "left");
+              }
+              break;
+            }
+            case Direction.RIGHT: {
+              const newPos = currentPos + 1;
+              if (newPos % this.cols !== 0 && newPos <= cells.length) {
+                await setPos(this.robot, newPos, "right");
+              }
+              break;
+            }
+            
+            case Direction.WAIT:
+              break;
+
+            default:
+              break;
+          }
+    }
+
     setPos(
+      element: Element,
       currentPos: number,
       newPos: number,
       cells: NodeListOf<HTMLTableCellElement>,
@@ -258,13 +335,14 @@ __VALUE__
     ): { currentPos: number; killedEnemies: number } {
       const currentCell = cells[currentPos]!;
       const newCell = cells[newPos]!;
-
+      
       const child = newCell.firstElementChild!;
       if (child.id === "slime") {
-        killedEnemies += 1;
+        if (element.id === "slime") return { currentPos, killedEnemies };
+        else if (element.id === "robot") killedEnemies += 1;
       }
 
-      child.replaceWith(this.robot);
+      child.replaceWith(element);
 
       const newP = document.createElement("p");
       newP.textContent = currentPos.toString();

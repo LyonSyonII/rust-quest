@@ -328,7 +328,7 @@ const props = {
     }
 
     public async setOutput(output: string) {
-      const out = output.replace("SUCCESS\n", "");
+      const out = output.replace("SUCCESS", "").trim();
       if (this.id && output.length !== out.length) {
         await this.setSuccess();
         this.onsuccess(out, this.getValue());

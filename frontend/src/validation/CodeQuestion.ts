@@ -1,5 +1,3 @@
-import type { Option } from "@sapphire/result";
-
 export type CodeQuestion = {
   /** Invisible part of the code.
    *

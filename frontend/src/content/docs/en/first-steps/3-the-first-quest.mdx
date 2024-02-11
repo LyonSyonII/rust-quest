@@ -10,6 +10,7 @@ import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.astro";
+import Hint from "@components/Hint.astro";
 
 export function Grocer(props) {
   return (
@@ -80,8 +81,10 @@ The Adventurer's Guild`;
   So, as a Programmer, could you find a way to automate this?
   
   I have this code thing that represents our magical crates and what's in them, check it out:
-  \> Hint: The structure of the code is `let <label> = <contents>`, think of the label as being the literal contents of the crate.
+
   </Grocer>
+  
+  <Hint>The structure of the code is let `<label> = <contents>`, think of the label as being the literal contents of the crate. </Hint>
   
   <CodeQuestion 
 id = "3-2"

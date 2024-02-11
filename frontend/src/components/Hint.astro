@@ -2,14 +2,51 @@
 
 ---
 
-<aside>
-  <slot/>
-</aside>
+<x-hint>
+  <button>Hint</button>
+  <aside>
+    <slot/>
+  </aside>
+</x-hint>
+
+<style>
+  x-hint {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  x-hint button {
+    height: 2rem;
+    width: 4rem;
+    min-width: 4rem;
+    background: var(--sl-color-gray-5);
+    border-color: transparent;
+    border-radius: .25em;
+  }
+  x-hint aside {
+    display: none;
+  }
+  x-hint[visible] aside {
+    display: block;
+    margin: 0;
+  }
+</style>
 
 <script>
   class Hint extends HTMLElement {
+    visible: boolean = false;
+
     constructor() {
-      
+      super();
+
+      const button = this.querySelector("button")!;
+
+      button.addEventListener("click", () => {
+        this.visible = !this.visible;
+        this.toggleAttribute("visible", this.visible);
+        button.textContent = this.visible ? "Hide" : "Hint";
+      });
     }
   }
+  customElements.define("x-hint", Hint);
 </script>
