@@ -5,18 +5,8 @@ import type { Langs } from "@i18n/_langs";
 export type Props = {
   /** Checkpoint that will be activated when "SUCCESS" is returned. */
   id?: string;
-  /** Invisible part of the code. All instances of `__VALUE__` will be replaced with the current editor value. */
-  setup?: string;
-  /** `(value: string, test: (regex: RegExp) => boolean) => string | undefined`
-   *  Function to validate the code.
-   *  If it returns a string, it will be displayed in the output and the code will not be executed. */
-  validator?: string;
-  /** `(stdout: string, value: string) => undefined`
-   *  Callback that will be called when "SUCCESS" is returned. */
-  onsuccess?: string;
-  vars?: Array<{ v: string; d: string; c: string }>;
-  placeholder?: string;
   code?: string;
+  placeholder?: string;
   errorMsg?: string;
   showLineNumbers?: boolean;
   editable?: boolean;
@@ -27,10 +17,6 @@ const l = translation(Astro.url.pathname.split("/")[1] as Langs);
 
 const {
   id = "",
-  setup = "__VALUE__",
-  validator = "return undefined",
-  onsuccess = "return undefined",
-  vars = [],
   placeholder = l.placeholder,
   code = "",
   errorMsg = l.error,
@@ -41,10 +27,6 @@ const {
 
 const props = {
   id,
-  setup,
-  validator,
-  onsuccess,
-  vars: JSON.stringify(vars),
   placeholder,
   code,
   errorMsg,
@@ -157,6 +139,7 @@ const props = {
   import { githubLight } from "src/codemirror-themes/github-light";
   import { githubDark } from "src/codemirror-themes/github-dark";
   import { onThemeChange } from "src/utils/onThemeChange";
+  import type { CodeQuestion } from "src/validation/CodeQuestion";
 
   class ResponseEvent extends Event {
     readonly codeBlock: CodeBlock;
@@ -189,14 +172,14 @@ const props = {
     runButton: HTMLButtonElement;
     resetButton: HTMLButtonElement;
 
-    code: string;
-    setup: string;
-    errorMsg: string;
+    code: string = "";
+    setup: string = "__VALUE__";
     validator: (
       value: string,
       test: (regex: RegExp) => boolean,
-    ) => string | undefined;
-    onsuccess: (stdout: string, value: string) => void;
+    ) => string | undefined = () => undefined;
+    onsuccess: (stdout: string, value: string) => void = () => {};
+    errorMsg: string;
 
     editor: EditorView;
     readonly: Compartment;
@@ -214,32 +197,34 @@ const props = {
         this.setValue(this.code);
         this.dispatchEvent(new ResetEvent(this));
       });
-
-      const vars: Array<{ v: string; d: string; c: string }> = JSON.parse(
-        this.getAttribute("vars")!,
-      );
-      const replaceVars = (r: string) =>
-        vars.reduce(
-          (acc, { v, d, c }) =>
-            acc.replaceAll(
-              `$${v}`,
-              Function("v", c)(localStorage.getItem(v) || d),
-            ),
-          r,
-        );
-      this.code = replaceVars(this.getAttribute("code")!);
-      this.setup = replaceVars(this.getAttribute("setup")!);
+      
       this.errorMsg = this.getAttribute("errorMsg")!;
-      this.validator = Function(
-        "value",
-        "test",
-        this.getAttribute("validator")!,
-      ) as any;
-      this.onsuccess = Function(
-        "stdout",
-        "value",
-        this.getAttribute("onsuccess")!,
-      ) as any;
+      
+      import(`../../validation/${this.id}.ts`)
+        .then((q) => q.default as CodeQuestion)
+        .then(
+          ({
+            setup,
+            vars = [],
+            validator,
+            onsuccess,
+          }) => {
+            const replaceVars = (r: string) =>
+              vars.reduce(
+                (acc, { v, d, c = (v) => v }) =>
+                  acc.replaceAll(
+                    `$${v}`,
+                    c(localStorage.getItem(v) || d),
+                  ),
+                r,
+              );
+            this.code = replaceVars(this.getAttribute("code") || this.code);
+            this.setValue(this.code);
+            this.setup = replaceVars(setup || this.setup);
+            this.validator = validator || this.validator;
+            this.onsuccess = onsuccess || this.onsuccess;
+          },
+        );
 
       this.readonly = new Compartment();
       this.theme = new Compartment();
@@ -341,7 +326,7 @@ const props = {
     public async setSuccess() {
       (await import("../Checkpoint/checkpoint")).add(this.id);
     }
-    
+
     public async setOutput(output: string) {
       const out = output.replace("SUCCESS\n", "");
       if (this.id && output.length !== out.length) {
@@ -363,7 +348,8 @@ const props = {
       this.setRunning(true);
 
       const value = this.getValue();
-      const v = this.validator(value, (regex: RegExp) => regex.test(value));
+      const v = this.validator(value, (regex: RegExp) => regex.test(value))?.trim();
+      
       if (v !== undefined) {
         // Wait a bit to emphasize that the code is running
         await new Promise((resolve) => setTimeout(resolve, 50));

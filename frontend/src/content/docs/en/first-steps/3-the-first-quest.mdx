@@ -48,7 +48,6 @@ The Adventurer's Guild`;
 <CodeQuestion
   id="3-1"
   code="read_quest(0)"
-  validator={`return \`${quest}SUCCESS\n\``}
   editable={false}
   showLineNumbers={false}
 />
@@ -71,7 +70,8 @@ The Adventurer's Guild`;
   <Grocer>
   See all these crates? They are magical boxes!  
   
-  The number you see on each panel is the amount of vegetables stored, and it updates automatically. Pretty handy, right?  
+  The number you see on each panel is the amount of vegetables stored, and it updates automatically.  
+  Pretty handy, right?  
   
   Unfortunately, only Programmers can mess with them, they are too complicated for people like me.  
   This is where you come in.  
@@ -80,6 +80,7 @@ The Adventurer's Guild`;
   So, as a Programmer, could you find a way to automate this?
   
   I have this code thing that represents our magical crates and what's in them, check it out:
+  \> Hint: The structure of the code is `let <label> = <contents>`, think of the label as being the literal contents of the crate.
   </Grocer>
   
   <CodeQuestion 
@@ -91,33 +92,7 @@ let carrots = 4;
 let onions = 2;
 
 let total = ? + ? + ?;
-`}
-setup = {`
-__VALUE__
-if total == potatoes + carrots + onions {
-  println!("potatoes + carrots + onions == {total}, great job!");
-  println!("SUCCESS");
-}
-`}
-validator = {(() => {
-const almost = `
-You're almost there! 
-But you don't need to use "let" in this exercise.
-`;
-const copy = `
-Copying each number isn't good enough.
-You need to come up with a solution that works even if the numbers change.
-Remember to use the magical properties of the crates!
-`;
-return `
-  const answer = value.substring(value.lastIndexOf("=") + 1, value.length-1).replace(" ", "");
-  return (
-    answer.includes("?") && \`${replace}\` ||
-    answer.includes("let") && \`${almost.trim()}\` ||
-    answer.split("+").some((x) => Number(x)) && \`${copy.trim()}\` ||
-    undefined
-  );`
-})()} />
+`} />
 </Checkpoint>
 
 <Checkpoint id="3-2">
@@ -147,18 +122,6 @@ You're on your own for this one. Let's get to it!
 id="3-3"
 question="Create a magical box to store 18 apples!"
 code="let ? = ?;"
-setup={`
-if "__VALUE__".replace(" ", "") == "letapples=18;" {
-  println!("Well done, the crate is now operative!");
-  println!("SUCCESS");
-} else { println!("Not yet, keep trying!") }
-`}
-validator={`
-return value.includes("apple ") && "Remember to use the plural form of the label!"
-    || value.includes("let apples =") && !value.includes("18") && "Remember that you need to store 18 apples!"
-    || value.includes("?") && \`${replace}\`
-    || undefined
-`}
 />
 
 </Checkpoint>

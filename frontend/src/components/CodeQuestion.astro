@@ -2,48 +2,21 @@
 import type { Langs } from "@i18n/_langs";
 import CodeBlock from "./CodeBlock/CodeBlock.astro";
 import QuestionCard from "./QuestionCard.astro";
-import { minify } from "terser";
 
 type Props = {
   question?: string;
-  setup?: string;
+  id?: string;
   code: string;
   errorMsg?: string;
   placeholder?: string;
   showLineNumbers?: boolean;
   editable?: boolean;
   lang?: Langs;
-  id?: string;
-  validator?: string;
-  onsuccess?: string;
-  vars?: Array<{ v: string; d?: string; c?: string }>;
 };
 
 const { question, code, ...other } = Astro.props;
-
-const mini = async (code: string) =>
-  (import.meta.env.PROD &&
-    (await minify(code, { parse: { bare_returns: true } })).code) ||
-  code;
-const validator = await mini(other.validator || "return undefined");
-const onsuccess = await mini(other.onsuccess || "return undefined");
-const vars = await Promise.all(
-  other.vars?.map(async ({ v, d = "?", c = "return v" }) => ({
-    v,
-    d,
-    c: await mini(c),
-  })) || [],
-);
-// Log resulting code when building
-import.meta.env.PROD && console.log({ validator, onsuccess, vars });
 ---
 
 <QuestionCard question={question}>
-  <CodeBlock
-    {...other}
-    code={code?.trim()}
-    validator={validator}
-    onsuccess={onsuccess}
-    vars={vars}
-  />
+  <CodeBlock {...other} code={code?.trim()} />
 </QuestionCard>
