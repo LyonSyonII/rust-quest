@@ -5,6 +5,7 @@ description: An introduction to the Rust Quest interactive book.
 
 import CodeQuestion from "@components/CodeQuestion.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
+import Hint from "@components/Hint.astro";
 
 Thank you for reading Rust Quest!  
 This book is designed for people with zero experience in Rust or programming in general, so don't worry, I'm sure you'll leave having learned something!
@@ -25,6 +26,10 @@ export const errorMsg =
 `Woops, something went wrong and the code does not compile!
 If you've mistakenly messed up the code, click the "Reset" button to return it back to its original state.`
 
+<Hint>
+  I'm a hint 💡  
+  Click me when you are stuck with a problem, but try solving it for yourself first!
+</Hint>
 <CodeQuestion 
   code={'println!("Hello World!")'}
   showLineNumbers={false}
