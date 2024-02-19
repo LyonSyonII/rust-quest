@@ -24,13 +24,13 @@ const question: CodeQuestion = {
     const answer = value
       .substring(value.lastIndexOf("=") + 1, value.length - 1)
       .replace(" ", "");
-    return (
-      (answer.includes("?") && replace) ||
-      (answer.includes("let") && almost) ||
-      (answer.split("+").some((x) => Number(x)) && copy) ||
-      (answer.match(/[-*/]/) && operations) ||
-      undefined
-    )
+    return ( 
+      answer.includes("?") && replace
+      || answer.includes("let") && almost
+      || answer.split("+").some((x) => Number(x)) && copy
+      || answer.match(/[-*/]/) && operations
+      || undefined
+    );
   },
 } as const;
 

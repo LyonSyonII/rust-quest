@@ -49,7 +49,7 @@ const { id, total, confetti = true } = Astro.props;
         if (!launchConfetti || value !== total || checkpoint.has(confettiId)) {
           return;
         }
-        
+
         confetti();
         add(confettiId);
       });

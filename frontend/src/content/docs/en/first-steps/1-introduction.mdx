@@ -21,15 +21,12 @@ Each quest provides a programming lesson and includes a snippet of code that you
 
 Try running the following snippet (click the "Run" button on the right or press `⇧ + ↵` on your keyboard while editing):
 
-export const code = 'println!("Hello World!")';
-export const setup= '__VALUE__; println!("SUCCESS")';
 export const errorMsg =
 `Woops, something went wrong and the code does not compile!
 If you've mistakenly messed up the code, click the "Reset" button to return it back to its original state.`
 
 <CodeQuestion 
-  code={code}
-  setup={setup}
+  code={'println!("Hello World!")'}
   showLineNumbers={false}
   errorMsg={errorMsg}
   id="1-1"

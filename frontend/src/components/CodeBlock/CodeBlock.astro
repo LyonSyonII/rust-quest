@@ -197,34 +197,24 @@ const props = {
         this.setValue(this.code);
         this.dispatchEvent(new ResetEvent(this));
       });
-      
+
       this.errorMsg = this.getAttribute("errorMsg")!;
-      
+
       import(`../../validation/${this.id}.ts`)
         .then((q) => q.default as CodeQuestion)
-        .then(
-          ({
-            setup,
-            vars = [],
-            validator,
-            onsuccess,
-          }) => {
-            const replaceVars = (r: string) =>
-              vars.reduce(
-                (acc, { v, d, c = (v) => v }) =>
-                  acc.replaceAll(
-                    `$${v}`,
-                    c(localStorage.getItem(v) || d),
-                  ),
-                r,
-              );
-            this.code = replaceVars(this.getAttribute("code") || this.code);
-            this.setValue(this.code);
-            this.setup = replaceVars(setup || this.setup);
-            this.validator = validator || this.validator;
-            this.onsuccess = onsuccess || this.onsuccess;
-          },
-        );
+        .then(({ setup, vars = [], validator, onsuccess }) => {
+          const replaceVars = (r: string) =>
+            vars.reduce(
+              (acc, { v, d, c = (v) => v }) =>
+                acc.replaceAll(`$${v}`, c(localStorage.getItem(v) || d)),
+              r,
+            );
+          this.code = replaceVars(this.getAttribute("code") || this.code);
+          this.setValue(this.code);
+          this.setup = replaceVars(setup || this.setup);
+          this.validator = validator || this.validator;
+          this.onsuccess = onsuccess || this.onsuccess;
+        });
 
       this.readonly = new Compartment();
       this.theme = new Compartment();
@@ -348,8 +338,10 @@ const props = {
       this.setRunning(true);
 
       const value = this.getValue();
-      const v = this.validator(value, (regex: RegExp) => regex.test(value))?.trim();
-      
+      const v = this.validator(value, (regex: RegExp) =>
+        regex.test(value),
+      )?.trim();
+
       if (v !== undefined) {
         // Wait a bit to emphasize that the code is running
         await new Promise((resolve) => setTimeout(resolve, 50));
@@ -368,12 +360,12 @@ const props = {
     }
 
     setResponse(response: string): boolean {
-      this.hideOutput();
-
       // Only show output if there is something and event isn't cancelled
       if (this.dispatchEvent(new ResponseEvent(this, response)) && response) {
         this.setOutput(response);
         this.setRunning(false);
+      } else {
+        this.hideOutput();
       }
 
       return true;

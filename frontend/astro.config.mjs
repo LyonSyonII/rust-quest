@@ -68,11 +68,11 @@ export default defineConfig({
   },
   prefetch: {
     prefetchAll: true,
-    defaultStrategy: "viewport"
+    defaultStrategy: "viewport",
   },
   experimental: {
     optimizeHoistedScript: false /* Disables some Starlight components */,
     clientPrerender: true,
-    contentCollectionCache: true
+    contentCollectionCache: true,
   },
 });
