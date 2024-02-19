@@ -3,32 +3,97 @@
 ---
 
 <x-hint>
-  <button>Hint</button>
-  <aside>
-    <slot/>
-  </aside>
+  <button>
+    <!-- carbon:idea -->
+    <!-- prettier-ignore -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewBox="0 0 32 32"><path fill="currentColor" d="M11 24h10v2H11zm2 4h6v2h-6zm3-26A10 10 0 0 0 6 12a9.19 9.19 0 0 0 3.46 7.62c1 .93 1.54 1.46 1.54 2.38h2c0-1.84-1.11-2.87-2.19-3.86A7.2 7.2 0 0 1 8 12a8 8 0 0 1 16 0a7.2 7.2 0 0 1-2.82 6.14c-1.07 1-2.18 2-2.18 3.86h2c0-.92.53-1.45 1.54-2.39A9.18 9.18 0 0 0 26 12A10 10 0 0 0 16 2"/></svg>
+  </button>
+  <div>
+    <slot />
+  </div>
 </x-hint>
 
 <style>
-  x-hint {
-    display: flex;
-    align-items: stretch;
-    gap: 1rem;
+  :root {
+    --portraitSize: 80px;
   }
-  x-hint button {
-    height: 2rem;
-    width: 4rem;
-    min-width: 4rem;
-    background: var(--sl-color-gray-5);
-    border-color: transparent;
+  :root x-hint {
+    /* background-color: var(--sl-color-gray-6); */
+  }
+  x-hint {
+    display: grid;
+    grid-template-columns: auto;
+    
+    margin-top: 0rem;
+    border: 1px;
+    border-radius: 0.25em;
+  }
+  button {
+    background-color: var(--sl-color-gray-6);
+    
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+
+    border: 1px;
     border-radius: .25em;
   }
-  x-hint aside {
+  button svg {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  div {
+    color: var(--sl-color-gray-1);
+    padding: 0.75rem;
+    margin-top: 0;
+    align-self: center;
+  }
+  @media only screen and (min-width: 1152px) {
+    x-hint {
+      margin-left: calc(-1 * var(--portraitSize));
+      grid-template-columns: var(--portraitSize);
+      position: absolute;
+    }
+    x-hint[visible] {
+      grid-template-columns: var(--portraitSize) auto;
+      position: relative;
+    }
+    button {
+      display: grid;
+      container-type: size;
+      min-height: calc(
+        80px + 0.5rem
+      ); /* 80px (image) + margins (0.25rem each) */
+    }
+    svg {
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+    @container (height < 120px) {
+      svg {
+        align-self: center;
+      }
+    }
+    #text {
+      padding: 1rem;
+      padding-left: 0.25rem;
+    }
+  }
+  x-hint[visible] {
+    background-color: var(--sl-color-gray-6);
+  }
+  x-hint div {
     display: none;
   }
-  x-hint[visible] aside {
+  x-hint[visible] div {
     display: block;
     margin: 0;
+  }
+  x-hint button svg {
+    color: var(--sl-color-white);
+  }
+  x-hint[visible] button svg {
+    color: yellow;
   }
 </style>
 
@@ -41,11 +106,9 @@
 
       const button = this.querySelector("button")!;
 
-      button.addEventListener("click", () => {
-        this.visible = !this.visible;
-        this.toggleAttribute("visible", this.visible);
-        button.textContent = this.visible ? "Hide" : "Hint";
-      });
+      button.addEventListener("click", () => 
+        this.toggleAttribute("visible")
+      );
     }
   }
   customElements.define("x-hint", Hint);

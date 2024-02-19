@@ -20,14 +20,13 @@
     "@codemirror/state": "^6.4.0",
     "@codemirror/view": "^6.24.0",
     "@lezer/highlight": "^1.2.0",
-    "@sapphire/result": "^2.6.6",
     "astro-compressor": "^0.4.1",
     "confettis": "^0.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.3.4",
     "@astrojs/starlight": "^0.17.4",
-    "astro": "^4.3.5",
+    "astro": "^4.4.0",
     "astro-compress": "^2.2.10",
     "astro-robots-txt": "^1.0.0",
     "astro-webmanifest": "^1.0.0",
@@ -35,7 +34,6 @@
     "prettier-plugin-astro": "^0.12.3",
     "rollup-plugin-visualizer": "^5.12.0",
     "sharp": "^0.33.2",
-    "terser": "^5.27.0",
     "typescript": "^5.3.3"
   }
 }
