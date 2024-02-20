@@ -58,14 +58,13 @@
       grid-template-columns: var(--portraitSize) auto;
       position: static;
     }
+    x-hint[visible] div {
+      padding-left: 40px;
+    }
     button {
       display: grid;
       container-type: size;
       min-height: var(--portraitSize);
-    }
-    #text {
-      padding: 1rem;
-      padding-left: 0.25rem;
     }
   }
   x-hint[visible] {
