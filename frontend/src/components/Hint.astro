@@ -1,6 +1,6 @@
 ---
----
 
+---
 
 <x-hint>
   <button>
@@ -20,21 +20,21 @@
   x-hint {
     display: grid;
     grid-template-columns: auto;
-    
+
     margin-top: 0rem;
     border: 1px;
     border-radius: 0.25em;
   }
   button {
     background-color: var(--sl-color-gray-6);
-    
+
     padding: 0;
     margin: 0;
     line-height: 0;
     cursor: pointer;
 
     border: 1px;
-    border-radius: .25em;
+    border-radius: 0.25em;
   }
   button svg {
     margin-left: auto;
@@ -91,8 +91,8 @@
     constructor() {
       super();
 
-      this.querySelector("button")!.addEventListener("click", () => 
-        this.toggleAttribute("visible")
+      this.querySelector("button")!.addEventListener("click", () =>
+        this.toggleAttribute("visible"),
       );
     }
   }

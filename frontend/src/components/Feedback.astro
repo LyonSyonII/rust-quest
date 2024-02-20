@@ -1,0 +1,73 @@
+---
+
+---
+
+<!-- https://codepen.io/vsync/pen/AmwKXE -->
+<form class="not-content" id="form" action="" method="get">
+  <label for="score-wrapper">How would you rate this chapter?</label>
+  <div id="score-wrapper">
+    <label for="score">😰</label>
+    <input id="score" type="range" min="1" max="5" value="3" />
+    <label for="score">🤩</label>
+  </div>
+  <label for="review">Do you have some feedback?</label>
+  <textarea id="review" name="review" autocapitalize="on"></textarea>
+  <button>Submit</button>
+</form>
+
+<script>
+  const form = document.querySelector("form")!;
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const button = form.querySelector("button")!;
+    button.innerText = "Thank you!";
+    console.log(data);
+  };
+</script>
+
+<style>
+  form {
+    --sl-card-border: var(--sl-color-purple);
+    --sl-card-bg: var(--sl-color-purple-low);
+    display: flex;
+    border: 1px solid var(--sl-color-gray-5);
+    background-color: var(--sl-color-black);
+    flex-direction: column;
+    align-items: center;
+    padding: var(--card-padding);
+    gap: var(--card-padding);
+  }
+  div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  div > input {
+    width: 80%;
+  }
+  div > label {
+    font-size: 1.5rem;
+  }
+  label[for="review"] {
+    text-align: center;
+    margin-top: 0.25rem;
+  }
+  textarea {
+    resize: none;
+    width: 100%;
+  }
+  button {
+    background-color: var(--sl-color-gray-6);
+    border-radius: 0.25rem;
+    cursor: pointer;
+
+    border: 1px;
+    border-radius: 0.25em;
+
+    transition: background-color 0.2s;
+  }
+  button:hover {
+    background-color: var(--sl-color-gray-5);
+  }
+</style>
