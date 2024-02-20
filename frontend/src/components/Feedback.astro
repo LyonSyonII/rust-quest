@@ -11,7 +11,7 @@
     <label for="score">🤩</label>
   </div>
   <label for="review">Do you have some feedback?</label>
-  <textarea id="review" name="review" autocapitalize="on"></textarea>
+  <textarea id="review" name="review" autocapitalize="on" autocorrect="off" />
   <button>Submit</button>
 </form>
 
@@ -19,10 +19,14 @@
   const form = document.querySelector("form")!;
   form.onsubmit = (e) => {
     e.preventDefault();
-    const data = new FormData(form);
+    const data = {
+      score: (form.querySelector("#score") as HTMLInputElement).value,
+      review: (form.querySelector("#review") as HTMLTextAreaElement).value,
+    };
     const button = form.querySelector("button")!;
     button.innerText = "Thank you!";
     console.log(data);
+    // TODO: fetch
   };
 </script>
 
