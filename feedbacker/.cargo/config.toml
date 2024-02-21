@@ -1,0 +1,11 @@
+[unstable]
+codegen-backend = true
+profile-rustflags = true
+
+[profile.dev]
+codegen-backend = "cranelift"
+
+[profile.release]
+#rustflags = [
+#    "-Zlocation-detail=none"
+#]

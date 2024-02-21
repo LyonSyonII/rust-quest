@@ -1,9 +1,12 @@
 ---
-
+export type Props = {
+  id: string;
+};
+const { id } = Astro.props;
 ---
 
 <!-- https://codepen.io/vsync/pen/AmwKXE -->
-<form class="not-content" id="form" action="" method="get">
+<form class="not-content" id={id} action="" method="post">
   <label for="score-wrapper">How would you rate this chapter?</label>
   <div id="score-wrapper">
     <label for="score">😰</label>
@@ -17,16 +20,25 @@
 
 <script>
   const form = document.querySelector("form")!;
-  form.onsubmit = (e) => {
+  form.onsubmit = async (e) => {
     e.preventDefault();
     const data = {
-      score: (form.querySelector("#score") as HTMLInputElement).value,
-      review: (form.querySelector("#review") as HTMLTextAreaElement).value,
+      id: form.id,
+      score: parseInt((form.querySelector("#score") as HTMLInputElement).value),
+      review: (form.querySelector("#review") as HTMLTextAreaElement).value.trim(),
     };
     const button = form.querySelector("button")!;
     button.innerText = "Thank you!";
     console.log(data);
-    // TODO: fetch
+    
+    await fetch("http://127.0.0.1:8080", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
   };
 </script>
 
