@@ -10,6 +10,21 @@ struct Feedback {
     review: String
 }
 
+#[derive(serde::Deserialize, Debug, Clone)]
+struct Config {
+    port: u16,
+    allowed_origins: Vec<String>
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            port: 9090,
+            allowed_origins: Vec::new(),
+        }
+    }
+}
+
 #[post("/")]
 async fn feedback(web::Json(feedback): web::Json<Feedback>) -> impl Responder {
     println!("{}", feedback);
@@ -18,18 +33,25 @@ async fn feedback(web::Json(feedback): web::Json<Feedback>) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        let cors = actix_cors::Cors::default()
-            .allowed_origin("https://rust-quest.com")
-            .allowed_origin("http://localhost:4321")
-            .allowed_methods(["POST", "OPTIONS"])
-            .allowed_header(http::header::CONTENT_TYPE);
+    let config = figment::Figment::new().merge(
+        figment::providers::Env::prefixed("")
+    ).extract::<Config>().unwrap();
+        
+    let cors = actix_cors::Cors::default()
+        .allowed_origin_fn(|origin, _| {
+            config.allowed_origins.iter().any(|a| a.as_bytes() == origin.as_bytes())
+        })
+        .allowed_methods(["POST", "OPTIONS"])
+        .allowed_header(http::header::CONTENT_TYPE);
 
-        App::new()
-            .service(feedback)
-            .wrap(cors)
+    let app = App::new().service(feedback).wrap(cors);
+
+    HttpServer::new(move || {
+        
+
+        app
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", config.port))?
     .run()
     .await
 }
