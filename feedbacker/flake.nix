@@ -34,6 +34,7 @@
           valgrind
           mold
           cargo-watch
+          docker
         ];
       };
     };

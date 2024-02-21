@@ -1,0 +1,32 @@
+cmd default() {
+  echo "$doc"
+}
+
+const PORT = 9090
+
+cmd watch() {
+  PORT=$PORT
+  ALLOWED_ORIGINS=https://rust-quest.com,http://localhost:1234
+  cargo watch -x run
+}
+
+sub docker {
+  const BUILD="docker build -t lyonsyonii/feedbacker ."
+  
+  /// Build the docker image
+  cmd build() {
+    $BUILD
+  }
+  
+  /// Build and push the docker image to dockerhub
+  cmd push() {
+    $BUILD
+    docker push lyonsyonii/feedbacker:latest
+  }
+  
+  /// Build and run the docker image
+  cmd run() {
+    $BUILD
+    docker run -p $PORT:$PORT lyonsyonii/feedbacker
+  }
+}
