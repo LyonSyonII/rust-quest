@@ -1,5 +1,6 @@
 ---
 type Props = {
+  question: string;
   id: string;
   rows: number;
   cols: number;
@@ -9,11 +10,22 @@ type Props = {
   winText: string;
   loseText: string;
 };
-const { rows, cols, cellSize = "5rem", start = 0, enemies = [], id, winText = "You win!", loseText = "There are some Slimes left, try again!" } = Astro.props;
+const { 
+  question, 
+  id, 
+  rows, 
+  cols, 
+  cellSize = "5rem", 
+  start = 0, 
+  enemies = [], 
+  winText = "You win!", 
+  loseText = "There are some Slimes left, try again!" 
+} = Astro.props;
 
 import { Image } from "astro:assets";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
 import Robot from "@assets/robot.svg";
+import QuestionCard from "@components/QuestionCard.astro";
 
 const slimes = (
   await Astro.glob<Record<string, ImageMetadata>>(
@@ -23,6 +35,7 @@ const slimes = (
 const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 ---
 
+<QuestionCard question={question} >
 <x-robot-game { ...{rows, cols, start, enemies, id, win: winText, lose: loseText} } >
   <table>
     {
@@ -43,6 +56,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
   </table>
   <CodeBlock id={id} />
 </x-robot-game>
+</QuestionCard>
 
 <style define:vars={{ cellSize }}>
   :root {
@@ -59,8 +73,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: .5rem;
-    margin-top: 2rem;
+    margin-bottom: 1rem;
     transition: opacity 0.2s ease-in-out;
   }
   tr {

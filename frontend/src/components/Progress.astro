@@ -82,7 +82,7 @@ const { id, total, confetti = true } = Astro.props;
       this.querySelector(".feedback")!.addEventListener("click", () => feedback.showModal());
 
       if (import.meta.env.DEV) {
-        this.querySelector(".reset")!.addEventListener("click", () => remove(id));
+        this.querySelector(".reset")!.addEventListener("click", () => { remove(id); location.reload() });
       }
     }
   }

@@ -4,6 +4,7 @@ description: The mandatory first mission of any adventurer!
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
+import QuestionCard from "@components/QuestionCard.astro";
 import Portrait from "@components/Portrait/PortraitCard.astro";
 import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
@@ -16,23 +17,11 @@ import RobotGame from "@components/RobotGame/RobotGame.astro";
 After long days of paperwork and chores, you've finally recieved your first real quest!
 You can't contain the excitement and quickly open the letter:
 
-export const quest = `
-Greetings adventurer!
-We hope you're ready for some fun, because this will be your first hunt quest!
 
-As you're still a rookie, your mission will be to kill some slimes and collect their blobs, which are quite valued in alchemy.
-
-Because you're a Programmer, you won't be killing them yourself.
-Instead, with this letter comes the spell "summon robot", which will summon a companion that you'll have to command.
-
-Read the instructions before using it!
-Good luck!
-`;
 
 <CodeQuestion
   id="5-1"
   code="read_quest(1);"
-  validator={`return \`${quest.trim()}SUCCESS\n\``}
   editable={false}
   showLineNumbers={false}
 />
@@ -41,8 +30,7 @@ Good luck!
 Okay... Time to read those instructions.  
 Let's see.
 
-> Posar card pq sembli mes un paper.
-
+<QuestionCard background="var(--color-paper)" border={false} rounded>
 ### Summoned Robot Instructions
 Congratulations on acquiring our Monster-Killing Robot!  
 This manual provides essential instructions to ensure optimal performance and safety.
@@ -64,7 +52,7 @@ The robot initialy has 4 possible functions:
 
 Remember to consult the warranty for any technical issues and reach out to our customer support for further assistance.  
 We wish you a happy monster extermination!
-
+</QuestionCard>
 
 <RobotGame 
   id="5-2-robot" 
@@ -80,4 +68,4 @@ robot. ? ;
 />
 </Checkpoint>
 
-<Progress id="5" />
+<Progress id="5" total={8} />
