@@ -8,8 +8,24 @@ use axum::{
     response::{Html, Json},
     routing::{get, post},
 };
+use utoipa::OpenApi;
 
 use crate::config::Config;
+
+#[derive(utoipa::OpenApi)]
+#[openapi(
+    paths(
+        routes::feedback,
+        routes::index
+    ),
+    components(
+        schemas(routes::Feedback, routes::Log)
+    ),
+    tags(
+        (name="feedback", description="Feedback API")
+    )
+)]
+struct ApiDoc;
 
 #[tokio::main]
 async fn main() {
@@ -29,6 +45,7 @@ async fn main() {
     let app = axum::Router::new()
         .route("/", post(routes::feedback))
         .route("/", get(routes::index))
+        .merge(utoipa_swagger_ui::SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .with_state(config)
         .layer(cors);
 

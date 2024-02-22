@@ -2,7 +2,13 @@ use axum::{extract::State, response::Html};
 
 use crate::Config;
 
-/// GET /
+#[utoipa::path(
+    get,
+    path = "/",
+    responses(
+        (status = 200, description = "Table with all logs", body = [Log])
+    )
+)]
 pub async fn index(State(config): State<&'static Config>) -> Html<Vec<u8>> {
     let Some(Ok(file)) = config.output.as_ref().map(std::fs::read_to_string) else {
         return Html("Waiting for feedback...".into());
