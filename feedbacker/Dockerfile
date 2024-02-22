@@ -2,11 +2,11 @@ FROM rust:slim
 
 WORKDIR /usr/src/feedbacker
 COPY . .
-RUN cargo build --release
-RUN cargo install --path .
+RUN cargo install --path . && cargo clean
 
 ENV PORT="9090"
-ENV ALLOWED_ORIGINS="*"
+ENV OUTPUT="./feedback.yml"
+# ENV ALLOWED_ORIGINS=""
 
 EXPOSE ${PORT}
 

@@ -1,9 +1,8 @@
 use axum::{
-    response::Json,
+    extract::State,
+    response::{Html, Json},
     routing::{get, post},
 };
-
-use std::fmt::Write;
 
 #[derive(serde::Deserialize, Debug, Clone)]
 struct Feedback {
@@ -16,57 +15,7 @@ struct Feedback {
 struct Config {
     port: u16,
     allowed_origins: Vec<String>,
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Config {
-            port: 9090,
-            allowed_origins: Vec::new(),
-        }
-    }
-}
-
-/// GET /
-async fn index() -> &'static str {
-    "Waiting for feedback..."
-}
-
-/// POST /
-async fn feedback(Json(feedback): Json<Feedback>) -> &'static str {
-    println!("{}", feedback);
-    "Thank you for your feedback!"
-}
-
-#[tokio::main]
-async fn main() {
-    let config =
-        figment::Figment::from(figment::providers::Serialized::defaults(Config::default()))
-            .merge(figment::providers::Env::prefixed(""))
-            .extract::<Config>()
-            .unwrap();
-
-    let cors = tower_http::cors::CorsLayer::new().allow_origin(
-        config
-            .allowed_origins
-            .into_iter()
-            .map(|o| o.parse::<http::HeaderValue>().unwrap())
-            .collect::<Vec<_>>(),
-    );
-
-    let app = axum::Router::new()
-        .route("/", post(feedback))
-        .route("/", get(index))
-        .layer(cors);
-
-    let listener = tokio::net::TcpListener::bind(("0.0.0.0", config.port))
-        .await
-        .unwrap();
-
-    let ip = local_ip_address::local_ip().unwrap();
-    println!("Listening on: http://{ip:?}:{}", config.port);
-
-    axum::serve(listener, app).await.unwrap();
+    output: Option<std::path::PathBuf>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
@@ -74,7 +23,104 @@ struct Log<'a> {
     date: time::OffsetDateTime,
     id: &'a str,
     score: u8,
-    review: &'a str,
+    review: std::borrow::Cow<'a, str>,
+}
+
+impl Config {
+    fn figment() -> figment::Figment {
+        figment::Figment::from(figment::providers::Serialized::defaults(Config::default()))
+            .merge(figment::providers::Env::prefixed(""))
+    }
+
+    fn get() -> &'static Config {
+        Box::leak(Box::new(Self::figment().extract::<Config>().unwrap()))
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            port: 9090,
+            allowed_origins: Vec::new(),
+            output: None,
+        }
+    }
+}
+
+/// GET /
+async fn index(State(config): State<&'static Config>) -> Html<String> {
+    let Some(Ok(file)) = config.output.as_ref().map(std::fs::read_to_string) else {
+        return Html("Waiting for feedback...".into());
+    };
+    
+    let logs: Vec<Log> = serde_yaml::from_str(&file).unwrap();
+    let logs = logs.into_iter().fold(String::new(), |acc, log| {
+        let date_format =
+            time::format_description::parse_borrowed::<2>("[year]-[month]-[day]").unwrap();
+        format!(
+            "{acc}<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>",
+            log.date.format(&date_format).unwrap(),
+            log.id,
+            log.score,
+            log.review
+        )
+    });
+    let css = include_str!("../assets/table.css");
+    let script = include_str!("../assets/sort-table.js");
+    Html(format!(
+        "<table><thead><tr><th>Date</th><th>ID</th><th>Score</th><th>Review</th></tr></thead><tbody>{logs}</tbody></table><style>{css}</style><script>{script}</script>",
+    ))
+}
+
+/// POST /
+async fn feedback(
+    State(config): State<&'static Config>,
+    Json(feedback): Json<Feedback>,
+) -> &'static str {
+    use std::io::Write;
+
+    if let Some(path) = &config.output {
+        let mut file = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(path)
+            .unwrap();
+
+        write!(file, "{feedback}").unwrap();
+    }
+    eprintln!("{}", feedback);
+    "Thank you for your feedback!"
+}
+
+#[tokio::main]
+async fn main() {
+    let config = Config::get();
+
+    let origins = config
+        .allowed_origins
+        .iter()
+        .map(|o| o.parse::<http::HeaderValue>().unwrap());
+    let cors =
+        tower_http::cors::CorsLayer::new().allow_origin(if config.allowed_origins.is_empty() {
+            tower_http::cors::AllowOrigin::any()
+        } else {
+            tower_http::cors::AllowOrigin::list(origins)
+        });
+
+    let app = axum::Router::new()
+        .route("/", post(feedback))
+        .route("/", get(index))
+        .with_state(config)
+        .layer(cors);
+
+    let listener = tokio::net::TcpListener::bind(("0.0.0.0", config.port))
+        .await
+        .unwrap();
+
+    eprintln!("{config:#?}");
+    eprintln!("Listening on: http://{}", listener.local_addr().unwrap());
+
+    axum::serve(listener, app).await.unwrap();
 }
 
 impl<'a> From<&'a Feedback> for Log<'a> {
@@ -83,7 +129,7 @@ impl<'a> From<&'a Feedback> for Log<'a> {
             date: time::OffsetDateTime::now_utc(),
             id: &value.id,
             score: value.score,
-            review: &value.review,
+            review: std::borrow::Cow::Borrowed(&value.review),
         }
     }
 }
@@ -91,8 +137,8 @@ impl<'a> From<&'a Feedback> for Log<'a> {
 impl std::fmt::Display for Feedback {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let log = Log::from(self);
-        serde_json::to_writer_pretty(FormatterWriter(f), &log).unwrap();
-        f.write_char(',')
+        serde_yaml::to_writer(FormatterWriter(f), &[log]).unwrap();
+        Ok(())
     }
 }
 
