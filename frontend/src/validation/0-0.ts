@@ -18,10 +18,10 @@ const question: CodeQuestion = {
   /** Function to validate the code entered by the user.
    *
    *  If it returns `Some`, it will be displayed in the output and the code will not be executed. */
-  validator: (value: string, test: (regex: RegExp) => boolean) =>
+  validator: (_value: string, test: (regex: RegExp) => boolean) =>
     (test(/something/) && "ERROR") || undefined,
   /** Callback that will be called when "SUCCESS" is returned. */
-  onsuccess: (stdout: string, value: string) => () => {},
+  onsuccess: (_stdout: string, _value: string) => () => {},
 } as const;
 
 export default question;

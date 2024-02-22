@@ -2,10 +2,12 @@
 import { translation } from "@i18n/_CodeBlock";
 import type { Langs } from "@i18n/_langs";
 
+/** CodeBlock */
 export type Props = {
   /** Checkpoint that will be activated when "SUCCESS" is returned. */
   id?: string;
-  code?: string;
+  code?: string; 
+  setup?: string;
   placeholder?: string;
   errorMsg?: string;
   showLineNumbers?: boolean;
@@ -197,10 +199,12 @@ const props = {
         this.setValue(this.code);
         this.dispatchEvent(new ResetEvent(this));
       });
-
+      this.setup = this.getAttribute("setup") || this.setup;
       this.errorMsg = this.getAttribute("errorMsg")!;
-
-      import(`../../validation/${this.id}.ts`)
+      
+      const file = this.id.endsWith("robot") ? "0-robot" : this.id;
+      
+      import(`../../validation/${file}.ts`)
         .then((q) => q.default as CodeQuestion)
         .then(({ setup, vars = [], validator, onsuccess }) => {
           const replaceVars = (r: string) =>
