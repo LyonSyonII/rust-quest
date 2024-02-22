@@ -1,4 +1,5 @@
 use axum::{
+    http,
     extract::State,
     response::{Html, Json},
     routing::{get, post},
@@ -48,7 +49,7 @@ impl Default for Config {
 }
 
 /// GET /
-async fn index(State(config): State<&'static Config>) -> Html<String> {
+async fn index(State(config): State<&'static Config>) -> Html<Vec<u8>> {
     let Some(Ok(file)) = config.output.as_ref().map(std::fs::read_to_string) else {
         return Html("Waiting for feedback...".into());
     };
@@ -58,7 +59,7 @@ async fn index(State(config): State<&'static Config>) -> Html<String> {
         let date_format =
             time::format_description::parse_borrowed::<2>("[year]-[month]-[day]").unwrap();
         format!(
-            "{acc}<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>",
+            "{acc}<tr><td>{}</td><td>{}</td><td>{}</td><td><pre>{}</pre></td></tr>",
             log.date.format(&date_format).unwrap(),
             log.id,
             log.score,
@@ -67,19 +68,26 @@ async fn index(State(config): State<&'static Config>) -> Html<String> {
     });
     let css = include_str!("../assets/table.css");
     let script = include_str!("../assets/sort-table.js");
-    Html(format!(
+
+    let html = format!(
         "<table><thead><tr><th>Date</th><th>ID</th><th>Score</th><th>Review</th></tr></thead><tbody>{logs}</tbody></table><style>{css}</style><script>{script}</script>",
-    ))
+    );
+    Html(minify_html::minify(html.as_bytes(), &minify_html::Cfg {
+        minify_css: true,
+        minify_js: true,
+        ..minify_html::Cfg::default()
+    }))
 }
 
 /// POST /
 async fn feedback(
     State(config): State<&'static Config>,
     Json(feedback): Json<Feedback>,
-) -> &'static str {
+) -> axum::http::StatusCode {
     use std::io::Write;
 
     if let Some(path) = &config.output {
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
         let mut file = std::fs::OpenOptions::new()
             .create(true)
             .append(true)
@@ -89,7 +97,7 @@ async fn feedback(
         write!(file, "{feedback}").unwrap();
     }
     eprintln!("{}", feedback);
-    "Thank you for your feedback!"
+    http::StatusCode::OK
 }
 
 #[tokio::main]
