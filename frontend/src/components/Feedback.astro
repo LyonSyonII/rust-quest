@@ -6,32 +6,37 @@ const { id } = Astro.props;
 ---
 
 <!-- https://codepen.io/vsync/pen/AmwKXE -->
-<form class="not-content" id={id} action="" method="post">
-  <label for="score-wrapper">How would you rate this chapter?</label>
-  <div id="score-wrapper">
-    <label for="score">😰</label>
-    <input id="score" type="range" min="1" max="5" value="3" />
-    <label for="score">🤩</label>
-  </div>
-  <label for="review">Do you have some feedback?</label>
-  <textarea id="review" name="review" autocapitalize="on" autocorrect="off" />
-  <button>Submit</button>
-</form>
+<dialog>
+  <form class="not-content" id={id} action="" method="dialog">
+    <label for="score-wrapper">How would you rate this chapter?</label>
+    <div id="score-wrapper">
+      <label for="score">😰</label>
+      <input id="score" type="range" min="1" max="5" value="3" />
+      <label for="score">🤩</label>
+    </div>
+    <label for="review">Do you have some feedback?</label>
+    <textarea id="review" name="review" autocapitalize="on" autocorrect="off" autofocus />
+    <button>Submit</button>
+  </form>
+</dialog>
 
 <script>
+  const dialog = document.querySelector("dialog")!;
   const form = document.querySelector("form")!;
-  form.onsubmit = async (e) => {
-    e.preventDefault();
+  const button = form.querySelector("button")!;
+  button.innerHTML = "Submit";
+
+  form.onsubmit = async () => {
+    // e.preventDefault();
     const data = {
       id: form.id,
       score: parseInt((form.querySelector("#score") as HTMLInputElement).value),
       review: (form.querySelector("#review") as HTMLTextAreaElement).value.trim(),
     };
-    const button = form.querySelector("button")!;
-    button.innerText = "Thank you!";
+
     console.log(data);
     
-    await fetch("http://127.0.0.1:8080", {
+    await fetch("http://rust-quest.garriga.dev", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,10 +44,21 @@ const { id } = Astro.props;
       body: JSON.stringify(data),
     });
 
+    dialog.close();
+    console.log("closed");
   };
 </script>
 
 <style>
+  dialog {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15% !important;
+
+    width: 50%;
+    height: 50%;
+  }
+
   form {
     --sl-card-border: var(--sl-color-purple);
     --sl-card-bg: var(--sl-color-purple-low);
@@ -53,6 +69,8 @@ const { id } = Astro.props;
     align-items: center;
     padding: var(--card-padding);
     gap: var(--card-padding);
+
+    height: 100%;
   }
   div {
     display: flex;
@@ -72,18 +90,20 @@ const { id } = Astro.props;
   textarea {
     resize: none;
     width: 100%;
+    height: 100%;
   }
   button {
-    background-color: var(--sl-color-gray-6);
+    background-color: var(--sl-color-accent-low);
     border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
     cursor: pointer;
-
+    
     border: 1px;
     border-radius: 0.25em;
-
-    transition: background-color 0.2s;
+    
+    transition: opacity 0.2s;
   }
   button:hover {
-    background-color: var(--sl-color-gray-5);
+    opacity: 0.8;
   }
 </style>

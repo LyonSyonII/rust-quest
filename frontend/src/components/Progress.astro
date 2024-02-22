@@ -1,4 +1,6 @@
 ---
+import Feedback from './Feedback.astro';
+
 type Props = {
   id: string;
   total: number;
@@ -11,8 +13,13 @@ const { id, total, confetti = true } = Astro.props;
 <x-progress data-confetti={`${confetti}`}>
   <label for={id}>0 / {total}</label>
   <progress {id} max={total}></progress>
-  {import.meta.env.DEV && <button>Reset</button>}
+  <button class="feedback">Give Feedback</button>
+
+  <Feedback id={id} />
+
+  {import.meta.env.DEV && <button class="reset"><b>RESET</b></button>}
 </x-progress>
+
 
 <style>
   x-progress {
@@ -24,6 +31,23 @@ const { id, total, confetti = true } = Astro.props;
   }
   progress {
     margin: 0 !important;
+  }
+  button {
+    background-color: var(--sl-color-accent-low);
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    
+    border: 1px;
+    border-radius: 0.25em;
+    
+    transition: opacity 0.2s;
+  }
+  button:hover {
+    opacity: 0.8;
+  }
+  .reset {
+    background-color: red;
   }
 </style>
 
@@ -53,10 +77,12 @@ const { id, total, confetti = true } = Astro.props;
         confetti();
         add(confettiId);
       });
+      
+      const feedback = this.querySelector("dialog")!;
+      this.querySelector(".feedback")!.addEventListener("click", () => feedback.showModal());
 
       if (import.meta.env.DEV) {
-        const button = this.querySelector("button") as HTMLButtonElement;
-        button.addEventListener("click", () => remove(id));
+        this.querySelector(".reset")!.addEventListener("click", () => remove(id));
       }
     }
   }

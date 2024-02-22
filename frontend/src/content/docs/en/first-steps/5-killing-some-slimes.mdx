@@ -10,8 +10,8 @@ import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.astro";
-
-{ /* import RobotGame from "@components/RobotGame/RobotGame.astro"; */ }
+import Feedback from "@components/Feedback.astro";
+import RobotGame from "@components/RobotGame/RobotGame.astro";
 
 After long days of paperwork and chores, you've finally recieved your first real quest!
 You can't contain the excitement and quickly open the letter:
@@ -47,23 +47,18 @@ Let's see.
 Congratulations on acquiring our Monster-Killing Robot!  
 This manual provides essential instructions to ensure optimal performance and safety.
 
-#### 1. Summoning
-- Ensure the space is clear of obstacles and bystanders.
-- Utter the summoning command `Robot::new()` clearly and confidently.
+#### 1. Available functions
+The robot initialy has 4 possible functions:
 
-#### 2. Available functions
-The robot has a total of 4 possible functions:
-
-| Action          | Description                                                          |
-| --------------- | -------------------------------------------------------------------- |
-| `Robot::new()`  | Summons a new robot.<br/>Link it to a variable to be able to use it. |
-| `robot.up()`    | Move the robot up one space                                          |
-| `robot.down()`  | Move the robot down one space                                        |
-| `robot.left()`  | Move the robot left one space                                        |
-| `robot.right()` | Move the robot right one space                                       |
+| Action    | Description                    |
+| --------- | ------------------------------ |
+| `up();`    | Move the robot up one space    |
+| `down();`  | Move the robot down one space  |
+| `left();`  | Move the robot left one space  |
+| `right();` | Move the robot right one space |
 
 
-#### 3. Legal and Ethical Considerations
+#### 2. Legal and Ethical Considerations
 - Adhere to local laws and regulations governing the use of monster-killing robots.
 - Exercise ethical judgement to ensure the safety of bystanders and property.
 
@@ -71,8 +66,8 @@ Remember to consult the warranty for any technical issues and reach out to our c
 We wish you a happy monster extermination!
 
 
-{/* <RobotGame 
-  id="5-2" 
+<RobotGame 
+  id="5-2-robot" 
   code={`
 let robot = Robot::new();
 robot. ? ;
@@ -82,9 +77,7 @@ robot. ? ;
   cols={3} 
   start={7} 
   enemies={[1]} 
-/> */}
+/>
 </Checkpoint>
 
-<Checkpoint id="5-2">
-potato
-</Checkpoint>
+<Progress id="5" />

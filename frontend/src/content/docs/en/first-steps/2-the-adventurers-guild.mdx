@@ -7,12 +7,13 @@ import CodeQuestion from "@components/CodeQuestion.astro";
 import Portrait from "@components/Portrait/PortraitCard.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.astro";
+import Feedback from "@components/Feedback.astro";
 
-export const code_mess =
+export const codeMess =
 `Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
 Remember to only modify the ? symbol.`
 export const replace = "Replace ? with your answer."
-export const wrong_answer = "Wrong answer, try again!"
+export const wrongAnswer = "Wrong answer, try again!"
 
 export function Guild(props) {
   return <Portrait 
@@ -39,7 +40,7 @@ export function SimpleQuestion({
     }
   `;
   const validator = `
-      return !value.startsWith(\`${no_dummy}\`) && \`${code_mess}\`
+      return !value.startsWith(\`${no_dummy}\`) && \`${codeMess}\`
       || value.includes("?") && \`${replace}\`
       || undefined
   `;
@@ -49,7 +50,7 @@ export function SimpleQuestion({
   );
 }
 export function FreeQuestion({ question, code = "", correct, id }) {
-  const setup = `if __VALUE__ { println!("${correct}SUCCESS\\n"); } else { println!("${wrong_answer}"); }`;
+  const setup = `if __VALUE__ { println!("${correct}SUCCESS\\n"); } else { println!("${wrongAnswer}"); }`;
   const validator = `return value.includes("?") && \`${replace}\` || undefined`;
   return (
     <CodeQuestion { ...{question, code, setup, validator, id} } showLineNumbers={false} />
