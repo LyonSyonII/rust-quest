@@ -30,13 +30,14 @@ pub async fn index(State(config): State<&'static Config>) -> Html<Vec<u8>> {
     let script = include_str!("../../assets/sort-table.js");
 
     let html = format!(
-        "<table><thead><tr><th>Date</th><th>ID</th><th>Score</th><th>Review</th></tr></thead><tbody>{logs}</tbody></table><style>{css}</style><script>{script}</script>",
+        "<!doctype html>\n<html><head><title>Feedbacker</title></head><body>{}</body></html>",
+        format_args!("<table><thead><tr><th>Date</th><th>ID</th><th>Score</th><th>Review</th></tr></thead><tbody>{logs}</tbody></table><style>{css}</style><script>{script}</script>"),
     );
     Html(minify_html::minify(
         html.as_bytes(),
         &minify_html::Cfg {
             minify_css: true,
-            minify_js: true,
+            minify_js: false,
             ..minify_html::Cfg::default()
         },
     ))
