@@ -14,6 +14,7 @@ tower = "0.4.13"
 tower-http = { version = "0.5.1", features = ["cors"] }
 serde_yaml = "0.9.32"
 minify-html = "0.15.0"
+utoipa-swagger-ui = { version = "6.0.0", features = ["axum"] }
 
 [profile.release]
 opt-level = 3       # Optimize for performance.
