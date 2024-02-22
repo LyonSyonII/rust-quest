@@ -1,11 +1,9 @@
+mod config;
 mod routes;
 mod utils;
-mod config;
 
 use axum::{
-    extract::State,
     http,
-    response::{Html, Json},
     routing::{get, post},
 };
 use utoipa::OpenApi;
@@ -35,17 +33,22 @@ async fn main() {
         .allowed_origins
         .iter()
         .map(|o| o.parse::<http::HeaderValue>().unwrap());
-    let cors =
-        tower_http::cors::CorsLayer::new().allow_origin(if config.allowed_origins.is_empty() {
+    let cors = tower_http::cors::CorsLayer::new()
+        .allow_origin(if config.allowed_origins.is_empty() {
             tower_http::cors::AllowOrigin::any()
         } else {
             tower_http::cors::AllowOrigin::list(origins)
-        });
+        })
+        .allow_methods([http::Method::GET, http::Method::POST])
+        .allow_headers([http::header::CONTENT_TYPE]);
 
     let app = axum::Router::new()
         .route("/", post(routes::feedback))
         .route("/", get(routes::index))
-        .merge(utoipa_swagger_ui::SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
+        .merge(
+            utoipa_swagger_ui::SwaggerUi::new("/swagger-ui")
+                .url("/api-docs/openapi.json", ApiDoc::openapi()),
+        )
         .with_state(config)
         .layer(cors);
 

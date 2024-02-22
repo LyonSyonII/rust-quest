@@ -10,7 +10,7 @@ impl Config {
         figment::Figment::from(figment::providers::Serialized::defaults(Config::default()))
             .merge(figment::providers::Env::prefixed(""))
     }
-    
+
     pub fn get() -> &'static Config {
         Box::leak(Box::new(Self::figment().extract::<Config>().unwrap()))
     }
