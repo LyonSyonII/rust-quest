@@ -6,7 +6,7 @@ import type { Langs } from "@i18n/_langs";
 export type Props = {
   /** Checkpoint that will be activated when "SUCCESS" is returned. */
   id?: string;
-  code?: string; 
+  code?: string;
   setup?: string;
   placeholder?: string;
   errorMsg?: string;
@@ -201,9 +201,9 @@ const props = {
       });
       this.setup = this.getAttribute("setup") || this.setup;
       this.errorMsg = this.getAttribute("errorMsg")!;
-      
+
       const file = this.id.endsWith("robot") ? "0-robot" : this.id;
-      
+
       import(`../../validation/${file}.ts`)
         .then((q) => q.default as CodeQuestion)
         .then(({ setup, vars = [], validator, onsuccess }) => {
@@ -322,13 +322,13 @@ const props = {
     }
 
     public async setOutput(output: string) {
-      const out = output.replace("SUCCESS", "").trim();
+      const out = output.replace("SUCCESS", "");
       if (this.id && output.length !== out.length) {
         await this.setSuccess();
-        this.onsuccess(out, this.getValue());
+        this.onsuccess(out.trim(), this.getValue());
       }
 
-      this.output.querySelector("p")!.innerText = out;
+      this.output.querySelector("p")!.innerText = out.trim();
       this.output.style.display = "block";
     }
 
