@@ -21,41 +21,6 @@ export function Guild(props) {
     {...props} 
   />
 }
-export function SimpleQuestion({
-  question,
-  code,
-  answer,
-  correct,
-  wrong,
-  checkMessed = true,
-  id,
-}) {
-  const no_dummy = code.toString().replace("?", "");
-  const setup = `
-    const VALUE: &str = "__VALUE__";
-    let a = VALUE.replace("${no_dummy}", "");
-    match a.replace(" ", "").as_str() {
-        "${answer}" => println!("${correct}SUCCESS\\n"),
-        _ => println!("${wrong}"),
-    }
-  `;
-  const validator = `
-      return !value.startsWith(\`${no_dummy}\`) && \`${codeMess}\`
-      || value.includes("?") && \`${replace}\`
-      || undefined
-  `;
-  
-  return (
-    <CodeQuestion { ...{question, code, setup, validator, id} } showLineNumbers={false} />
-  );
-}
-export function FreeQuestion({ question, code = "", correct, id }) {
-  const setup = `if __VALUE__ { println!("${correct}SUCCESS\\n"); } else { println!("${wrongAnswer}"); }`;
-  const validator = `return value.includes("?") && \`${replace}\` || undefined`;
-  return (
-    <CodeQuestion { ...{question, code, setup, validator, id} } showLineNumbers={false} />
-  );
-}
 
 <Portrait src="guild-girl" >
 Good morning, welcome to Newlia, where new heroes are born!
@@ -73,13 +38,11 @@ Please, fill in the blanks in the following statements, replacing **`?`** with t
 If you mess up the code, click the "Reset" button to return it to its original state.
 :::
 
-<SimpleQuestion
+<CodeQuestion
   question="What's five plus five?"
   code="5 + 5 == ?"
-  answer="10"
-  correct="5 + 5 == 10, good job!"
-  wrong="5 + 5 != {a}, keep trying!"
   id="2-1"
+  showLineNumbers={false}
 />
 
 <Checkpoint id="2-1">
@@ -87,13 +50,11 @@ If you mess up the code, click the "Reset" button to return it to its original s
   Well done! Let's continue.
   </Guild>
   
-  <SimpleQuestion
+  <CodeQuestion
     question="What's negative one minus one?"
     code="-1 - 1 == ?"
-    answer="-2"
-    correct="That's right, -2! I see you aren't fooled easily."
-    wrong="-1 - 1 != {a}, keep trying!"
     id="2-2"
+    showLineNumbers={false}
   />
 </Checkpoint>
 
@@ -101,14 +62,12 @@ If you mess up the code, click the "Reset" button to return it to its original s
   <Guild>
   All right, let's up the challenge a bit.
   </Guild>
-
-  <SimpleQuestion
+  
+  <CodeQuestion
     question="What's the number that multiplied by two equals sixteen divided by four?"
     code="16 / 4 == 2 * ?"
-    answer="2"
-    correct="Perfect! Now you know how to make the computer do basic calculations for you, well done!"
-    wrong="16 / 4 != 2 * {a}, keep trying!"
     id="2-3"
+    showLineNumbers={false}
   />
 </Checkpoint>
 
@@ -119,39 +78,39 @@ If you mess up the code, click the "Reset" button to return it to its original s
   
   Now we'll do some comparisons, simple stuff.
   </Guild>
-
-  <FreeQuestion
+  
+  <CodeQuestion
     question="Write any number greater than 200."
     code="200 < ?"
-    correct="Correct!"
     id="2-4"
-  />
+    showLineNumbers={false}
+  /> 
 </Checkpoint>
 
 <Checkpoint id="2-4">
-  <FreeQuestion
+  <CodeQuestion
     question="Okay... Now a number smaller than 200."
     code="200 > ?"
-    correct="Perfect!"
     id="2-5"
+    showLineNumbers={false}
   />
 </Checkpoint>
 
 <Checkpoint id="2-5">
-  <FreeQuestion
+  <CodeQuestion
     question="Now one that's smaller or equal than 0."
     code="0 >= ?"
-    correct="Good answer!"
     id="2-6"
+    showLineNumbers={false}
   />
 </Checkpoint>
 
 <Checkpoint id="2-6">
-  <FreeQuestion
+  <CodeQuestion
     question="And finally one that's greater or equal than 0."
     code="0 <= ?"
-    correct="Fantastic!"
     id="2-7"
+    showLineNumbers={false}
   />
 </Checkpoint>
 
@@ -163,24 +122,28 @@ If you mess up the code, click the "Reset" button to return it to its original s
   For instance, for the first question, instead of saying `200 is smaller than ?`, say `? is greater than 200`.  
   Remember to fill in the `?` in your final submission.
   
-  <FreeQuestion
+  <CodeQuestion
     question="Write any number greater than 200."
-    correct="Correct!"
-  />
+    id="2-4"
+    showLineNumbers={false}
+  /> 
 
-  <FreeQuestion
+  <CodeQuestion
     question="Okay... Now a number smaller than 200."
-    correct="Perfect!"
+    id="2-5"
+    showLineNumbers={false}
   />
   
-  <FreeQuestion
+  <CodeQuestion
     question="Now one that's smaller or equal than 0."
-    correct="Good answer!"
+    id="2-6"
+    showLineNumbers={false}
   />
   
-  <FreeQuestion
+  <CodeQuestion
     question="And finally one that's greater or equal than 0."
-    correct="Fantastic!"
+    id="2-7"
+    showLineNumbers={false}
   />
   :::
   
@@ -198,13 +161,6 @@ If you mess up the code, click the "Reset" button to return it to its original s
     question=""
     id="2-8"
     code={'let name = "$NAME";'}
-    vars={[ {v: "NAME", d: "?"} ]}
-    setup={`__VALUE__; println!("{name}, welcome to the Adventurer's Guild!\nSUCCESS")`}
-    validator={`return value.includes("?") && "Hint: Just replace ? with your name!" || undefined`}
-    onsuccess={`
-      let name = stdout.substring(0, stdout.indexOf(","));
-      localStorage.setItem("NAME", name);
-    `}
   />
 </Checkpoint>
 
