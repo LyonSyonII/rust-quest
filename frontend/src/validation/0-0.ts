@@ -1,6 +1,6 @@
 import type { CodeQuestion } from "./CodeQuestion";
 
-const question: CodeQuestion = {
+export default {
   /** Invisible part of the code.
    *
    *  All instances of `__VALUE__` will be replaced with the current editor value. */
@@ -21,7 +21,5 @@ const question: CodeQuestion = {
   validator: (_value: string, test: (regex: RegExp) => boolean) =>
     (test(/something/) && "ERROR") || undefined,
   /** Callback that will be called when "SUCCESS" is returned. */
-  onsuccess: (_stdout: string, _value: string) => () => {},
-} as const;
-
-export default question;
+  onsuccess: (_stdout: string, _value: string) => {},
+} as CodeQuestion;
