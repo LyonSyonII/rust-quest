@@ -8,7 +8,7 @@ export type Props = {
 
 const {
   question,
-  background = "transparent",
+  background = "var(--sl-color-black)",
   border = true,
   rounded = false,
 } = Astro.props;
@@ -26,7 +26,6 @@ const borderRadius = rounded ? "var(--border-radius)" : "none";
   article {
     --sl-card-border: var(--sl-color-gray-5);
     display: flex;
-    background-color: var(--sl-color-black);
     flex-direction: column;
     padding: var(--card-padding);
     gap: var(--card-padding);
