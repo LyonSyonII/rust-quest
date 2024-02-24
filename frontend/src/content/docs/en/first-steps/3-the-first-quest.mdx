@@ -140,7 +140,7 @@ After configuring the box, you walk to the counter to tell the grocer of your su
 Okay, that shouldn't be difficult, just take two apples and... Huh? Why is your hand being stopped in the air?  
 
 You look at the panel, maybe something is wrong?  
-Sure enough, the panel is red, and says: <Highlight bg={colors.red}>Anti-theft protection enabled, if you want to change the contents of this box **add the `mut` directive**</Highlight>
+Sure enough, the panel glows red, and says: <Highlight bg={colors.red}>Anti-theft protection enabled, if you want to change the contents of this box **add the `mut` directive**</Highlight>
 
 `mut` what? What does that mean? Why does a grocery store have anti-theft magical boxes?
 
@@ -153,26 +153,6 @@ question="Fix the box and take two apples from it!"
 code={`
 ? apples = 18;
 apples = apples - 2;
-`}
-setup={`
-__VALUE__
-if apples == 16 {
-  println!("Once you say the magical words 'let mut' the barrier sorrounding the box disappears, and you're able to take the apples.\\nGood job!");
-  println!("SUCCESS");
-} else {
-  println!("There should be 16 apples in the box, but you have {apples}, did you replace some values?");
-}
-`}
-validator={`
-const v = value.replaceAll(" ", "");
-const secondLine = v.substring(v.indexOf(";")).trim();
-return value.includes("?") && \`${replace}\`
-    || value.includes("letmut") && "Good guess! But each directive should be on its own, maybe try adding a space?"
-    || v.includes("mutlet") && "Almost! But the panel says to 'add' the directive, so maybe you need to use it in another order?"
-    || v.startsWith("mutapples") && "You're nearly there, but remember the first magical word 'let'!\\nThe panel says to 'add mut', not replace."
-    || v.startsWith("letapples") && "The box still doesn't let you take the apples!\\nRemember what the panel says 'add the \`mut\` directive'"
-    || secondLine.includes("let") && "Looks like you've modified the second line, replace only the ? part!"
-    || undefined
 `}
 />
 
@@ -199,36 +179,18 @@ code={`
 let mut apples = 16;
 ?;
 `}
-setup={`
-__VALUE__
-if apples == 16 + 64 {
-  println!("Perfect, apples = {apples}, now you know how to modify values!");
-  println!("SUCCESS");
-} else {
-  println!("Not yet, keep trying!");
-}
-`}
-validator={`
-const v = value.replaceAll(" ", "");
-const answer = v.substring(v.indexOf(";"));
-return answer.includes("?") && \`${replace}\`
-    || answer.includes("letapples") && "'let' is used to create magical boxes, but this one already exists!"
-    || answer.includes("letmutapples") && "'let' and 'mut' are used to create mutable magical boxes, but this one already exists!"
-    || answer.includes("16") && "Remember, we need reusable code!\\nLook at the previous exercise if you need some inspiration."
-    || undefined
-`}
 />
 </Checkpoint>
 
 <Checkpoint id="3-5">
 :::note[Being more technical...]
-`let mut apples = 18` means "make these apples changeable and set them to 18", where "mut" is "mutable".
+`let mut apples = 16` means "make these apples changeable and set them to 16", where "mut" is "mutable".
 
 Although it may seem outdated, `let` is a widely used term in math.
  
 In programming, the magical boxes are referred to as "variables" for a similar reason as `let` - assigning things to specific letters is common in math, and these letters are called "variables".
 
-In Rust, variables are "immutable" by default (which is uncommon in other programming languages).
+In Rust, variables are "immutable" by default (which is uncommon in other programming languages).  
 The reason for this is that you typically utilize variables to hold temporary values and do not need to directly alter them.
 :::
 
