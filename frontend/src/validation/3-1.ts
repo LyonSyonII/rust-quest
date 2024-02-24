@@ -6,8 +6,6 @@ Your first quest is... To assist the local grocery store!
 We expect great things of you.
 The Adventurer's Guild`;
 
-const question: CodeQuestion = {
+export default {
   validator: () => quest + "SUCCESS\n",
-} as const;
-
-export default question;
+} as CodeQuestion;
