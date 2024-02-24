@@ -1,16 +1,16 @@
 ---
-interface Props {
-  question?: string;
+export type Props = {
+  question: string | undefined;
   background?: string;
   rounded?: boolean;
   border?: boolean;
-}
+};
 
-const { 
-  question, 
-  background = "transparent", 
+const {
+  question,
+  background = "transparent",
   border = true,
-  rounded = false
+  rounded = false,
 } = Astro.props;
 
 const borderStyle = border ? "1px solid var(--sl-color-gray-5)" : "none";
