@@ -1,9 +1,5 @@
 import { type CodeQuestion, getAnswer, replace } from "./CodeQuestion";
 
-const setup = `
-__VALUE__ println!("Welcome, {name} {surname}!\\nYou're {age} years old.SUCCESS");
-`;
-
 function validator(value: string, test: (regex: RegExp) => boolean): string | undefined {
   const surname = getAnswer("surname = ", value);
   const age = getAnswer("age = ", value);
@@ -15,20 +11,16 @@ function validator(value: string, test: (regex: RegExp) => boolean): string | un
       || Number(age) < 0 && "[age] Age can't be negative, can it? 😉"
       || Number(age) < 15 && "[age] You must be at least 15 years old to go adventuring!"
       || value.includes("?") && replace
-      || !test(/let name = ".*";\nlet surname = (\?|".*");\nlet mut age = (\?|[0-9]+);/) && "Seems like you've messed up the code, click the 'Reset' button to return it back to its original state."
+      || !test(/^let name = ".*";\nlet surname = (\?|".*");\nlet mut age = (\?|\d+);$/) && "Seems like you've messed up the code, click the 'Reset' button to return it back to its original state."
       || undefined;
 }
 
-function onsuccess(value: string): void {
-  const name = getAnswer("name = ", value).slice(1, -1);
-  localStorage.setItem("NAME", name);
-}
-
-const question: CodeQuestion = {
-  setup,
+export default {
+  setup: `__VALUE__ println!("Welcome, {name} {surname}!\\nYou're {age} years old.SUCCESS");`,
   vars: [{ v: "NAME", d: "Hero" }],
+  onsuccess: (_, value) => {
+    const name = getAnswer("name = ", value).slice(1, -1);
+    localStorage.setItem("NAME", name);
+  },
   validator,
-  onsuccess,
-} as const;
-
-export default question;
+} as CodeQuestion;
