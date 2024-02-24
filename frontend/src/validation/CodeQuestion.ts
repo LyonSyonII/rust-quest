@@ -16,7 +16,7 @@ export type CodeQuestion = {
    *  If it returns `Some`, it will be displayed in the output and the code will not be executed. */
   validator?: (
     value: string,
-    test: (regex: RegExp) => boolean,
+    test: (regex: RegExp, ignoreWhitespace?: boolean) => boolean,
   ) => string | undefined;
   /** Callback that will be called when "SUCCESS" is returned. */
   onsuccess?: (stdout: string, value: string) => void;
