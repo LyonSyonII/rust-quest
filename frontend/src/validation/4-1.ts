@@ -1,6 +1,6 @@
 import { type CodeQuestion, getAnswer, replace } from "./CodeQuestion";
 
-function validator(value: string, test: (regex: RegExp) => boolean): string | undefined {
+function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boolean) => boolean): string | undefined {
   const surname = getAnswer("surname = ", value);
   const age = getAnswer("age = ", value);
   return test(/let name = "";/) && "[name] Fill in your name!"

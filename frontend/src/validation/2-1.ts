@@ -17,11 +17,10 @@ export function SimpleQuestion({answer, getAnswer, correct, wrong, integrity}: S
       _ => println!("${wrong}"),
     }
     `;
-  const validator = (value: string) => 
+  return { setup, validator: (value: string, test) => 
     value.includes("?") && replace
-    || !integrity.test(value.replace(/\s/g, "")) && codeMess
-    || undefined;
-  return { setup, validator };
+    || !test(integrity, true) && codeMess
+    || undefined };
 }
 
 export type FreeQuestion = {
@@ -32,11 +31,13 @@ export type FreeQuestion = {
 export function FreeQuestion({correct, validators = []}: FreeQuestion): CodeQuestion {
   const wrongAnswer = "Wrong answer, try again!"
   const setup = `if __VALUE__ { println!("${correct}SUCCESS\\n"); } else { println!("${wrongAnswer}"); }`;
-  const validator = (value: string) => 
-    value.includes("?") && replace
-    || !validators.some((v) => v.test(value.replace(/\s/g, ""))) && codeMess
-    || undefined;
-  return { setup, validator };
+  return { 
+    setup, 
+    validator: (value: string, test) => 
+      value.includes("?") && replace
+      || !validators.some((v) => test(v, true)) && codeMess
+      || undefined 
+  };
 }
 
 export default SimpleQuestion({

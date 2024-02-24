@@ -29,7 +29,7 @@ export default {
       || answer.includes("let") && almost
       || answer.split("+").some((x) => Number(x)) && copy
       || answer.match(/[-*/]/) && operations
-      || !test(/^let potatoes = \d+;\nlet carrots = \d+;\nlet onions = \d+;\n*let total =\s*\w+\s*\+\s*\w+\s*\+\s*\w+\s*;\s*$/, false) && codeMess
+      || !test(/^let potatoes = \d+;\nlet carrots = \d+;\nlet onions = \d+;\n*let total =\s*\w+\s*\+\s*\w+\s*\+\s*\w+\s*;\s*$/) && codeMess
       || undefined
     );
   },

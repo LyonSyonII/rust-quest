@@ -17,7 +17,7 @@ export default {
         || answer.includes("letmut") && "'let' and 'mut' are used to create mutable magical boxes, but this one already exists!"
         || answer.includes("let") && "'let' is used to create magical boxes, but this one already exists!"
         || answer.includes("16") && "Remember, we need reusable code!\nLook at the previous exercise if you need some inspiration."
-        || !test(/^letmutapples=16;.*;$/) && codeMess
+        || !test(/^let mut apples = 16;\n.*;$/) && codeMess
         || undefined
   }
 } as CodeQuestion;

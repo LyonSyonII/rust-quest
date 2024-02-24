@@ -10,6 +10,6 @@ export default {
     value.includes("?") && replace
     || value.includes("apple ") && "Remember to use the plural form of the label!" 
     || value.includes("let apples =") && !value.includes("18") && "Remember that you need to store 18 apples!"
-    || !test(/^let\w+=\d+;$/) && codeMess
+    || !test(/^let \w+ = \d+;$/) && codeMess
     || undefined,
 } as CodeQuestion;

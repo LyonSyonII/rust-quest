@@ -342,7 +342,7 @@ const props = {
       this.setRunning(true);
 
       const value = this.getValue();
-      const v = this.validator(value, (regex: RegExp, ignoreWhitespace: boolean = true) =>
+      const v = this.validator(value, (regex: RegExp, ignoreWhitespace: boolean = false) =>
         ignoreWhitespace
           ? regex.test(value.replaceAll(/\s/g, ""))
           : regex.test(value),
