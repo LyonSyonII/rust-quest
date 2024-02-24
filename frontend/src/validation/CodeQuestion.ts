@@ -23,6 +23,9 @@ export type CodeQuestion = {
 };
 
 export const replace = "Replace ? with your answer.";
+export const codeMess =
+`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
+Remember to only modify the ? symbol.`
 
 /** Gets a substring between `s` and `;` */
 export function getAnswer(s: string, value: string): string {

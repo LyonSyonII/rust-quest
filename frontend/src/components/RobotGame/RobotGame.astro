@@ -10,16 +10,16 @@ type Props = {
   winText: string;
   loseText: string;
 };
-const { 
-  question, 
-  id, 
-  rows, 
-  cols, 
-  cellSize = "5rem", 
-  start = 0, 
-  enemies = [], 
-  winText = "You win!", 
-  loseText = "There are some Slimes left, try again!" 
+const {
+  question,
+  id,
+  rows,
+  cols,
+  cellSize = "5rem",
+  start = 0,
+  enemies = [],
+  winText = "You win!",
+  loseText = "There are some Slimes left, try again!",
 } = Astro.props;
 
 import { Image } from "astro:assets";
@@ -35,32 +35,34 @@ const slimes = (
 const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 ---
 
-<QuestionCard question={question} >
-<x-robot-game { ...{rows, cols, start, enemies, id, win: winText, lose: loseText} } >
-  <table>
-    {
-      [...Array(rows)].map((_, i) => (
-        <tr>
-          {[...Array(cols)].map((_, j) => (
-            <td>
-              {
-                start == (i * cols + j) && <Image src={Robot} alt="robot" id="robot" />
-                || enemies.includes(i * cols + j) && <Image src={getRandomSlime()} alt="slime" id="slime" />
-                || <p>{i * cols + j}</p>
-              }
-            </td>
-          ))}
-        </tr>
-      ))
-    }
-  </table>
-  <CodeBlock id={id} />
-</x-robot-game>
+<QuestionCard question={question}>
+  <x-robot-game
+    {...{ rows, cols, start, enemies, id, win: winText, lose: loseText }}
+  >
+    <table>
+      {
+        [...Array(rows)].map((_, i) => (
+          <tr>
+            {[...Array(cols)].map((_, j) => (
+              <td>
+                {(start == i * cols + j && (
+                  <Image src={Robot} alt="robot" id="robot" />
+                )) ||
+                  (enemies.includes(i * cols + j) && (
+                    <Image src={getRandomSlime()} alt="slime" id="slime" />
+                  )) || <p>{i * cols + j}</p>}
+              </td>
+            ))}
+          </tr>
+        ))
+      }
+    </table>
+    <CodeBlock id={id} />
+  </x-robot-game>
 </QuestionCard>
 
 <style define:vars={{ cellSize }}>
   :root {
-    
   }
   img {
     width: 80%;
@@ -118,29 +120,31 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     readonly enemies: number;
     readonly winText: string;
     readonly loseText: string;
-    
+
     tableChanged: boolean;
     robot: HTMLImageElement;
-    
+
     constructor() {
       super();
 
       this.codeblock = this.querySelector<CodeBlock>("x-code-block")!;
-      this.startingBoard = this.querySelector("table")!.cloneNode(true) as HTMLTableElement;
-        
-        this.startPos = +this.getAttribute("start")!;
-        this.rows = +this.getAttribute("rows")!;
-        this.cols = +this.getAttribute("cols")!;
-        this.enemies = this.querySelectorAll("#slime").length;
+      this.startingBoard = this.querySelector("table")!.cloneNode(
+        true,
+      ) as HTMLTableElement;
 
-        this.winText = this.getAttribute("win")!;
-        this.loseText = this.getAttribute("lose")!;
+      this.startPos = +this.getAttribute("start")!;
+      this.rows = +this.getAttribute("rows")!;
+      this.cols = +this.getAttribute("cols")!;
+      this.enemies = this.querySelectorAll("#slime").length;
 
-        this.tableChanged = false;
+      this.winText = this.getAttribute("win")!;
+      this.loseText = this.getAttribute("lose")!;
+
+      this.tableChanged = false;
 
       this.robot = this.querySelector("#robot")!;
     }
-    
+
     async resetBoard() {
       if (!this.tableChanged) {
         return;
@@ -149,34 +153,42 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
       this.querySelector("table")!.style.opacity = "0";
       await new Promise((r) => setTimeout(r, 200));
       this.startingBoard.style.opacity = "0";
-      this.querySelector("table")!.replaceWith(this.startingBoard.cloneNode(true));
+      this.querySelector("table")!.replaceWith(
+        this.startingBoard.cloneNode(true),
+      );
       await new Promise((r) => setTimeout(r, 10));
       this.querySelector("table")!.style.opacity = "1";
       this.robot = this.querySelector("#robot")!;
       await new Promise((r) => setTimeout(r, 200));
     }
-    
+
     connectedCallback() {
-        this.codeblock.addEventListener("reset", (e) => { 
-          this.resetBoard();
-          e.codeBlock.hideOutput();
-        });
-        this.codeblock.addEventListener("response", async (e) => {
+      this.codeblock.addEventListener("reset", (e) => {
+        this.resetBoard();
+        e.codeBlock.hideOutput();
+      });
+      this.codeblock.addEventListener("response", async (e) => {
         e.preventDefault();
         await this.resetBoard();
-        
+
         const cells = this.querySelectorAll("td");
         let killedEnemies = 0;
         let currentPos = this.startPos;
-        
-        const wait = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        const wait = async (ms: number) =>
+          new Promise((resolve) => setTimeout(resolve, ms));
 
         const setPos = async (newPos: number, direction: string) => {
           this.tableChanged = true;
           this.robot.classList.add(direction);
           await wait(350);
           this.robot.classList.remove(direction);
-          ({currentPos, killedEnemies} = this.setPos(currentPos, newPos, cells, killedEnemies));
+          ({ currentPos, killedEnemies } = this.setPos(
+            currentPos,
+            newPos,
+            cells,
+            killedEnemies,
+          ));
         };
 
         for (const c of e.response.split("\n")) {
@@ -210,15 +222,16 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
               break;
             }
 
-            default: continue;
+            default:
+              continue;
           }
 
           await wait(150);
         }
-        
+
         if (killedEnemies === this.enemies) {
           this.codeblock.setOutput(this.winText + "SUCCESS");
-          confetti({count: 20});
+          confetti({ count: 20 });
         } else {
           this.codeblock.setOutput(this.loseText);
           await wait(1000);
@@ -228,21 +241,26 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
       });
     }
 
-    setPos(currentPos: number, newPos: number, cells: NodeListOf<HTMLTableCellElement>, killedEnemies: number): { currentPos: number, killedEnemies: number } {
+    setPos(
+      currentPos: number,
+      newPos: number,
+      cells: NodeListOf<HTMLTableCellElement>,
+      killedEnemies: number,
+    ): { currentPos: number; killedEnemies: number } {
       const currentCell = cells[currentPos]!;
       const newCell = cells[newPos]!;
-      
+
       const child = newCell.firstElementChild!;
       if (child.id === "slime") {
         killedEnemies += 1;
       }
-      
+
       child.replaceWith(this.robot);
-      
+
       const newP = document.createElement("p");
       newP.textContent = currentPos.toString();
       currentCell.appendChild(newP);
-      
+
       return { currentPos: newPos, killedEnemies };
     }
   }

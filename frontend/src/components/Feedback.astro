@@ -15,7 +15,12 @@ const { id } = Astro.props;
       <label for="score">🤩</label>
     </div>
     <label for="review">Do you have some feedback?</label>
-    <textarea id="review" name="review" autocapitalize="on" autocorrect="off" autofocus />
+    <textarea
+      id="review"
+      name="review"
+      autocapitalize="on"
+      autocorrect="off"
+      autofocus></textarea>
     <button>Submit</button>
   </form>
 </dialog>
@@ -31,11 +36,13 @@ const { id } = Astro.props;
     const data = {
       id: form.id,
       score: parseInt((form.querySelector("#score") as HTMLInputElement).value),
-      review: (form.querySelector("#review") as HTMLTextAreaElement).value.trim(),
+      review: (
+        form.querySelector("#review") as HTMLTextAreaElement
+      ).value.trim(),
     };
 
     console.log(data);
-    
+
     await fetch("http://rust-quest.garriga.dev", {
       method: "POST",
       headers: {
@@ -97,10 +104,10 @@ const { id } = Astro.props;
     border-radius: 0.25rem;
     padding: 0.25rem 0.5rem;
     cursor: pointer;
-    
+
     border: 1px;
     border-radius: 0.25em;
-    
+
     transition: opacity 0.2s;
   }
   button:hover {

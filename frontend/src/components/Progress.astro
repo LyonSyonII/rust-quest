@@ -1,5 +1,5 @@
 ---
-import Feedback from './Feedback.astro';
+import Feedback from "./Feedback.astro";
 
 type Props = {
   id: string;
@@ -17,9 +17,14 @@ const { id, total, confetti = true } = Astro.props;
 
   <Feedback id={id} />
 
-  {import.meta.env.DEV && <button class="reset"><b>RESET</b></button>}
+  {
+    import.meta.env.DEV && (
+      <button class="reset">
+        <b>RESET</b>
+      </button>
+    )
+  }
 </x-progress>
-
 
 <style>
   x-progress {
@@ -37,10 +42,10 @@ const { id, total, confetti = true } = Astro.props;
     border-radius: 0.25rem;
     padding: 0.25rem 0.5rem;
     cursor: pointer;
-    
+
     border: 1px;
     border-radius: 0.25em;
-    
+
     transition: opacity 0.2s;
   }
   button:hover {
@@ -77,12 +82,17 @@ const { id, total, confetti = true } = Astro.props;
         confetti();
         add(confettiId);
       });
-      
+
       const feedback = this.querySelector("dialog")!;
-      this.querySelector(".feedback")!.addEventListener("click", () => feedback.showModal());
+      this.querySelector(".feedback")!.addEventListener("click", () =>
+        feedback.showModal(),
+      );
 
       if (import.meta.env.DEV) {
-        this.querySelector(".reset")!.addEventListener("click", () => { remove(id); location.reload() });
+        this.querySelector(".reset")!.addEventListener("click", () => {
+          remove(id);
+          location.reload();
+        });
       }
     }
   }
