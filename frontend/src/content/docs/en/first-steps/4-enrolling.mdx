@@ -66,29 +66,14 @@ If a variable has it, it means it WILL change, if not (or you're not sure), make
 <Guild>
 Thought that was it? We're just getting started!
 </Guild>
-{ /* 
-  TODO: Experiment without examples, if people get stuck add them
-  // meters    (eg: 1.75)
-  // kilograms (eg: 64.3)
- */ }
+
 <CodeQuestion 
 id="4-2"
 question="Enter your height (meters), weight (kilograms) and current money:"
 code={`
-let mut height = ?; 
-let mut weight = ?; 
+let mut height = ?;
+let mut weight = ?;
 let mut money = 12.50;
-`}
-setup={`__VALUE__ println!("Your height is {height} meters, your weight is {weight} kilograms and you have {money} coins.\\nSUCCESS");`}
-validator={`
-${getAnswer};
-const height = getAnswer("height = ");
-const weight = getAnswer("weight = ");
-return height.includes("?") && "[height] Fill in your height!"
-    || !height.includes(".") && "[height] Wow, that's a very round height!\\nTry adding some decimals to make it more precise."
-    || weight.includes("?") && "[weight] Fill in your weight!"
-    || value.includes("?") && \`${replace}\`
-    || undefined
 `}
 />
 </Checkpoint>
