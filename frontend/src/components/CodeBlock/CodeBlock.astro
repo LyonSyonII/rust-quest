@@ -201,7 +201,7 @@ const props = {
       });
       this.setup = this.getAttribute("setup") || this.setup;
       this.errorMsg = this.getAttribute("errorMsg")!;
-      
+
       const file = this.id.endsWith("robot") ? "0-robot" : this.id;
 
       import(`../../validation/${file}.ts`)
@@ -342,10 +342,12 @@ const props = {
       this.setRunning(true);
 
       const value = this.getValue();
-      const v = this.validator(value, (regex: RegExp, ignoreWhitespace: boolean = false) =>
-        ignoreWhitespace
-          ? regex.test(value.replaceAll(/\s/g, ""))
-          : regex.test(value),
+      const v = this.validator(
+        value,
+        (regex: RegExp, ignoreWhitespace: boolean = false) =>
+          ignoreWhitespace
+            ? regex.test(value.replaceAll(/\s/g, ""))
+            : regex.test(value),
       )?.trim();
 
       if (v !== undefined) {
