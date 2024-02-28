@@ -1,23 +1,37 @@
 ---
+type Board = {
+  rows?: number;
+  cols?: number;
+  /** Position where the robot starts. */
+  start: number;
+  /** Enemy positions. */
+  enemies: number[];
+  /** Minimum steps needed to solve the puzzle. */
+  steps: number;
+};
+
 type Props = {
   question: string;
   id: string;
-  rows: number;
-  cols: number;
+
+  rows?: number;
+  cols?: number;
   cellSize: string;
-  start: number;
-  enemies: number[];
+
+  boards: Board[];
+
+  /** If the boards need to be solved with the minimum steps. */
+  solveWithMinimum: boolean;
   winText: string;
   loseText: string;
 };
 const {
   question,
   id,
-  rows,
-  cols,
+  rows: rowsDef = 3,
+  cols: colsDef = 3,
+  boards,
   cellSize = "5rem",
-  start = 0,
-  enemies = [],
   winText = "You win!",
   loseText = "There are some Slimes left, try again!",
 } = Astro.props;
@@ -37,26 +51,37 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 
 <QuestionCard question={question}>
   <x-robot-game
-    {...{ rows, cols, start, enemies, id, win: winText, lose: loseText }}
+    {...{
+      rows: rowsDef,
+      cols: colsDef,
+      boards,
+      id,
+      win: winText,
+      lose: loseText,
+    }}
   >
-    <table>
+    <div id="boards">
       {
-        [...Array(rows)].map((_, i) => (
-          <tr>
-            {[...Array(cols)].map((_, j) => (
-              <td>
-                {(start == i * cols + j && (
-                  <Image src={Robot} alt="robot" id="robot" />
-                )) ||
-                  (enemies.includes(i * cols + j) && (
-                    <Image src={getRandomSlime()} alt="slime" id="slime" />
-                  )) || <p>{i * cols + j}</p>}
-              </td>
+        boards.map(({ rows = rowsDef, cols = colsDef, start, enemies }) => (
+          <table>
+            {[...Array(cols)].map((_, i) => (
+              <tr>
+                {[...Array(rows)].map((_, j) => (
+                  <td>
+                    {(start == i * colsDef + j && (
+                      <Image src={Robot} alt="robot" id="robot" />
+                    )) ||
+                      (enemies.includes(i * colsDef + j) && (
+                        <Image src={getRandomSlime()} alt="slime" id="slime" />
+                      )) || <p>{i * colsDef + j}</p>}
+                  </td>
+                ))}
+              </tr>
             ))}
-          </tr>
+          </table>
         ))
       }
-    </table>
+    </div>
     <CodeBlock id={id} />
   </x-robot-game>
 </QuestionCard>
@@ -76,7 +101,14 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 1rem;
+    margin-top: 0 !important;
     transition: opacity 0.2s ease-in-out;
+  }
+  #boards {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
   }
   tr {
     background-color: white !important;

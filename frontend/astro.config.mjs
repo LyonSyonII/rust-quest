@@ -74,6 +74,6 @@ export default defineConfig({
   experimental: {
     optimizeHoistedScript: false /* Disables some Starlight components */,
     clientPrerender: true,
-    contentCollectionCache: true,
+    contentCollectionCache: false,
   },
 });

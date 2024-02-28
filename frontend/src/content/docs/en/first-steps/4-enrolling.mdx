@@ -129,23 +129,6 @@ let mut registered = false;
 let mut dead = ?;
 let mut wears_glasses = ?;
 `}
-validator={`
-${getAnswer};
-const dead = getAnswer("dead = ");
-const wears_glasses = getAnswer("wears_glasses = ");
-const wrong = " The answer has to be 'true' or 'false', look closely at the previous values.";
-return !test(/let is_human = (true|false);/) && "Seems like you've messed up the first line, click the 'Reset' button to return it back to its original state."
-    || !test(/let mut registered = (true|false);/) && "Seems like you've messed up the second line, click the 'Reset' button to return it back to its original state."
-    || !test(/let mut dead = .*;/) && "Seems like you've messed up the third line, click the 'Reset' button to return it back to its original state."
-    || !test(/let mut wears_glasses = .*;/) && "Seems like you've messed up the fourth line, click the 'Reset' button to return it back to its original state."
-    || !test(/^let is_human = .*;\\nlet mut registered = .*;\\nlet mut dead = .*;\\nlet mut wears_glasses = .*;$/) && "Seems like you've messed up the lines, click the 'Reset' button to return it back to its original state."
-    || dead.includes("?") && "[dead] Are you dead or alive?"
-    || dead === "true" && "[dead] Are you sure you're dead? How are you answering this question?"
-    || dead !== "false" && "[dead]" + wrong
-    || wears_glasses.includes("?") && "[wears_glasses] Do you have glasses?"
-    || !(/true|false/).test(wears_glasses) && "[wears_glasses]" + wrong
-    || undefined
-`}
 />
 </Checkpoint>
 
@@ -154,7 +137,7 @@ return !test(/let is_human = (true|false);/) && "Seems like you've messed up the
 While text is written in double quotes, `true` and `false` are special values that aren't considered text.  
 Instead, they're called `booleans`, and can **only** be either `true` or `false`.  
 
-The name comes from 'George Boole', a mathematician who invented them.
+The name comes from 'George Boole', the mathematician who invented them.
 
 Remember the "Adventurer's Guild" chapter? We were doing Boolean logic back then.  
 When you evaluate an expression like `200 < 1000`, it returns a boolean value (in this case `true`), because the expression can only be `true` or `false`.

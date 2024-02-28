@@ -13,11 +13,6 @@ Read the instructions before using it!
 Good luck!
 `;
 
-const question: CodeQuestion = {
-  /** Function to validate the code entered by the user.
-   *
-   *  If it returns `Some`, it will be displayed in the output and the code will not be executed. */
+export default {
   validator: () => quest.trim() + "SUCCESS"
-} as const;
-
-export default question;
+} as CodeQuestion;

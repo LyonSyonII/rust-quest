@@ -17,8 +17,6 @@ import RobotGame from "@components/RobotGame/RobotGame.astro";
 After long days of paperwork and chores, you've finally recieved your first real quest!
 You can't contain the excitement and quickly open the letter:
 
-
-
 <CodeQuestion
   id="5-1"
   code="read_quest(1);"
@@ -38,33 +36,54 @@ This manual provides essential instructions to ensure optimal performance and sa
 #### 1. Available functions
 The robot initialy has 4 possible functions:
 
-| Action    | Description                    |
-| --------- | ------------------------------ |
+| Action     | Description                    |
+| ---------- | ------------------------------ |
 | `up();`    | Move the robot up one space    |
 | `down();`  | Move the robot down one space  |
 | `left();`  | Move the robot left one space  |
 | `right();` | Move the robot right one space |
 
+More functions will be unlocked once enough monsters are defeated.
 
-#### 2. Legal and Ethical Considerations
+#### 2. Usage
+To kill a monster, just move the robot where it is and the machine will do the rest.
+
+To ensure 100% success rate, multiple simulations will run before executing your program.  
+**This means that your code must be able to solve ALL the simulations.**
+
+#### 3. Legal and Ethical Considerations
 - Adhere to local laws and regulations governing the use of monster-killing robots.
 - Exercise ethical judgement to ensure the safety of bystanders and property.
 
-Remember to consult the warranty for any technical issues and reach out to our customer support for further assistance.  
+If you have any issue, don't hesitate to reach out to our customer support for further assistance.
 We wish you a happy monster extermination!
 </QuestionCard>
 
-<RobotGame 
-  id="5-2-robot" 
-  code={`
-let robot = Robot::new();
-robot. ? ;
-robot. ? ;
-`}
-  rows={3} 
-  cols={3} 
-  start={7} 
-  enemies={[1]} 
+<RobotGame
+  id="5-2-robot"
+  boards={[
+    {
+      start: 7,
+      enemies: [1]
+    },
+    {
+      start: 7,
+      enemies: [1]
+    },
+    {
+      start: 7,
+      enemies: [1]
+    },
+    {
+      start: 7,
+      enemies: [1]
+    },
+  ]}
+  rows={3}
+  cols={3}
+  start={7}
+  enemies={[1]}
+  cellSize={"3rem"}
 />
 </Checkpoint>
 
