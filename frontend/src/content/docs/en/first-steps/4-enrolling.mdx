@@ -129,14 +129,6 @@ let mut registered = false;
 let mut dead = ?;
 let mut wears_glasses = ?;
 `}
-setup={`
-__VALUE__;
-let glasses = match wears_glasses {
-    true => "And I also wear glasses, we match!",
-    false => "And good! As an adventurer, it's better if you don't need glasses."
-};
-println!("I'm glad you're not dead!\\n{glasses}\\nSUCCESS");
-`}
 validator={`
 ${getAnswer};
 const dead = getAnswer("dead = ");

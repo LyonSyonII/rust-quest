@@ -1,5 +1,5 @@
 import { type CodeQuestion, replace, codeMess } from "./CodeQuestion";
-import { createRegExp, exactly, multiline } from "magic-regexp";
+import { createRegExp } from "magic-regexp";
 import { _, semicolon, stringZ, char, wrongCharZ, start, end } from "./regex";
 
 function validator(value: string): string | undefined {

@@ -1,10 +1,16 @@
-import { exactly, maybe, oneOrMore, whitespace, word, char as any } from "magic-regexp";
+import { exactly, maybe, whitespace, word, char as _any } from "magic-regexp";
 
-/** Matches start of string */
+/** Matches start of string. */
 export const start = exactly().at.lineStart();
 
-/** Matches end of string */
+/** Matches end of string. */
 export const end = exactly().at.lineEnd();
+
+/** Matches any character except newline. */
+export const any = _any;
+
+/** Matches `true` or `false`. */
+export const bool = exactly("true").or("false");
 
 /** Accepts a string delimited with `'` and exactly one character. 
  * @example 'X'
