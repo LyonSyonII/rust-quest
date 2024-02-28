@@ -102,39 +102,6 @@ let initial1 = '$NAME';
 let initial2 = ?;
 let mut cardinal = ?;
 `}
-vars={[ {v: "NAME", d: "Hero", c: "return v[0].toUpperCase()"} ]}
-setup={`
-__VALUE__
-let cardinal = match cardinal {
-    'N' => "North",
-    'S' => "South",
-    'E' => "East",
-    'W' => "West",
-    _ => unreachable!()
-};
-println!("Your initials are {initial1}.{initial2}. and your favourite cardinal point is {cardinal}.\\nSUCCESS");
-`}
-validator={`
-${getAnswer};
-const charegex = /'.'/;
-const initial2 = getAnswer("initial2 = ");
-const cardinal = getAnswer("cardinal = ");
-return !test(/let initial1 = '.';/) && "Seems like you've messed up the first line, click the 'Reset' button to return it back to its original state."
-    || !test(/let initial2 = .*;/) && "Seems like you've messed up the second line, click the 'Reset' button to return it back to its original state."
-    || !test(/let mut cardinal = .*;/) && "Seems like you've messed up the third line, click the 'Reset' button to return it back to its original state."
-    || value.match(/\\n/g).length + 1 !== 3 && "Seems like you've messed up the lines, click the 'Reset' button to return it back to its original state."
-    || initial2.includes("?") && "[initial2] Fill in your second initial!"
-    || initial2.includes('"') && "[initial2] You're almost there, but an initial has only one character, so there's a better way to write it!\\nLook closely at how 'initial1' is written."
-    || !charegex.test(initial2) && "[initial2] Something is wrong with your second initial.\\nLook closely at how 'initial1' is written!"
-    || initial2.length > 3 && "[initial2] An initial has only one character!"
-    || initial2.toUpperCase() !== initial2 && "[initial2] An initial should be uppercase!"
-    || cardinal.includes("?") && "[cardinal] Fill in your favourite cardinal point!"
-    || cardinal.includes('"') && "[cardinal] You're almost there, but a cardinal point has only one character, so there's a better way to write it!\\nLook closely at how 'initial1' is written."
-    || !charegex.test(cardinal) && "[cardinal] Something is wrong with your cardinal point.\\nLook closely at how 'initial1' is written!"
-    || !(/'[nsew]'/i).test(cardinal) && \`[cardinal] \${cardinal} is not a cardinal point! Try 'N', 'S', 'E' or 'W'.\`
-    || value.includes("?") && \`${replace}\`
-    || undefined
-`}
 />
 </Checkpoint>
 
