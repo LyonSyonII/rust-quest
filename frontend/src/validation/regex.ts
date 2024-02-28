@@ -1,5 +1,11 @@
 import { exactly, maybe, oneOrMore, whitespace, word, char as any } from "magic-regexp";
 
+/** Matches start of string */
+export const start = exactly().at.lineStart();
+
+/** Matches end of string */
+export const end = exactly().at.lineEnd();
+
 /** Accepts a string delimited with `'` and exactly one character. 
  * @example 'X'
  * */
@@ -31,7 +37,7 @@ export const wrongChar = exactly("'", word, "'");
 export const string = exactly('"', word, '"');
 
 /** Accepts 0 or more whitespace. */
-export const _ = maybe(oneOrMore(whitespace));
+export const _ = whitespace.times.any();
 
 /** Accepts a semicolon sorrounded by whitespace. */
 export const semicolon = exactly(_, ";", _);

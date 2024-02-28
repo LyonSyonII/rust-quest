@@ -1,14 +1,16 @@
 import { type CodeQuestion, replace, codeMess } from "./CodeQuestion";
-import { createRegExp } from "magic-regexp";
-import { _, semicolon, stringZ, char, wrongCharZ } from "./regex";
+import { createRegExp, exactly, multiline } from "magic-regexp";
+import { _, semicolon, stringZ, char, wrongCharZ, start, end } from "./regex";
 
 function validator(value: string): string | undefined {
   const answer = wrongCharZ.or(stringZ).or("?").optionally();
   
   const regex = createRegExp(
+    start,
     "let initial1 =", _, char.as("initial1"), semicolon,
     "let initial2 =", _, answer.as("initial2"), semicolon,
-    "let mut cardinal =", _, answer.as("cardinal"), semicolon
+    "let mut cardinal =", _, answer.as("cardinal"), semicolon,
+    end
   );
   const matches = value.match(regex);
   if (!matches) return codeMess;
