@@ -1,4 +1,7 @@
+import type { CodeQuestion } from "src/validation/CodeQuestion";
+
 class CodeBlock extends HTMLElement {
+  public setProps(question: CodeQuestion): void;
   public getValue(): string;
   public setValue(value: string): void;
   public setReadonly(readonly: boolean): void;

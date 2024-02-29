@@ -1,45 +1,23 @@
 ---
-type Board = {
-  rows?: number;
-  cols?: number;
-  /** Position where the robot starts. */
-  start: number;
-  /** Enemy positions. */
-  enemies: number[];
-  /** Minimum steps needed to solve the puzzle. */
-  steps: number;
-};
-
-type Props = {
-  question: string;
-  id: string;
-
-  rows?: number;
-  cols?: number;
-  cellSize: string;
-
-  boards: Board[];
-
-  /** If the boards need to be solved with the minimum steps. */
-  solveWithMinimum: boolean;
-  winText: string;
-  loseText: string;
-};
-const {
-  question,
-  id,
-  rows: rowsDef = 3,
-  cols: colsDef = 3,
-  boards,
-  cellSize = "5rem",
-  winText = "You win!",
-  loseText = "There are some Slimes left, try again!",
-} = Astro.props;
-
+import { Functions, type Board, type RobotGameProps } from "./RobotGame";
 import { Image } from "astro:assets";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
 import Robot from "@assets/robot.svg";
 import QuestionCard from "@components/QuestionCard.astro";
+
+type Props = {
+  question: string;
+  id: string;
+  cellSize: string;
+};
+
+const { question, id, cellSize = "5rem" } = Astro.props;
+
+const {
+  rows: rowsDef = 3,
+  cols: colsDef = 3,
+  boards,
+}: RobotGameProps = await import(`src/validation/${id}.ts`);
 
 const slimes = (
   await Astro.glob<Record<string, ImageMetadata>>(
@@ -50,16 +28,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 ---
 
 <QuestionCard question={question}>
-  <x-robot-game
-    {...{
-      rows: rowsDef,
-      cols: colsDef,
-      boards,
-      id,
-      win: winText,
-      lose: loseText,
-    }}
-  >
+  <x-robot-game id={id}>
     <div id="boards">
       {
         boards.map(({ rows = rowsDef, cols = colsDef, start, enemies }) => (
@@ -142,39 +111,66 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 
 <script>
   import { confetti } from "src/utils/confetti";
+  import type { CodeBlock } from "@components/CodeBlock/CodeBlock";
+  import { Functions, type Board, type RobotGameProps } from "./RobotGame";
+  import type { CodeQuestion } from "src/validation/CodeQuestion";
+
+  type Boards = (Board & { board: HTMLTableElement, robot: HTMLImageElement, tableChanged: boolean })[];
 
   class RobotGame extends HTMLElement {
     readonly codeblock: CodeBlock;
-    readonly startingBoard: HTMLTableElement;
-    readonly startPos: number;
-    readonly rows: number;
-    readonly cols: number;
-    readonly enemies: number;
-    readonly winText: string;
-    readonly loseText: string;
-
-    tableChanged: boolean;
-    robot: HTMLImageElement;
+    currentBoard: number = 0;
+    boards: Boards = [];
+    functions: Functions = Functions.BASIC;
+    solveWithMinimum: boolean = false;
+    winText: string = "You win!";
+    loseText: string = "There are some Slimes left, try again!";
 
     constructor() {
       super();
 
       this.codeblock = this.querySelector<CodeBlock>("x-code-block")!;
+
+      import(`src/validation/${this.id}.ts`).then((props: RobotGameProps) => {
+        this.functions = props.functions || this.functions;
+        this.winText = props.winText || this.winText;
+        this.loseText = props.loseText || this.loseText;
+        this.solveWithMinimum = props.solveWithMinimum || this.solveWithMinimum;
+
+        const htmlBoards = [...this.querySelectorAll("table")].map(board => board.cloneNode(true) as HTMLTableElement);
+      })
+
+      this.boards = this.getAttribute("boards");
+
       this.startingBoard = this.querySelector("table")!.cloneNode(
         true,
       ) as HTMLTableElement;
+      
+      this.setupCodeBlock();
+    }
 
-      this.startPos = +this.getAttribute("start")!;
-      this.rows = +this.getAttribute("rows")!;
-      this.cols = +this.getAttribute("cols")!;
-      this.enemies = this.querySelectorAll("#slime").length;
+    async setupCodeBlock(
+      rows: number,
+      cols: number,
+      startPos: number,
+      enemies: number[],
+      functions: Functions
+    ) {
+      const questions = await import("src/validation/0-robot");
 
-      this.winText = this.getAttribute("win")!;
-      this.loseText = this.getAttribute("lose")!;
-
-      this.tableChanged = false;
-
-      this.robot = this.querySelector("#robot")!;
+      let question;
+      switch (functions) {
+        case Functions.BASIC:
+          question = questions.basicMovement;
+          break;
+        case Functions.LOOK_HORIZONTAL:
+          question = questions.lookLeftRight(rows, cols, startPos, enemies);
+          break;
+        default:
+          question = questions.default;
+          break;
+      }
+      this.codeblock.setProps(question);
     }
 
     async resetBoard() {

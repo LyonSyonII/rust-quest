@@ -1,3 +1,14 @@
+export const replace = "Replace ? with your answer.";
+export const codeMess =
+`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
+Remember to only modify the ? symbol.`
+
+/** Gets a substring between `s` and `;` */
+export function getAnswer(s: string, value: string): string {
+  const f = value.indexOf(s) + s.length;
+  return value.substring(f, value.indexOf(";", f)).trim();
+}
+
 export type CodeQuestion = {
   /** Invisible part of the code.
    *
@@ -21,14 +32,3 @@ export type CodeQuestion = {
   /** Callback that will be called when "SUCCESS" is returned. */
   onsuccess?: (stdout: string, value: string) => void;
 };
-
-export const replace = "Replace ? with your answer.";
-export const codeMess =
-`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
-Remember to only modify the ? symbol.`
-
-/** Gets a substring between `s` and `;` */
-export function getAnswer(s: string, value: string): string {
-  const f = value.indexOf(s) + s.length;
-  return value.substring(f, value.indexOf(";", f)).trim();
-}

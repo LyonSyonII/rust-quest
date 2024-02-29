@@ -202,23 +202,11 @@ const props = {
       this.setup = this.getAttribute("setup") || this.setup;
       this.errorMsg = this.getAttribute("errorMsg")!;
 
-      const file = this.id.endsWith("robot") ? "0-robot" : this.id;
-
-      import(`../../validation/${file}.ts`)
-        .then((q) => q.default as CodeQuestion)
-        .then(({ setup, vars = [], validator, onsuccess }) => {
-          const replaceVars = (r: string) =>
-            vars.reduce(
-              (acc, { v, d, c = (v) => v }) =>
-                acc.replaceAll(`$${v}`, c(localStorage.getItem(v) || d)),
-              r,
-            );
-          this.code = replaceVars(this.getAttribute("code") || this.code);
-          this.setValue(this.code);
-          this.setup = replaceVars(setup || this.setup);
-          this.validator = validator || this.validator;
-          this.onsuccess = onsuccess || this.onsuccess;
-        });
+      if (!this.id.endsWith("robot")) {
+        import(`../../validation/${this.id}.ts`).then((q) =>
+          this.setProps(q.default as CodeQuestion),
+        );
+      }
 
       this.readonly = new Compartment();
       this.theme = new Compartment();
@@ -281,6 +269,20 @@ const props = {
       this.querySelector("pre")?.replaceWith(this.editor.dom);
       // To avoid line gutter collapsing
       setTimeout(() => this.editor.requestMeasure(), 300);
+    }
+
+    public setProps({ setup, vars = [], validator, onsuccess }: CodeQuestion) {
+      const replaceVars = (r: string) =>
+        vars.reduce(
+          (acc, { v, d, c = (v) => v }) =>
+            acc.replaceAll(`$${v}`, c(localStorage.getItem(v) || d)),
+          r,
+        );
+      this.code = replaceVars(this.getAttribute("code") || this.code);
+      this.setValue(this.code);
+      this.setup = replaceVars(setup || this.setup);
+      this.validator = validator || this.validator;
+      this.onsuccess = onsuccess || this.onsuccess;
     }
 
     public getValue(): string {
