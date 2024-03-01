@@ -244,27 +244,29 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     }
 
     async resetBoards() {
-      let i = 0;
-      for (const board of this.boards) {
+      this.boards = await Promise.all(this.boards.map(async (board, i) => {
         if (!board.tableChanged) {
-          i += 1;
-          break;
+          return board;
         }
+        
         board.tableChanged = false;
         board.htmlTable.style.opacity = "0";
         await new Promise((r) => setTimeout(r, 200));
         this.startingHtmlBoards[i]!.style.opacity = "0";
+
         const newTable = this.startingHtmlBoards[i]!.cloneNode(
           true,
         ) as HTMLTableElement;
         board.htmlTable.replaceWith(newTable);
-        await new Promise((r) => setTimeout(r, 10));
-        newTable.style.opacity = "1";
-        board.robot = newTable.querySelector("#robot")!;
-        await new Promise((r) => setTimeout(r, 200));
-      }
+        board.htmlTable = newTable;
 
-      i += 1;
+        await new Promise((r) => setTimeout(r, 10));
+        board.htmlTable.style.opacity = "1";
+        board.robot = board.htmlTable.querySelector("#robot")!;
+        await new Promise((r) => setTimeout(r, 200));
+
+        return board;
+      }))
     }
 
     /** Returns `number` representing the number of steps.
