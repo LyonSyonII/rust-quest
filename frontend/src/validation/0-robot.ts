@@ -22,52 +22,59 @@ export const lookLeftRight: (
     const ROWS: usize = ${rows};
     const COLS: usize = ${cols};
     const ENEMIES: &[usize] = &[${enemies.join(", ")}];
-
-    let mut pos = ${start};
+    
+    let pos = std::cell::RefCell::new(${start});
     
     let is_slime_left = || {
-      if pos % COLS == 0 {
+      if *pos.borrow() % COLS == 0 {
         return false;
       }
-      ENEMIES.contains(&(pos-1))
+      ENEMIES.contains(&(*pos.borrow()-1))
     };
     let is_slime_right = || {
-      if pos % COLS == COLS-1 {
+      if dbg!(dbg!(*pos.borrow()) % dbg!(COLS)) == COLS-1 {
         return false;
       }
-      ENEMIES.contains(&(pos+1))
+      ENEMIES.contains(&(*pos.borrow()+1))
     };
+    let isl = is_slime_left;
+    let isr = is_slime_right;
     
     let up = || {
-      if pos < COLS {
+      if *pos.borrow() < COLS {
         return;
       }
-      pos -= COLS;
+      *pos.borrow_mut() -= COLS;
       println!("UP");
     };
     let down =  || {
-      if pos >= ROWS * (COLS-1) {
+      if *pos.borrow() >= ROWS * (COLS-1) {
         return;
       }
-      pos += COLS;
+      *pos.borrow_mut() += COLS;
       println!("DOWN");
     };
     let left = || { 
-      if pos % COLS == 0 {
+      if *pos.borrow() % COLS == 0 {
         return;
       }
       println!("LEFT");
-      pos -= 1;
+      *pos.borrow_mut() -= 1;
     };
     let right = || { 
-      if pos % COLS == COLS-1 {
+      if dbg!(*pos.borrow() % COLS) == COLS-1 {
         return;
       }
       println!("RIGHT");
-      pos += 1;
+      *pos.borrow_mut() += 1;
     };
+    let u = up;
+    let d = down;
+    let l = left;
+    let r = right;
+    
     __VALUE__
-    `.replaceAll("\n", "")
+    `.replaceAll(/\s\s|\n/g, "")
   }
 };
 

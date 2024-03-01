@@ -13,6 +13,7 @@ import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.astro";
 import Feedback from "@components/Feedback.astro";
 import RobotGame from "@components/RobotGame/RobotGame.astro";
+import Hint from "@components/Hint.astro";
 
 After long days of paperwork and chores, you've finally recieved your first real quest!
 You can't contain the excitement and quickly open the letter:
@@ -29,11 +30,11 @@ Okay... Time to read those instructions.
 Let's see.
 
 <QuestionCard background="var(--color-paper)" border={false} rounded>
-### Summoned Robot Instructions
+#### Summoned Robot Instructions
 Congratulations on acquiring our Monster-Killing Robot!  
 This manual provides essential instructions to ensure optimal performance and safety.
 
-#### 1. Available functions
+##### 1. Available functions
 The robot initialy has 4 possible functions:
 
 | Action     | Description                    |
@@ -45,13 +46,13 @@ The robot initialy has 4 possible functions:
 
 More functions will be unlocked once enough monsters are defeated.
 
-#### 2. Usage
+##### 2. Usage
 To kill a monster, just move the robot where it is and the machine will do the rest.
 
 To ensure 100% success rate, multiple simulations will run before executing your program.  
 **This means that your code must be able to solve ALL the simulations.**
 
-#### 3. Legal and Ethical Considerations
+##### 3. Legal and Ethical Considerations
 - Adhere to local laws and regulations governing the use of monster-killing robots.
 - Exercise ethical judgement to ensure the safety of bystanders and property.
 
@@ -59,9 +60,81 @@ If you have any issue, don't hesitate to reach out to our customer support for f
 We wish you a happy monster extermination!
 </QuestionCard>
 
+<Hint>
+Remember the instructions:
+- `up();`
+- `down();`
+- `left();`
+- `right();`
+
+Don't forget the semicolon at the end of each function!
+</Hint>
+
 <RobotGame
   id="5-2-robot"
-  cellSize={"3rem"}
+  question="Kill the slime!"
+/>
+</Checkpoint>
+
+<Checkpoint id="5-2-robot">
+
+Once the simulation is complete, the robot swiftly starts moving and punches the slime to death.
+
+One down, many more to go!
+
+<RobotGame
+  id="5-3-robot"
+  question="Kill another one!"
+/>
+</Checkpoint>
+
+<Checkpoint id="5-3-robot">
+Another slime bites the dust!
+
+Now there's two simulations?  
+No problem, you can handle this!
+
+<Hint>
+Try solving the first simulation and see what happens.
+</Hint>
+<RobotGame
+  id="5-4-robot"
+  question="Complete the simulations!"
+/>
+</Checkpoint>
+
+<Checkpoint id="5-4-robot">
+
+Seems like you're getting the hang of it!
+
+<QuestionCard background="var(--color-paper)" border={false} rounded>
+#### New functions unlocked!
+Two new functions have been unlocked:
+
+| Action              | Description                                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `is_slime_left();`  | Returns `true` if a slime is located at the *left* of the robot.{/* <br/>Works even if the slime is not adjacent.  */}|
+| `is_slime_right();` | Returns `true` if a slime is located at the *right* of the robot.{/* <br/>Works even if the slime is not adjacent. */}                                                                                    |
+
+:::tip[Tip]
+If a function name is too long, you can abreviate it to only the initials.  
+For example, `is_slime_left();` can be called as `isl();`
+
+This is only for this book, don't try doing it in real code!
+:::
+</QuestionCard>
+
+<RobotGame
+id="5-5-robot"
+question="Let's use the new functions!"
+code={`
+if ? {
+  left();
+}
+if ? {
+  right();
+}
+`}
 />
 </Checkpoint>
 

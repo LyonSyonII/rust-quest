@@ -1,0 +1,46 @@
+import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGame";
+import { codeMess, replace } from "./CodeQuestion";
+import { createRegExp, exactly, maybe, word } from "magic-regexp";
+import { _, end, semicolon, start } from "./regex";
+
+export default {
+  functions: Functions.LOOK_HORIZONTAL,
+  rows: 3,
+  cols: 3,
+  boards: [
+    {
+      start: 7,
+      enemies: [6],
+      steps: 2
+    },
+    {
+      start: 7,
+      enemies: [8],
+      steps: 1
+    },
+  ],
+  validator
+} as RobotGameProps;
+
+function validator(value: string): string | undefined {
+  const regex = createRegExp(
+    start, _,
+    "if", _, exactly("?").or(word, "()", maybe(";")).as("first"), _, "{", _, "left()", _, semicolon, "}", _,
+    "if", _, exactly("?").or(word, "()", maybe(";")).as("second"), _, "{", _, "right()", _, semicolon, "}", _,
+    end
+  );
+  const matches = value.match(regex);
+  if (!matches) return codeMess;
+
+  const { first, second } = matches.groups;
+  if (!first) return codeMess;
+  if (!second) return codeMess;
+
+  const wrong = "Look closely at the instructions, you don't need a semicolon!";
+
+  return value.includes("?") && replace
+    || first.includes(";") && wrong
+    || second.includes(";") && wrong
+    || undefined
+}
+

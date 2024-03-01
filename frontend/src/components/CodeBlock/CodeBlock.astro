@@ -214,12 +214,10 @@ const props = {
       this.setup = this.getAttribute("setup") || this.setup;
       this.errorMsg = this.getAttribute("errorMsg")!;
 
-      if (!this.id.endsWith("robot")) {
-        import(`../../validation/${this.id}.ts`).then((q) => {
-          this.setProps(q.default as CodeQuestion),
-          this.setValue(this.code);
-        });
-      }
+      import(`../../validation/${this.id}.ts`).then((q) => {
+        this.setProps(q.default as CodeQuestion),
+        this.setValue(this.code);
+      });
 
       this.readonly = new Compartment();
       this.theme = new Compartment();
@@ -291,7 +289,7 @@ const props = {
             acc.replaceAll(`$${v}`, c(localStorage.getItem(v) || d)),
           r,
         );
-      this.code = replaceVars(this.getAttribute("code") || this.code);
+      this.code = replaceVars(this.getAttribute("code")?.trim() || this.code);
       this.setup = replaceVars(setup || this.setup);
       this.validator = validator || this.validator;
       this.onsuccess = onsuccess || this.onsuccess;
@@ -365,6 +363,7 @@ const props = {
         await new Promise((resolve) => setTimeout(resolve, 50));
         this.setResponse(v);
         this.setRunning(false);
+        return;
       }
 
       const result = await this.evaluateSnippet(value);

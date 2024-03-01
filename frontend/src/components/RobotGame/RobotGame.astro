@@ -6,17 +6,21 @@ import Robot from "@assets/robot.svg";
 import QuestionCard from "@components/QuestionCard.astro";
 
 type Props = {
-  question: string;
   id: string;
-  cellSize: string;
+  question?: string;
+  code?: string;
+  cellSize?: string;
 };
 
-const { question, id, cellSize = "5rem" } = Astro.props;
+const { id, question = "", code = "", cellSize = "3rem" } = Astro.props;
+
+console.log({code});
 
 const {
   rows: rowsDef = 3,
   cols: colsDef = 3,
   boards,
+  solveWithMinimumSteps
 }: RobotGameProps = (await import(`../../validation/${id}.ts`)).default;
 
 const slimes = (
@@ -27,36 +31,42 @@ const slimes = (
 const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 ---
 
-<QuestionCard question={question}>
+<QuestionCard question={question} gap="0">
   <x-robot-game id={id}>
     <div id="boards">
       {
-        boards.map(({ rows = rowsDef, cols = colsDef, start, enemies }) => (
-          <table>
-            {[...Array(cols)].map((_, i) => (
-              <tr>
-                {[...Array(rows)].map((_, j) => (
-                  <td>
-                    {(start == i * colsDef + j && (
-                      <Image src={Robot} alt="robot" id="robot" />
-                    )) ||
-                      (enemies.includes(i * colsDef + j) && (
-                        <Image src={getRandomSlime()} alt="slime" id="slime" />
-                      )) || <p>{i * colsDef + j}</p>}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </table>
-        ))
-      }
+        boards.map(({ rows = rowsDef, cols = colsDef, start, enemies, steps }, i) => (
+          <div id="board">
+            { solveWithMinimumSteps && <label for={`${id}-${i}`}>Steps: {steps}</label> }
+            <table id={`${id}-${i}`}>
+              {[...Array(cols)].map((_, i) => (
+                <tr>
+                  {[...Array(rows)].map((_, j) => (
+                    <td>
+                      {(start == i * colsDef + j && (
+                        <Image src={Robot} alt="robot" id="robot" />
+                      )) ||
+                        (enemies.includes(i * colsDef + j) && (
+                          <Image src={getRandomSlime()} alt="slime" id="slime" />
+                        )) || <p>{i * colsDef + j}</p>}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </table>
+            </div>
+            ))
+          }
     </div>
-    <CodeBlock id={id} />
+    { solveWithMinimumSteps && <b id="min-steps">Solve with the minimum steps possible</b> }
+    <CodeBlock id={id} code={code}/>
   </x-robot-game>
 </QuestionCard>
 
 <style define:vars={{ cellSize }}>
-  :root {
+  :root { }
+  x-robot-game {
+    margin-top: 0 !important;
   }
   img {
     width: 80%;
@@ -64,20 +74,35 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     margin-left: auto;
     margin-right: auto;
   }
-  table {
+  #board table {
     table-layout: fixed;
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 1rem;
-    margin-top: 0 !important;
+    margin-top: 0;
     transition: opacity 0.2s ease-in-out;
+  }
+  label {
+    text-align: center;
+  }
+  #min-steps {
+    font-size: 0.8rem;
+    margin-top: 0;
+   /*  justify-self: flex-start; */
   }
   #boards {
     display: flex;
     justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
+    margin-top: 0rem;
+  }
+  #board {
+    margin-top: 0 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   tr {
     background-color: white !important;
@@ -146,13 +171,11 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
       );
       
       import(`../../validation/${this.id}.ts`).then(({default: props}: {default: RobotGameProps}) => {
-        console.log(props);
-
         this.functions = props.functions || this.functions;
         this.winText = props.winText || this.winText;
         this.loseText = props.loseText || this.loseText;
         this.solveWithMinimumSteps =
-          props.solveWithMinimum || this.solveWithMinimumSteps;
+          props.solveWithMinimumSteps || this.solveWithMinimumSteps;
         
         this.boards = [...this.querySelectorAll("table")].map(
           (htmlTable, i) => ({
@@ -175,6 +198,19 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
         this.codeblock.setRunning(true);
         this.codeblock.setOutput("Compiling...");
 
+        this.resetBoards();
+
+        const value = this.codeblock.getValue();
+
+        const v = await this.codeblock.validateSnippet(value);
+        if (v !== undefined) {
+          // Wait a bit to emphasize that the code is running
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          this.codeblock.setOutput(v);
+          this.codeblock.setRunning(false);
+          return Promise.reject();
+        }
+
         const responses: [string, Board][] = await Promise.all(
           this.boards.map(async (board) => {
             const { rows, cols, start, enemies } = board;
@@ -185,13 +221,16 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
               enemies,
               this.functions,
             );
-            const response = await this.codeblock.evaluateSnippet(
-              this.codeblock.getValue(),
-            );
+            
+            const response = await this.codeblock.evaluateSnippet(value);
             return [response, board];
           }),
         );
 
+        if (responses === undefined) {
+          return;
+        }
+        
         for (const [response, board] of responses) {
           const steps = await this.handleResponse(response, board);
           if (steps === undefined) {
@@ -297,6 +336,8 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
         ));
       };
       
+      this.codeblock.setOutput("Simulating...");
+
       for (const c of response.split("\n")) {
         switch (c) {
           case "UP": {

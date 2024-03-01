@@ -4,9 +4,9 @@ export default {
   boards: [
     {
       start: 7,
-      enemies: [1],
+      enemies: [3],
       steps: 2
-    }
+    },
   ],
   rows: 3,
   cols: 3,

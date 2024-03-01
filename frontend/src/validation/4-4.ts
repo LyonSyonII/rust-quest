@@ -14,7 +14,7 @@ function validator(value: string): string | undefined {
   const matches = value.match(regex);
   if (!matches) return codeMess;
   let { human, registered, dead, glasses } = matches.groups;
-
+  
   const fillHuman = "[is_human] Fill in if you're human!";
   const fillRegistered = "[registered] Fill in if you're registered!";
   const fillDead = "[dead] Fill in if you're dead!";
@@ -24,7 +24,7 @@ function validator(value: string): string | undefined {
   if (!registered) return fillRegistered;
   if (!dead) return fillDead;
   if (!glasses) return fillGlasses;
-
+  
   dead = dead.trim();
   glasses = glasses.trim();
   

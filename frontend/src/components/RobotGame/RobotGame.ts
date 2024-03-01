@@ -1,3 +1,5 @@
+import type { CodeQuestion } from "src/validation/CodeQuestion";
+
 export const Functions = {
   BASIC: "BASIC",
   LOOK_HORIZONTAL: "LOOK_HORIZONTAL",
@@ -23,7 +25,7 @@ export type RobotGameProps = {
   /** Abilities available to the programmer. */
   functions?: Functions;
   /** If the boards need to be solved with the minimum steps. */
-  solveWithMinimum?: boolean;
+  solveWithMinimumSteps?: boolean;
   winText?: string;
   loseText?: string;
-};
+} & CodeQuestion;
