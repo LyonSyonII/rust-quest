@@ -143,6 +143,18 @@ const props = {
   import { onThemeChange } from "src/utils/onThemeChange";
   import type { CodeQuestion } from "src/validation/CodeQuestion";
 
+  class RunEvent extends Event {
+    readonly codeBlock: CodeBlock;
+
+    constructor(cb: CodeBlock) {
+      super("run", {
+        bubbles: true,
+        cancelable: true,
+      });
+      this.codeBlock = cb;
+    }
+  }
+
   class ResponseEvent extends Event {
     readonly codeBlock: CodeBlock;
     readonly response: string;
@@ -203,9 +215,10 @@ const props = {
       this.errorMsg = this.getAttribute("errorMsg")!;
 
       if (!this.id.endsWith("robot")) {
-        import(`../../validation/${this.id}.ts`).then((q) =>
+        import(`../../validation/${this.id}.ts`).then((q) => {
           this.setProps(q.default as CodeQuestion),
-        );
+          this.setValue(this.code);
+        });
       }
 
       this.readonly = new Compartment();
@@ -279,7 +292,6 @@ const props = {
           r,
         );
       this.code = replaceVars(this.getAttribute("code") || this.code);
-      this.setValue(this.code);
       this.setup = replaceVars(setup || this.setup);
       this.validator = validator || this.validator;
       this.onsuccess = onsuccess || this.onsuccess;
@@ -340,33 +352,46 @@ const props = {
     }
 
     async handleRun() {
+      // If event is cancelled, don't run
+      if (this.dispatchEvent(new RunEvent(this)) === false) return;
+
       this.setOutput("Compiling...");
       this.setRunning(true);
 
       const value = this.getValue();
-      const v = this.validator(
-        value,
-        (regex: RegExp, ignoreWhitespace: boolean = false) =>
-          ignoreWhitespace
-            ? regex.test(value.replaceAll(/\s/g, ""))
-            : regex.test(value),
-      )?.trim();
-
+      const v = await this.validateSnippet(value);
       if (v !== undefined) {
         // Wait a bit to emphasize that the code is running
         await new Promise((resolve) => setTimeout(resolve, 50));
         this.setResponse(v);
         this.setRunning(false);
-        return;
       }
 
-      const setup = this.setup.replaceAll("__VALUE__", value);
+      const result = await this.evaluateSnippet(value);
+      this.setResponse(result);
+    }
+
+    /** Returns `undefined` if the validation was successful or a `string` with the error. */
+    public async validateSnippet(snippet: string): Promise<string | undefined> {
+      const v = this.validator(
+        snippet,
+        (regex: RegExp, ignoreWhitespace: boolean = false) =>
+          ignoreWhitespace
+            ? regex.test(snippet.replaceAll(/\s/g, ""))
+            : regex.test(snippet),
+      )?.trim();
+
+      return v;
+    }
+
+    /** Evaluates `snippet` and returns the response. */
+    public async evaluateSnippet(snippet: string): Promise<string> {
+      const setup = this.setup.replaceAll("__VALUE__", snippet);
       const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
 
-      const result = await import("./evaluate").then(({ evaluate }) =>
+      return await import("./evaluate").then(({ evaluate }) =>
         evaluate(code, this.errorMsg),
       );
-      this.setResponse(result);
     }
 
     setResponse(response: string): boolean {

@@ -16,7 +16,7 @@ export type Board = {
   steps: number;
 };
 
-type RobotGameProps = {
+export type RobotGameProps = {
   rows?: number;
   cols?: number;
   boards: Board[];

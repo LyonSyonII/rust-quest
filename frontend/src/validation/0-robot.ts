@@ -38,45 +38,37 @@ export const lookLeftRight: (
       ENEMIES.contains(&(pos+1))
     };
     
-    fn up() {
+    let up = || {
       if pos < COLS {
         return;
       }
       pos -= COLS;
       println!("UP");
-    }
-    fn down() {
+    };
+    let down =  || {
       if pos >= ROWS * (COLS-1) {
         return;
       }
       pos += COLS;
       println!("DOWN");
-    }
-    fn left() { 
+    };
+    let left = || { 
       if pos % COLS == 0 {
         return;
       }
       println!("LEFT");
       pos -= 1;
-    }
-    fn right() { 
+    };
+    let right = || { 
       if pos % COLS == COLS-1 {
         return;
       }
       println!("RIGHT");
       pos += 1;
-    }
-    ${basicMovement.setup}
+    };
+    __VALUE__
     `.replaceAll("\n", "")
   }
 };
 
-export default {
-  setup: `
-    fn up() { println!("UP") }
-    fn down() { println!("DOWN") }
-    fn left() { println!("LEFT") }
-    fn right() { println!("RIGHT") }
-    __VALUE__
-    `.replaceAll("\n", ""),
-} as CodeQuestion;
+export default basicMovement;

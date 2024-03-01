@@ -10,6 +10,8 @@ class CodeBlock extends HTMLElement {
   public setRunning(running: boolean): void;
   public setOutput(output: string): void;
   public hideOutput(): void;
+  public async validateSnippet(snippet: string): Promise<string | undefined>;
+  public async evaluateSnippet(snippet: string): Promise<string>;
 
   public addEventListener<K extends keyof CustomEventMap>(
     type: K,
@@ -18,8 +20,13 @@ class CodeBlock extends HTMLElement {
 }
 
 interface CustomEventMap {
+  run: RunEvent;
   response: ResponseEvent;
   reset: ResetEvent;
+}
+
+class RunEvent extends Event {
+  readonly codeBlock: CodeBlock;
 }
 
 class ResponseEvent extends Event {

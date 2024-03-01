@@ -1,5 +1,5 @@
 ---
-import { Functions, type Board, type RobotGameProps } from "./RobotGame";
+import type { RobotGameProps } from "./RobotGame.ts";
 import { Image } from "astro:assets";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
 import Robot from "@assets/robot.svg";
@@ -17,7 +17,7 @@ const {
   rows: rowsDef = 3,
   cols: colsDef = 3,
   boards,
-}: RobotGameProps = await import(`src/validation/${id}.ts`);
+}: RobotGameProps = (await import(`../../validation/${id}.ts`)).default;
 
 const slimes = (
   await Astro.glob<Record<string, ImageMetadata>>(
@@ -96,33 +96,44 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     transition: transform 0.35s ease-out;
   }
   .up {
-    transform: translateY(-5rem);
+    transform: translateY(calc(-1 * var(--cellSize)));
   }
   .down {
-    transform: translateY(5rem);
+    transform: translateY(var(--cellSize));
   }
   .right {
-    transform: translateX(5rem);
+    transform: translateX(var(--cellSize));
   }
   .left {
-    transform: translateX(-5rem);
+    transform: translateX(calc(-1 * var(--cellSize)));
   }
 </style>
 
 <script>
   import { confetti } from "src/utils/confetti";
   import type { CodeBlock } from "@components/CodeBlock/CodeBlock";
-  import { Functions, type Board, type RobotGameProps } from "./RobotGame";
-  import type { CodeQuestion } from "src/validation/CodeQuestion";
+  import {
+    Functions,
+    type Board as BoardProps,
+    type RobotGameProps,
+  } from "./RobotGame";
 
-  type Boards = (Board & { board: HTMLTableElement, robot: HTMLImageElement, tableChanged: boolean })[];
+  type Board = BoardProps & {
+    htmlTable: HTMLTableElement;
+    robot: HTMLImageElement;
+    tableChanged: boolean;
+    numEnemies: number;
+    rows: number;
+    cols: number;
+  };
 
   class RobotGame extends HTMLElement {
     readonly codeblock: CodeBlock;
-    currentBoard: number = 0;
-    boards: Boards = [];
+    readonly startingHtmlBoards: HTMLTableElement[];
+
+    boards: Board[] = [];
     functions: Functions = Functions.BASIC;
-    solveWithMinimum: boolean = false;
+    solveWithMinimumSteps: boolean = false;
     winText: string = "You win!";
     loseText: string = "There are some Slimes left, try again!";
 
@@ -130,23 +141,82 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
       super();
 
       this.codeblock = this.querySelector<CodeBlock>("x-code-block")!;
+      this.startingHtmlBoards = [...this.querySelectorAll("table")].map(
+        (t) => t.cloneNode(true) as HTMLTableElement,
+      );
+      
+      import(`../../validation/${this.id}.ts`).then(({default: props}: {default: RobotGameProps}) => {
+        console.log(props);
 
-      import(`src/validation/${this.id}.ts`).then((props: RobotGameProps) => {
         this.functions = props.functions || this.functions;
         this.winText = props.winText || this.winText;
         this.loseText = props.loseText || this.loseText;
-        this.solveWithMinimum = props.solveWithMinimum || this.solveWithMinimum;
+        this.solveWithMinimumSteps =
+          props.solveWithMinimum || this.solveWithMinimumSteps;
+        
+        this.boards = [...this.querySelectorAll("table")].map(
+          (htmlTable, i) => ({
+            htmlTable,
+            robot: htmlTable.querySelector("#robot")!,
+            tableChanged: false,
+            numEnemies: props.boards[i]?.enemies.length || 0,
+            rows: props.boards[i]?.rows || 3,
+            cols: props.boards[i]?.cols || 3,
+            ...props.boards[i]!,
+          }),
+        );
+      });
+    }
 
-        const htmlBoards = [...this.querySelectorAll("table")].map(board => board.cloneNode(true) as HTMLTableElement);
-      })
+    connectedCallback() {
+      this.codeblock.addEventListener("run", async (e) => {
+        e.preventDefault();
 
-      this.boards = this.getAttribute("boards");
+        this.codeblock.setRunning(true);
+        this.codeblock.setOutput("Compiling...");
 
-      this.startingBoard = this.querySelector("table")!.cloneNode(
-        true,
-      ) as HTMLTableElement;
-      
-      this.setupCodeBlock();
+        const responses: [string, Board][] = await Promise.all(
+          this.boards.map(async (board) => {
+            const { rows, cols, start, enemies } = board;
+            await this.setupCodeBlock(
+              rows,
+              cols,
+              start,
+              enemies,
+              this.functions,
+            );
+            const response = await this.codeblock.evaluateSnippet(
+              this.codeblock.getValue(),
+            );
+            return [response, board];
+          }),
+        );
+
+        for (const [response, board] of responses) {
+          const steps = await this.handleResponse(response, board);
+          if (steps === undefined) {
+            this.codeblock.setOutput(this.loseText);
+            await new Promise((r) => setTimeout(r, 1000));
+            this.codeblock.setRunning(false);
+            this.resetBoards();
+            return;
+          }
+          if (this.solveWithMinimumSteps && board.steps < steps) {
+            this.codeblock.setOutput("You took too many steps, try again!");
+            this.codeblock.setRunning(false);
+            return;
+          }
+        }
+
+        this.codeblock.setOutput(this.winText + "SUCCESS");
+        confetti({ count: 20 });
+        this.codeblock.setRunning(false);
+      });
+
+      this.codeblock.addEventListener("reset", (e) => {
+        this.resetBoards();
+        e.codeBlock.hideOutput();
+      });
     }
 
     async setupCodeBlock(
@@ -154,9 +224,9 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
       cols: number,
       startPos: number,
       enemies: number[],
-      functions: Functions
+      functions: Functions,
     ) {
-      const questions = await import("src/validation/0-robot");
+      const questions = await import("../../validation/0-robot");
 
       let question;
       switch (functions) {
@@ -173,105 +243,106 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
       this.codeblock.setProps(question);
     }
 
-    async resetBoard() {
-      if (!this.tableChanged) {
-        return;
+    async resetBoards() {
+      let i = 0;
+      for (const board of this.boards) {
+        if (!board.tableChanged) {
+          i += 1;
+          break;
+        }
+        board.tableChanged = false;
+        board.htmlTable.style.opacity = "0";
+        await new Promise((r) => setTimeout(r, 200));
+        this.startingHtmlBoards[i]!.style.opacity = "0";
+        const newTable = this.startingHtmlBoards[i]!.cloneNode(
+          true,
+        ) as HTMLTableElement;
+        board.htmlTable.replaceWith(newTable);
+        await new Promise((r) => setTimeout(r, 10));
+        newTable.style.opacity = "1";
+        board.robot = newTable.querySelector("#robot")!;
+        await new Promise((r) => setTimeout(r, 200));
       }
-      this.tableChanged = false;
-      this.querySelector("table")!.style.opacity = "0";
-      await new Promise((r) => setTimeout(r, 200));
-      this.startingBoard.style.opacity = "0";
-      this.querySelector("table")!.replaceWith(
-        this.startingBoard.cloneNode(true),
-      );
-      await new Promise((r) => setTimeout(r, 10));
-      this.querySelector("table")!.style.opacity = "1";
-      this.robot = this.querySelector("#robot")!;
-      await new Promise((r) => setTimeout(r, 200));
+
+      i += 1;
     }
 
-    connectedCallback() {
-      this.codeblock.addEventListener("reset", (e) => {
-        this.resetBoard();
-        e.codeBlock.hideOutput();
-      });
-      this.codeblock.addEventListener("response", async (e) => {
-        e.preventDefault();
-        await this.resetBoard();
+    /** Returns `number` representing the number of steps.
+     *
+     *  If the robot didn't kill all the slimes, return `undefined`.
+     */
+    async handleResponse(response: string, board: Board): Promise<number | undefined> {
+      const cells = board.htmlTable.querySelectorAll("td");
+      let killedEnemies = 0;
+      let currentPos = board.start;
+      let steps = 0;
 
-        const cells = this.querySelectorAll("td");
-        let killedEnemies = 0;
-        let currentPos = this.startPos;
+      const wait = async (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
 
-        const wait = async (ms: number) =>
-          new Promise((resolve) => setTimeout(resolve, ms));
-
-        const setPos = async (newPos: number, direction: string) => {
-          this.tableChanged = true;
-          this.robot.classList.add(direction);
-          await wait(350);
-          this.robot.classList.remove(direction);
-          ({ currentPos, killedEnemies } = this.setPos(
-            currentPos,
-            newPos,
-            cells,
-            killedEnemies,
-          ));
-        };
-
-        for (const c of e.response.split("\n")) {
-          switch (c) {
-            case "UP": {
-              const newPos = currentPos - this.cols;
-              if (newPos >= 0) {
-                await setPos(newPos, "up");
-              }
-              break;
+      const setPos = async (newPos: number, direction: string) => {
+        board.tableChanged = true;
+        steps += 1;
+        board.robot.classList.add(direction);
+        await wait(350);
+        board.robot.classList.remove(direction);
+        ({ currentPos, killedEnemies } = this.setPos(
+          currentPos,
+          newPos,
+          board.robot,
+          cells,
+          killedEnemies,
+        ));
+      };
+      
+      for (const c of response.split("\n")) {
+        switch (c) {
+          case "UP": {
+            const newPos = currentPos - board.cols;
+            if (newPos >= 0) {
+              await setPos(newPos, "up");
             }
-            case "DOWN": {
-              const newPos = currentPos + this.cols;
-              if (newPos <= cells.length) {
-                await setPos(newPos, "down");
-              }
-              break;
+            break;
+          }
+          case "DOWN": {
+            const newPos = currentPos + board.cols;
+            if (newPos <= cells.length) {
+              await setPos(newPos, "down");
             }
-            case "LEFT": {
-              const newPos = currentPos - 1;
-              if (currentPos % this.cols !== 0 && newPos >= 0) {
-                await setPos(newPos, "left");
-              }
-              break;
+            break;
+          }
+          case "LEFT": {
+            const newPos = currentPos - 1;
+            if (currentPos % board.cols !== 0 && newPos >= 0) {
+              await setPos(newPos, "left");
             }
-            case "RIGHT": {
-              const newPos = currentPos + 1;
-              if (newPos % this.cols !== 0 && newPos <= cells.length) {
-                await setPos(newPos, "right");
-              }
-              break;
+            break;
+          }
+          case "RIGHT": {
+            const newPos = currentPos + 1;
+            if (newPos % board.cols !== 0 && newPos <= cells.length) {
+              await setPos(newPos, "right");
             }
-
-            default:
-              continue;
+            break;
           }
 
-          await wait(150);
+          default:
+            continue;
         }
 
-        if (killedEnemies === this.enemies) {
-          this.codeblock.setOutput(this.winText + "SUCCESS");
-          confetti({ count: 20 });
-        } else {
-          this.codeblock.setOutput(this.loseText);
-          await wait(1000);
-          this.resetBoard();
-        }
-        this.codeblock.setRunning(false);
-      });
+        await wait(150);
+      }
+
+      if (killedEnemies < board.numEnemies) {
+        return undefined;
+      }
+      return steps;
     }
 
     setPos(
       currentPos: number,
       newPos: number,
+      robot: HTMLImageElement,
       cells: NodeListOf<HTMLTableCellElement>,
       killedEnemies: number,
     ): { currentPos: number; killedEnemies: number } {
@@ -283,7 +354,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
         killedEnemies += 1;
       }
 
-      child.replaceWith(this.robot);
+      child.replaceWith(robot);
 
       const newP = document.createElement("p");
       newP.textContent = currentPos.toString();
@@ -292,5 +363,6 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
       return { currentPos: newPos, killedEnemies };
     }
   }
+
   customElements.define("x-robot-game", RobotGame);
 </script>
