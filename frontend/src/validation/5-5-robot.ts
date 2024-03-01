@@ -4,6 +4,7 @@ import { createRegExp, exactly, maybe, word } from "magic-regexp";
 import { _, end, semicolon, start } from "./regex";
 
 export default {
+  solveWithMinimumSteps: true,
   functions: Functions.LOOK_HORIZONTAL,
   rows: 3,
   cols: 3,
@@ -11,7 +12,7 @@ export default {
     {
       start: 7,
       enemies: [6],
-      steps: 2
+      steps: 1
     },
     {
       start: 7,
@@ -39,8 +40,7 @@ function validator(value: string): string | undefined {
   const wrong = "Look closely at the instructions, you don't need a semicolon!";
 
   return value.includes("?") && replace
-    || first.includes(";") && wrong
-    || second.includes(";") && wrong
+    || first.includes(";") && `[first condition] ${wrong}`
+    || second.includes(";") && `[second condition] ${wrong}`
     || undefined
 }
-

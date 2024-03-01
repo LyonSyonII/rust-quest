@@ -37,7 +37,6 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
       {
         boards.map(({ rows = rowsDef, cols = colsDef, start, enemies, steps }, i) => (
           <div id="board">
-            { solveWithMinimumSteps && <label for={`${id}-${i}`}>Steps: {steps}</label> }
             <table id={`${id}-${i}`}>
               {[...Array(cols)].map((_, i) => (
                 <tr>
@@ -54,6 +53,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
                 </tr>
               ))}
             </table>
+            { solveWithMinimumSteps && <label for={`${id}-${i}`}>Minimum Steps: {steps}</label> }
             </div>
             ))
           }
@@ -66,7 +66,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 <style define:vars={{ cellSize }}>
   :root { }
   x-robot-game {
-    margin-top: 0 !important;
+
   }
   img {
     width: 80%;
@@ -79,12 +79,14 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 1rem;
+    margin-bottom: 0rem;
     margin-top: 0;
     transition: opacity 0.2s ease-in-out;
   }
   label {
+    font-size: 0.8rem;
     text-align: center;
+    margin-top: 0 !important;
   }
   #min-steps {
     font-size: 0.8rem;
@@ -97,6 +99,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     align-items: center;
     flex-wrap: wrap;
     margin-top: 0rem;
+    margin-bottom: 0.5rem;
   }
   #board {
     margin-top: 0 !important;
