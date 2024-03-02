@@ -1,5 +1,7 @@
 import { codeMess, replace, type CodeQuestion } from "./CodeQuestion";
 
+// TODO: Add extra validation for the name of the variable
+
 export default {
   setup: `
     if "__VALUE__".replace(" ", "") == "letapples=18;" {

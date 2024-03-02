@@ -19,6 +19,7 @@ export default {
         || v.startsWith("mutapples") && "You're nearly there, but remember the first magical word 'let'!\nThe panel says to 'add mut', not replace."
         || v.startsWith("letapples") && "The box still doesn't let you take the apples!\nRemember what the panel says: 'add the `mut` directive'"
         || secondLine.includes("let") && "Looks like you've modified the second line, replace only the ? part!"
+        // TODO: Add validation to ensure that only the first line is modified
         || !/^letmutapples=18;apples=apples-2;$/.test(v) && codeMess
         || undefined
   }
