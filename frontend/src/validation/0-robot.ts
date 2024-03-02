@@ -7,6 +7,11 @@ export const basicMovement: CodeQuestion = {
   fn down() { println!("DOWN") }
   fn left() { println!("LEFT") }
   fn right() { println!("RIGHT") }
+
+  let u = up;
+  let d = down;
+  let l = left;
+  let r = right;
   __VALUE__
   `.replaceAll("\n", "")
 } as const;
@@ -45,7 +50,7 @@ export const lookLeftRight: (
         return false;
       }
       for i in 0..ROWS {
-        for j in (pos % COLS)..COLS {
+        for j in ((pos+1) % COLS)..COLS {
           if ENEMIES.contains(&(i * COLS + j)) { return true }
         }
       }

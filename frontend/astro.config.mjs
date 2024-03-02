@@ -62,7 +62,7 @@ export default defineConfig({
     compressor(),
   ],
   vite: {
-    plugins: [visualizer(), MagicRegExpTransformPlugin.vite(), analyzer()],
+    plugins: [visualizer(), MagicRegExpTransformPlugin.vite()],
   },
   markdown: {
     remarkPlugins: [],

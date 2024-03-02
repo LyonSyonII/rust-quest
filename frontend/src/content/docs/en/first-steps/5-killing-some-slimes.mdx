@@ -14,6 +14,12 @@ import Progress from "@components/Progress.astro";
 import Feedback from "@components/Feedback.astro";
 import RobotGame from "@components/RobotGame/RobotGame.astro";
 import Hint from "@components/Hint.astro";
+import { Content as WIP } from "@components/WIP.mdx";
+
+:::danger[Page in testing phase]
+This page should be finished, but there might be some bugs or things that are hard to understand.  
+Proceed with caution!
+:::
 
 After long days of paperwork and chores, you've finally recieved your first real quest!
 You can't contain the excitement and quickly open the letter:
@@ -114,10 +120,10 @@ Seems like you're getting the hang of it!
 #### New functions unlocked!
 Two new functions have been unlocked:
 
-| Action              | Description                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `is_slime_left()`  | Returns `true` if a slime is located at the *left* of the robot.{/* <br/>Works even if the slime is not adjacent.  */}|
-| `is_slime_right()` | Returns `true` if a slime is located at the *right* of the robot.{/* <br/>Works even if the slime is not adjacent. */}                                                                                    |
+| Action             | Description                                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `is_slime_left()`  | Returns `true` if a slime is located at the *left* of the robot.<br/>Works even if the slime is not adjacent.  |
+| `is_slime_right()` | Returns `true` if a slime is located at the *right* of the robot.<br/>Works even if the slime is not adjacent. |                                                                                    
 
 :::tip[Tip]
 If a function name is too long, you can abreviate it to only the initials.  
@@ -172,10 +178,86 @@ if ? {
 <Checkpoint id="5-6-robot">
 Well done, all slimes will tremble in fear when they hear your name!
 
+<Hint>
+If you're in doubt, try solving it without accounting for the minimum steps and then think on what you can do to reduce them.
+
+A good way to know when to use conditionals is to solve the problem aloud:  
+*if the slime is on the left of the robot, go there, if not...*
+</Hint>
 <RobotGame
 id="5-7-robot"
-question="Different steps?"
+question="Different minimum steps?"
 />
 </Checkpoint>
 
-<Progress id="5" total={8} />
+<Checkpoint id="5-7-robot">
+You even handled a different amount of steps for simulation, excellent job!
+
+Okay, I know `if`, but... What's this `else`?
+<Hint>
+Think of `else` as a default path if none of the above worked.
+
+What will happen if the slime isn't at the left of the robot when the `if is_slime_left()` condition is reached?
+</Hint>
+<RobotGame
+id="5-8-robot"
+question="Solve this, or else..."
+code={`
+up();
+if is_slime_left() {
+  
+} else {
+  
+}
+`}
+/>
+</Checkpoint>
+
+<Checkpoint id="5-8-robot">
+:::note[Why the else?]
+In this case the normal line of thought would be to use a `is_slime_up()` function, but it isn't available yet!
+
+For this reason, we can use `else` to signify a case where none of our previous conditions is met.
+:::
+
+And finally, the last one!  
+Hang on, you're almost there!
+
+<Hint>
+`else if` is a special case of `else` that allows you to check for another condition.
+
+It's especially useful because it only runs if the previous `if` or `else if` didn't.
+</Hint>
+
+<RobotGame
+id="5-9-robot"
+question="The final challenge!"
+code={`
+up();
+if ? {
+
+} else if ? {
+
+} else {
+
+}
+`}
+/>
+</Checkpoint>
+
+<Checkpoint id="5-9-robot">
+:::note[A bit more on conditions]
+As you've probably seen, `else` and `else if` are powerful because they allow you to chain multiple conditions, ensuring that the previous ones are `false`.
+
+For example, when `else` is reached, it means that there isn't a slime either to the left or to the right of the robot.
+
+If we had used `if` instead, we would have had to check for both conditions again, which is redundant.
+:::
+You did it, you saved the world from the slime invasion!
+
+Well... Maybe it wasn't that dramatic, but you did a great job.
+
+This was a long one though, so let's take a break and celebrate your victory!
+</Checkpoint>
+
+<Progress id="5" total={9} />
