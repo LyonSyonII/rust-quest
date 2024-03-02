@@ -1,4 +1,6 @@
 ---
+import Feedback from "./Feedback.astro";
+
 type Props = {
   id: string;
   total: number;
@@ -11,7 +13,17 @@ const { id, total, confetti = true } = Astro.props;
 <x-progress data-confetti={`${confetti}`}>
   <label for={id}>0 / {total}</label>
   <progress {id} max={total}></progress>
-  {import.meta.env.DEV && <button>Reset</button>}
+  <button class="feedback">Give Feedback</button>
+
+  <Feedback id={id} />
+
+  {
+    import.meta.env.DEV && (
+      <button class="reset">
+        <b>RESET</b>
+      </button>
+    )
+  }
 </x-progress>
 
 <style>
@@ -25,10 +37,28 @@ const { id, total, confetti = true } = Astro.props;
   progress {
     margin: 0 !important;
   }
+  button {
+    background-color: var(--sl-color-accent-low);
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+
+    border: 1px;
+    border-radius: 0.25em;
+
+    transition: opacity 0.2s;
+  }
+  button:hover {
+    opacity: 0.8;
+  }
+  .reset {
+    background-color: red;
+  }
 </style>
 
 <script>
   import { subscribe, add, remove } from "./Checkpoint/checkpoint";
+  import { confetti } from "../utils/confetti";
 
   class Progress extends HTMLElement {
     constructor() {
@@ -36,7 +66,7 @@ const { id, total, confetti = true } = Astro.props;
 
       const progress = this.querySelector("progress") as HTMLProgressElement;
       const label = this.querySelector("label") as HTMLLabelElement;
-      const confetti: boolean = this.dataset.confetti === "true";
+      const launchConfetti: boolean = this.dataset.confetti === "true";
       const id: string = progress.id;
       const total: number = progress.max;
 
@@ -44,17 +74,25 @@ const { id, total, confetti = true } = Astro.props;
         const value = checkpoint.size < total ? checkpoint.size : total;
         label.innerText = `${value} / ${total}`;
         progress.value = value;
-        if (!confetti || value !== total || checkpoint.has(`${id}-confetti`)) {
+        const confettiId = `${id}-confetti`;
+        if (!launchConfetti || value !== total || checkpoint.has(confettiId)) {
           return;
         }
-        const confettis = await import("confettis");
-        confettis.create({ y: 2 });
-        add(`${id}-confetti`);
+
+        confetti();
+        add(confettiId);
       });
 
+      const feedback = this.querySelector("dialog")!;
+      this.querySelector(".feedback")!.addEventListener("click", () =>
+        feedback.showModal(),
+      );
+
       if (import.meta.env.DEV) {
-        const button = this.querySelector("button") as HTMLButtonElement;
-        button.addEventListener("click", () => remove(id));
+        this.querySelector(".reset")!.addEventListener("click", () => {
+          remove(id);
+          location.reload();
+        });
       }
     }
   }

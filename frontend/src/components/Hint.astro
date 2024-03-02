@@ -1,0 +1,99 @@
+---
+
+---
+
+<x-hint>
+  <button>
+    <!-- carbon:idea -->
+    <!-- prettier-ignore -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 32 32"><path fill="currentColor" d="M11 24h10v2H11zm2 4h6v2h-6zm3-26A10 10 0 0 0 6 12a9.19 9.19 0 0 0 3.46 7.62c1 .93 1.54 1.46 1.54 2.38h2c0-1.84-1.11-2.87-2.19-3.86A7.2 7.2 0 0 1 8 12a8 8 0 0 1 16 0a7.2 7.2 0 0 1-2.82 6.14c-1.07 1-2.18 2-2.18 3.86h2c0-.92.53-1.45 1.54-2.39A9.18 9.18 0 0 0 26 12A10 10 0 0 0 16 2"/></svg>
+  </button>
+  <div>
+    <slot />
+  </div>
+</x-hint>
+
+<style>
+  :root {
+    --portraitSize: 40px;
+  }
+  x-hint {
+    display: grid;
+    grid-template-columns: auto;
+
+    margin-top: 0rem;
+    border: 1px;
+    border-radius: 0.25em;
+  }
+  button {
+    background-color: var(--sl-color-gray-6);
+
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+    cursor: pointer;
+
+    border: 1px;
+    border-radius: 0.25em;
+  }
+  button svg {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  div {
+    color: var(--sl-color-gray-1);
+    padding: 0.75rem;
+    margin-top: 0;
+    align-self: center;
+  }
+  @media only screen and (min-width: 1152px) {
+    x-hint {
+      margin-left: -80px;
+      grid-template-columns: var(--portraitSize);
+      position: absolute;
+    }
+    x-hint[visible] {
+      grid-template-columns: var(--portraitSize) auto;
+      position: static;
+    }
+    x-hint[visible] div {
+      padding-left: 40px;
+    }
+    button {
+      display: grid;
+      container-type: size;
+      min-height: var(--portraitSize);
+    }
+  }
+  x-hint[visible] {
+    background-color: var(--sl-color-gray-6);
+  }
+  x-hint div {
+    display: none;
+  }
+  x-hint[visible] div {
+    display: block;
+    margin: 0;
+  }
+  x-hint button svg {
+    color: var(--sl-color-white);
+  }
+  x-hint[visible] button svg {
+    color: #dfc838;
+  }
+</style>
+
+<script>
+  class Hint extends HTMLElement {
+    constructor() {
+      super();
+
+      this.querySelector("button")!.addEventListener("click", () =>
+        this.toggleAttribute("visible"),
+      );
+    }
+  }
+  customElements.define("x-hint", Hint);
+</script>

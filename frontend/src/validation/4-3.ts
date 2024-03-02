@@ -1,0 +1,57 @@
+import { type CodeQuestion, replace, codeMess } from "./CodeQuestion";
+import { createRegExp } from "magic-regexp";
+import { _, semicolon, stringZ, char, wrongCharZ, start, end } from "./regex";
+
+function validator(value: string): string | undefined {
+  const answer = wrongCharZ.or(stringZ).or("?").optionally();
+  
+  const regex = createRegExp(
+    start,
+    "let initial1 =", _, char.as("initial1"), semicolon,
+    "let initial2 =", _, answer.as("initial2"), semicolon,
+    "let mut cardinal =", _, answer.as("cardinal"), semicolon,
+    end
+  );
+  const matches = value.match(regex);
+  if (!matches) return codeMess;
+  const { initial1, initial2, cardinal } = matches.groups;
+  
+  const fillFirst = "[initial1] Fill in your first initial!";
+  const fillSecond = "[initial2] Fill in your second initial!";
+  const fillCardinal = "[cardinal] Fill in your favourite cardinal point!";
+  
+  if (!initial1) return fillFirst;
+  if (!initial2) return fillSecond;
+  if (!cardinal) return fillCardinal;
+  
+  return initial2.includes("?") && fillSecond
+  || initial2.length === 2 && fillSecond
+  || initial2.length > 3 && "[initial2] An initial has only one character!"
+  || initial2.includes('"') && "[initial2] You're almost there, but an initial has only one character, so there's a better way to write it!\nLook closely at how 'initial1' is written."
+  || initial2.toUpperCase() !== initial2 && "[initial2] An initial should be uppercase!"
+  || cardinal.includes("?") && fillCardinal
+  || cardinal.includes('"') && "[cardinal] You're almost there, but a cardinal point has only one character, so there's a better way to write it!\nLook closely at how 'initial1' is written."
+  || !(/'[nsew]'/i).test(cardinal) && `[cardinal] ${cardinal} is not a cardinal point! Try 'N', 'S', 'E' or 'W'.`
+  || value.includes("?") && replace
+  || undefined
+}
+
+export default {
+  setup: `
+  __VALUE__
+  let cardinal = match cardinal {
+      'N' => "North",
+      'S' => "South",
+      'E' => "East",
+      'W' => "West",
+      _ => unreachable!()
+  };
+  println!("Your initials are {initial1}.{initial2}. and your favourite cardinal point is {cardinal}.\\nSUCCESS");
+  `,
+  vars: [{
+    v: "NAME",
+    d: "Hero",
+    c: (v) => v[0]?.toUpperCase()
+  }],
+  validator,
+} as CodeQuestion;

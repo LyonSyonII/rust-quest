@@ -9,6 +9,7 @@ import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.astro";
+import Feedback from "@components/Feedback.astro";
 import { Content as WIP } from "@components/WIP.mdx";
 
 export function Guild(props) {
@@ -53,23 +54,7 @@ code={`
 let name = "$NAME";
 let surname = ?;
 let mut age = ?;
-`}
-vars={[ {v: "NAME", d: "Hero"} ]}
-setup={`__VALUE__ println!("Welcome, {name} {surname}!\\nYou're {age} years old.SUCCESS");`}
-validator={`
-${getAnswer};
-const surname = getAnswer("surname = ");
-const age = getAnswer("age = ");
-return surname.includes("?") && "[surname] Fill in your surname!"
-    || !surname.includes('"') && "[surname] Something is wrong with your surname.\\nLook closely to how 'name' is written!"
-    || age.includes("?") && "[age] Fill in your age!"
-    || Number(age) < 0 && "[age] Age can't be negative, can it? 😉"
-    || Number(age) < 15 && "[age] You must be at least 15 years old to go adventuring!"
-    || value.includes("?") && \`${replace}\`
-    || undefined
-`}
-onsuccess={`${getAnswer};localStorage.setItem("NAME", getAnswer("name = ").slice(1, -1));`}
-/>
+`}/>
 :::note[Why is age mutable?]
 Well, you are getting older, right?  
 
@@ -81,29 +66,14 @@ If a variable has it, it means it WILL change, if not (or you're not sure), make
 <Guild>
 Thought that was it? We're just getting started!
 </Guild>
-{ /* 
-  TODO: Experiment without examples, if people get stuck add them
-  // meters    (eg: 1.75)
-  // kilograms (eg: 64.3)
- */ }
+
 <CodeQuestion 
 id="4-2"
 question="Enter your height (meters), weight (kilograms) and current money:"
 code={`
-let mut height = ?; 
-let mut weight = ?; 
+let mut height = ?;
+let mut weight = ?;
 let mut money = 12.50;
-`}
-setup={`__VALUE__ println!("Your height is {height} meters, your weight is {weight} kilograms and you have {money} coins.\\nSUCCESS");`}
-validator={`
-${getAnswer};
-const height = getAnswer("height = ");
-const weight = getAnswer("weight = ");
-return height.includes("?") && "[height] Fill in your height!"
-    || !height.includes(".") && "[height] Wow, that's a very round height!\\nTry adding some decimals to make it more precise."
-    || weight.includes("?") && "[weight] Fill in your weight!"
-    || value.includes("?") && \`${replace}\`
-    || undefined
 `}
 />
 </Checkpoint>
@@ -132,39 +102,6 @@ let initial1 = '$NAME';
 let initial2 = ?;
 let mut cardinal = ?;
 `}
-vars={[ {v: "NAME", d: "Hero", c: "return v[0].toUpperCase()"} ]}
-setup={`
-__VALUE__
-let cardinal = match cardinal {
-    'N' => "North",
-    'S' => "South",
-    'E' => "East",
-    'W' => "West",
-    _ => unreachable!()
-};
-println!("Your initials are {initial1}.{initial2}. and your favourite cardinal point is {cardinal}.\\nSUCCESS");
-`}
-validator={`
-${getAnswer};
-const charegex = /'.'/;
-const initial2 = getAnswer("initial2 = ");
-const cardinal = getAnswer("cardinal = ");
-return !test(/let initial1 = '.';/) && "Seems like you've messed up the first line, click the 'Reset' button to return it back to its original state."
-    || !test(/let initial2 = .*;/) && "Seems like you've messed up the second line, click the 'Reset' button to return it back to its original state."
-    || !test(/let mut cardinal = .*;/) && "Seems like you've messed up the third line, click the 'Reset' button to return it back to its original state."
-    || value.match(/\\n/g).length + 1 !== 3 && "Seems like you've messed up the lines, click the 'Reset' button to return it back to its original state."
-    || initial2.includes("?") && "[initial2] Fill in your second initial!"
-    || initial2.includes('"') && "[initial2] You're almost there, but an initial has only one character, so there's a better way to write it!\\nLook closely at how 'initial1' is written."
-    || !charegex.test(initial2) && "[initial2] Something is wrong with your second initial.\\nLook closely at how 'initial1' is written!"
-    || initial2.length > 3 && "[initial2] An initial has only one character!"
-    || initial2.toUpperCase() !== initial2 && "[initial2] An initial should be uppercase!"
-    || cardinal.includes("?") && "[cardinal] Fill in your favourite cardinal point!"
-    || cardinal.includes('"') && "[cardinal] You're almost there, but a cardinal point has only one character, so there's a better way to write it!\\nLook closely at how 'initial1' is written."
-    || !charegex.test(cardinal) && "[cardinal] Something is wrong with your cardinal point.\\nLook closely at how 'initial1' is written!"
-    || !(/'[nsew]'/i).test(cardinal) && \`[cardinal] \${cardinal} is not a cardinal point! Try 'N', 'S', 'E' or 'W'.\`
-    || value.includes("?") && \`${replace}\`
-    || undefined
-`}
 />
 </Checkpoint>
 
@@ -192,31 +129,6 @@ let mut registered = false;
 let mut dead = ?;
 let mut wears_glasses = ?;
 `}
-setup={`
-__VALUE__;
-let glasses = match wears_glasses {
-    true => "And I also wear glasses, we match!",
-    false => "And good! As an adventurer, it's better if you don't need glasses."
-};
-println!("I'm glad you're not dead!\\n{glasses}\\nSUCCESS");
-`}
-validator={`
-${getAnswer};
-const dead = getAnswer("dead = ");
-const wears_glasses = getAnswer("wears_glasses = ");
-const wrong = " The answer has to be 'true' or 'false', look closely at the previous values.";
-return !test(/let is_human = (true|false);/) && "Seems like you've messed up the first line, click the 'Reset' button to return it back to its original state."
-    || !test(/let mut registered = (true|false);/) && "Seems like you've messed up the second line, click the 'Reset' button to return it back to its original state."
-    || !test(/let mut dead = .*;/) && "Seems like you've messed up the third line, click the 'Reset' button to return it back to its original state."
-    || !test(/let mut wears_glasses = .*;/) && "Seems like you've messed up the fourth line, click the 'Reset' button to return it back to its original state."
-    || !test(/^let is_human = .*;\\nlet mut registered = .*;\\nlet mut dead = .*;\\nlet mut wears_glasses = .*;$/) && "Seems like you've messed up the lines, click the 'Reset' button to return it back to its original state."
-    || dead.includes("?") && "[dead] Are you dead or alive?"
-    || dead === "true" && "[dead] Are you sure you're dead? How are you answering this question?"
-    || dead !== "false" && "[dead]" + wrong
-    || wears_glasses.includes("?") && "[wears_glasses] Do you have glasses?"
-    || !(/true|false/).test(wears_glasses) && "[wears_glasses]" + wrong
-    || undefined
-`}
 />
 </Checkpoint>
 
@@ -225,7 +137,7 @@ return !test(/let is_human = (true|false);/) && "Seems like you've messed up the
 While text is written in double quotes, `true` and `false` are special values that aren't considered text.  
 Instead, they're called `booleans`, and can **only** be either `true` or `false`.  
 
-The name comes from 'George Boole', a mathematician who invented them.
+The name comes from 'George Boole', the mathematician who invented them.
 
 Remember the "Adventurer's Guild" chapter? We were doing Boolean logic back then.  
 When you evaluate an expression like `200 < 1000`, it returns a boolean value (in this case `true`), because the expression can only be `true` or `false`.
@@ -241,6 +153,7 @@ See you later!
 
 Finally, the paperwork is over!  
 You're exhausted after filling out all those forms, so you return to the inn and fall right into bed.
+
 </Checkpoint>
 
 <Progress id="4" total={4} />

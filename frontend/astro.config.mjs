@@ -5,6 +5,7 @@ import compress from "astro-compress";
 import robotsTxt from "astro-robots-txt";
 import webmanifest from "astro-webmanifest";
 import compressor from "astro-compressor";
+import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
 
 // https://astro.build/config
 export default defineConfig({
@@ -61,12 +62,18 @@ export default defineConfig({
     compressor(),
   ],
   vite: {
-    plugins: [visualizer()],
+    plugins: [visualizer(), MagicRegExpTransformPlugin.vite()],
   },
   markdown: {
     remarkPlugins: [],
   },
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "viewport",
+  },
   experimental: {
-    optimizeHoistedScript: false, /* Disables some Starlight components */
+    optimizeHoistedScript: false /* Disables some Starlight components */,
+    clientPrerender: true,
+    contentCollectionCache: false,
   },
 });

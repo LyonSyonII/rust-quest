@@ -1,0 +1,412 @@
+---
+import type { RobotGameProps } from "./RobotGame.ts";
+import { Image } from "astro:assets";
+import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
+import Robot from "@assets/robot.svg";
+import QuestionCard from "@components/QuestionCard.astro";
+
+type Props = {
+  id: string;
+  question?: string;
+  code?: string;
+  cellSize?: string;
+};
+
+const { id, question = "", code = "", cellSize = "3rem" } = Astro.props;
+
+const {
+  rows: rowsDef = 3,
+  cols: colsDef = 3,
+  boards,
+  solveWithMinimumSteps
+}: RobotGameProps = (await import(`../../validation/${id}.ts`)).default;
+
+const slimes = (
+  await Astro.glob<Record<string, ImageMetadata>>(
+    "/src/assets/monsters/slime/*",
+  )
+).map((v) => v.default!);
+const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
+---
+
+<QuestionCard question={question} gap="0">
+  <x-robot-game id={id}>
+    <div id="boards">
+      {
+        boards.map(({ rows = rowsDef, cols = colsDef, start, enemies, steps }, i) => (
+          <div id="board">
+            <table id={`${id}-${i}`}>
+              {[...Array(cols)].map((_, i) => (
+                <tr>
+                  {[...Array(rows)].map((_, j) => (
+                    <td>
+                      {(start == i * colsDef + j && (
+                        <Image src={Robot} alt="robot" id="robot" />
+                      )) ||
+                        (enemies.includes(i * colsDef + j) && (
+                          <Image src={getRandomSlime()} alt="slime" id="slime" />
+                        )) || <p>{i * colsDef + j}</p>}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </table>
+            { solveWithMinimumSteps && <label for={`${id}-${i}`}>Minimum Steps: {steps}</label> }
+            </div>
+            ))
+          }
+    </div>
+    { solveWithMinimumSteps && <b id="min-steps">Solve with the minimum steps possible</b> }
+    <CodeBlock id={id} code={code}/>
+  </x-robot-game>
+</QuestionCard>
+
+<style define:vars={{ cellSize }}>
+  :root { }
+  x-robot-game {
+
+  }
+  img {
+    width: 80%;
+    height: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #board table {
+    table-layout: fixed;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0rem;
+    margin-top: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+  label {
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 0 !important;
+  }
+  #min-steps {
+    font-size: 0.8rem;
+    margin-top: 0;
+   /*  justify-self: flex-start; */
+  }
+  #boards {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 0rem;
+    margin-bottom: 0.5rem;
+  }
+  #board {
+    margin-top: 0 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  tr {
+    background-color: white !important;
+  }
+  td {
+    width: var(--cellSize);
+    height: var(--cellSize);
+    padding: 0 !important;
+    text-align: center;
+  }
+  td > :global(p) {
+    opacity: 0.5;
+    font-weight: bold;
+  }
+  #robot {
+    transition: transform 0.35s ease-out;
+  }
+  .up {
+    transform: translateY(calc(-1 * var(--cellSize)));
+  }
+  .down {
+    transform: translateY(var(--cellSize));
+  }
+  .right {
+    transform: translateX(var(--cellSize));
+  }
+  .left {
+    transform: translateX(calc(-1 * var(--cellSize)));
+  }
+</style>
+
+<script>
+  import { confetti } from "src/utils/confetti";
+  import type { CodeBlock } from "@components/CodeBlock/CodeBlock";
+  import {
+    Functions,
+    type Board as BoardProps,
+    type RobotGameProps,
+  } from "./RobotGame";
+
+  type Board = BoardProps & {
+    htmlTable: HTMLTableElement;
+    robot: HTMLImageElement;
+    tableChanged: boolean;
+    numEnemies: number;
+    rows: number;
+    cols: number;
+  };
+
+  class RobotGame extends HTMLElement {
+    readonly codeblock: CodeBlock;
+    readonly startingHtmlBoards: HTMLTableElement[];
+
+    boards: Board[] = [];
+    functions: Functions = Functions.BASIC;
+    solveWithMinimumSteps: boolean = false;
+    winText: string = "You win!";
+    loseText: string = "There are some Slimes left, try again!";
+
+    constructor() {
+      super();
+
+      this.codeblock = this.querySelector<CodeBlock>("x-code-block")!;
+      this.startingHtmlBoards = [...this.querySelectorAll("table")].map(
+        (t) => t.cloneNode(true) as HTMLTableElement,
+      );
+      
+      import(`../../validation/${this.id}.ts`).then(({default: props}: {default: RobotGameProps}) => {
+        this.functions = props.functions || this.functions;
+        this.winText = props.winText || this.winText;
+        this.loseText = props.loseText || this.loseText;
+        this.solveWithMinimumSteps =
+          props.solveWithMinimumSteps || this.solveWithMinimumSteps;
+        
+        this.boards = [...this.querySelectorAll("table")].map(
+          (htmlTable, i) => ({
+            htmlTable,
+            robot: htmlTable.querySelector("#robot")!,
+            tableChanged: false,
+            numEnemies: props.boards[i]?.enemies.length || 0,
+            rows: props.boards[i]?.rows || 3,
+            cols: props.boards[i]?.cols || 3,
+            ...props.boards[i]!,
+          }),
+        );
+      });
+    }
+
+    connectedCallback() {
+      this.codeblock.addEventListener("run", async (e) => {
+        e.preventDefault();
+
+        this.codeblock.setRunning(true);
+        this.codeblock.setOutput("Compiling...");
+
+        this.resetBoards();
+
+        const value = this.codeblock.getValue();
+
+        const v = await this.codeblock.validateSnippet(value);
+        if (v !== undefined) {
+          // Wait a bit to emphasize that the code is running
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          this.codeblock.setOutput(v);
+          this.codeblock.setRunning(false);
+          return Promise.reject();
+        }
+
+        const responses: [string, Board][] = await Promise.all(
+          this.boards.map(async (board) => {
+            const { rows, cols, start, enemies } = board;
+            await this.setupCodeBlock(
+              rows,
+              cols,
+              start,
+              enemies,
+              this.functions,
+            );
+            
+            const response = await this.codeblock.evaluateSnippet(value);
+            return [response, board];
+          }),
+        );
+
+        if (responses === undefined) {
+          return;
+        }
+        
+        for (const [response, board] of responses) {
+          const steps = await this.handleResponse(response, board);
+          if (steps === undefined) {
+            this.codeblock.setOutput(this.loseText);
+            await new Promise((r) => setTimeout(r, 1000));
+            this.codeblock.setRunning(false);
+            this.resetBoards();
+            return;
+          }
+          if (this.solveWithMinimumSteps && board.steps < steps) {
+            this.codeblock.setOutput("You took too many steps, try again!");
+            this.codeblock.setRunning(false);
+            return;
+          }
+        }
+
+        this.codeblock.setOutput(this.winText + "SUCCESS");
+        confetti({ count: 20 });
+        this.codeblock.setRunning(false);
+      });
+
+      this.codeblock.addEventListener("reset", (e) => {
+        this.resetBoards();
+        e.codeBlock.hideOutput();
+      });
+    }
+
+    async setupCodeBlock(
+      rows: number,
+      cols: number,
+      startPos: number,
+      enemies: number[],
+      functions: Functions,
+    ) {
+      const questions = await import("../../validation/0-robot");
+
+      let question;
+      switch (functions) {
+        case Functions.BASIC:
+          question = questions.basicMovement;
+          break;
+        case Functions.LOOK_HORIZONTAL:
+          question = questions.lookLeftRight(rows, cols, startPos, enemies);
+          break;
+        default:
+          question = questions.default;
+          break;
+      }
+      this.codeblock.setProps(question);
+    }
+
+    async resetBoards() {
+      for (let i = 0; i < this.boards.length; i += 1) {
+        const board = this.boards[i]!;
+
+        if (!board.tableChanged) {
+          break;
+        }
+        
+        board.tableChanged = false;
+        board.htmlTable.style.opacity = "0";
+        await new Promise((r) => setTimeout(r, 200));
+        this.startingHtmlBoards[i]!.style.opacity = "0";
+        
+        const newTable = this.startingHtmlBoards[i]!.cloneNode(
+          true,
+        ) as HTMLTableElement;
+        board.htmlTable.replaceWith(newTable);
+        board.htmlTable = newTable;
+        
+        await new Promise((r) => setTimeout(r, 20));
+        board.htmlTable.style.opacity = "1";
+        board.robot = board.htmlTable.querySelector("#robot")!;
+        await new Promise((r) => setTimeout(r, 200));
+      }
+    }
+
+    /** Returns `number` representing the number of steps.
+     *
+     *  If the robot didn't kill all the slimes, return `undefined`.
+     */
+    async handleResponse(response: string, board: Board): Promise<number | undefined> {
+      const cells = board.htmlTable.querySelectorAll("td");
+      let killedEnemies = 0;
+      let currentPos = board.start;
+      let steps = 0;
+
+      const wait = async (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
+
+      const setPos = async (newPos: number, direction: string) => {
+        board.tableChanged = true;
+        steps += 1;
+        board.robot.classList.add(direction);
+        await wait(350);
+        board.robot.classList.remove(direction);
+        ({ currentPos, killedEnemies } = this.setPos(
+          currentPos,
+          newPos,
+          board.robot,
+          cells,
+          killedEnemies,
+        ));
+      };
+      
+      this.codeblock.setOutput("Simulating...");
+
+      for (const c of response.split("\n")) {
+        switch (c) {
+          case "UP": {
+            const newPos = currentPos - board.cols;
+            if (newPos >= 0) {
+              await setPos(newPos, "up");
+            }
+            break;
+          }
+          case "DOWN": {
+            const newPos = currentPos + board.cols;
+            if (newPos <= cells.length) {
+              await setPos(newPos, "down");
+            }
+            break;
+          }
+          case "LEFT": {
+            const newPos = currentPos - 1;
+            if (currentPos % board.cols !== 0 && newPos >= 0) {
+              await setPos(newPos, "left");
+            }
+            break;
+          }
+          case "RIGHT": {
+            const newPos = currentPos + 1;
+            if (newPos % board.cols !== 0 && newPos <= cells.length) {
+              await setPos(newPos, "right");
+            }
+            break;
+          }
+
+          default:
+            continue;
+        }
+
+        await wait(150);
+      }
+
+      if (killedEnemies < board.numEnemies) {
+        return undefined;
+      }
+      return steps;
+    }
+
+    setPos(
+      currentPos: number,
+      newPos: number,
+      robot: HTMLImageElement,
+      cells: NodeListOf<HTMLTableCellElement>,
+      killedEnemies: number,
+    ): { currentPos: number; killedEnemies: number } {
+      const currentCell = cells[currentPos]!;
+      const newCell = cells[newPos]!;
+
+      const child = newCell.firstElementChild!;
+      if (child.id === "slime") {
+        killedEnemies += 1;
+      }
+
+      child.replaceWith(robot);
+
+      const newP = document.createElement("p");
+      newP.textContent = currentPos.toString();
+      currentCell.appendChild(newP);
+
+      return { currentPos: newPos, killedEnemies };
+    }
+  }
+
+  customElements.define("x-robot-game", RobotGame);
+</script>
