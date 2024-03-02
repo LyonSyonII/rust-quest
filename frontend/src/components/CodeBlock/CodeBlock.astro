@@ -17,6 +17,8 @@ export type Props = {
 
 const l = translation(Astro.url.pathname.split("/")[1] as Langs);
 
+Astro.props.code = Astro.props.code?.trim().replaceAll("$\\n", "") || "";
+
 const {
   id = "",
   placeholder = l.placeholder,
@@ -289,7 +291,7 @@ const props = {
             acc.replaceAll(`$${v}`, c(localStorage.getItem(v) || d)),
           r,
         );
-      this.code = replaceVars(this.getAttribute("code")?.trim() || this.code);
+      this.code = replaceVars(this.getAttribute("code") || this.code);
       this.setup = replaceVars(setup || this.setup);
       this.validator = validator || this.validator;
       this.onsuccess = onsuccess || this.onsuccess;

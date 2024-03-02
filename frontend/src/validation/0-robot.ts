@@ -26,16 +26,30 @@ export const lookLeftRight: (
     let pos = std::cell::RefCell::new(${start});
     
     let is_slime_left = || {
-      if *pos.borrow() % COLS == 0 {
+      let pos = *pos.borrow();
+      
+      if pos % COLS == 0 {
         return false;
       }
-      ENEMIES.contains(&(*pos.borrow()-1))
+      for i in 0..ROWS {
+        for j in 0..(pos % COLS) {
+          if ENEMIES.contains(&(i * COLS + j)) { return true }
+        }
+      }
+      false
     };
     let is_slime_right = || {
-      if dbg!(dbg!(*pos.borrow()) % dbg!(COLS)) == COLS-1 {
+      let pos = *pos.borrow();
+
+      if pos % COLS == COLS-1 {
         return false;
       }
-      ENEMIES.contains(&(*pos.borrow()+1))
+      for i in 0..ROWS {
+        for j in (pos % COLS)..COLS {
+          if ENEMIES.contains(&(i * COLS + j)) { return true }
+        }
+      }
+      false
     };
     let isl = is_slime_left;
     let isr = is_slime_right;
@@ -62,7 +76,7 @@ export const lookLeftRight: (
       *pos.borrow_mut() -= 1;
     };
     let right = || { 
-      if dbg!(*pos.borrow() % COLS) == COLS-1 {
+      if *pos.borrow() % COLS == COLS-1 {
         return;
       }
       println!("RIGHT");
@@ -72,7 +86,7 @@ export const lookLeftRight: (
     let d = down;
     let l = left;
     let r = right;
-    
+
     __VALUE__
     `.replaceAll(/\s\s|\n/g, "")
   }

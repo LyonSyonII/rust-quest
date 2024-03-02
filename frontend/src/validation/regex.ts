@@ -9,6 +9,9 @@ export const end = exactly().at.lineEnd();
 /** Matches any character except newline. */
 export const any = _any;
 
+/** Matches a line. */
+export const line = any.times.any()
+
 /** Matches `true` or `false`. */
 export const bool = exactly("true").or("false");
 

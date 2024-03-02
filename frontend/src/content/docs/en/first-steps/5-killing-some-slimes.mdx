@@ -95,6 +95,9 @@ Now there's two simulations?
 No problem, you can handle this!
 
 <Hint>
+Each "simulation" is represented by a different board.  
+Your code will need to solve all of them to be considered correct.
+
 Try solving the first simulation and see what happens.
 </Hint>
 <RobotGame
@@ -124,6 +127,13 @@ This is only for this book, don't try doing it in real code!
 :::
 </QuestionCard>
 
+<Hint>
+See the "Minimum Steps" message below every simulation?  
+This means that you have to solve it in that amount of steps.
+
+To do it, you need to use the newly unlocked functions to check if there's a slime to the left or right of the robot.  
+Try replacing the `?` with one of them and see what happens!
+</Hint>
 <RobotGame
 id="5-5-robot"
 question="Let's use the new functions!"
@@ -139,7 +149,33 @@ if ? {
 </Checkpoint>
 
 <Checkpoint id="5-5-robot">
-Good! 
+Good!  
+Work smarter, not harder 😉.
+
+<RobotGame 
+id="5-6-robot"
+question="Murder those monsters!"
+code={`
+$\\n
+if ? {
+
+
+}
+if ? {
+
+
+}
+`}
+/>
+</Checkpoint>
+
+<Checkpoint id="5-6-robot">
+Well done, all slimes will tremble in fear when they hear your name!
+
+<RobotGame
+id="5-7-robot"
+question="Different steps?"
+/>
 </Checkpoint>
 
 <Progress id="5" total={8} />
