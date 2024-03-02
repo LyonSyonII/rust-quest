@@ -1,4 +1,10 @@
-export async function evaluate(code: string, error: string): Promise<string> {
+export type EvalResponse = string | { error: string };
+
+function err(error: string): EvalResponse {
+  return { error }
+}
+
+export async function evaluate(code: string, error: string): Promise<EvalResponse> {
   if (import.meta.env.DEV) {
     return Promise.race([
       godbolt(code, error),
@@ -11,12 +17,12 @@ export async function evaluate(code: string, error: string): Promise<string> {
     godbolt(code, error),
     playground(code, error),
     new Promise((resolve, _) =>
-      setTimeout(() => resolve("Execution timed out, please try again."), 3000),
-    ) as Promise<string>,
-  ]).catch(() => "There was an error, please try again.");
+      setTimeout(() => resolve(err("Execution timed out, please try again.")), 3000),
+    ) as Promise<EvalResponse>,
+  ]).catch(() => err("There was an error during execution, please try again."));
 }
 
-async function godbolt(code: string, error: string): Promise<string> {
+async function godbolt(code: string, error: string): Promise<EvalResponse> {
   const params = {
     source: code,
     bypassCache: 2,
@@ -77,14 +83,14 @@ async function godbolt(code: string, error: string): Promise<string> {
   const stderr_idx = response.indexOf("\nStandard error:", compilation);
   if (stderr_idx !== -1) {
     return (
-      error || response.substring(stderr_idx + "Standard error:\n".length + 1)
+      err(error || response.substring(stderr_idx + "Standard error:\n".length + 1))
     );
   }
 
-  return "UNKNOWN ERROR";
+  return err("UNKNOWN ERROR");
 }
 
-async function playground(code: string, error: string): Promise<string> {
+async function playground(code: string, error: string): Promise<EvalResponse> {
   const params = {
     version: "stable",
     optimize: "0",
@@ -109,8 +115,8 @@ async function playground(code: string, error: string): Promise<string> {
       if (response.error === null) {
         return response.result;
       } else {
-        return error || response.error;
+        return err(error || response.error);
       }
     })
-    .catch((error) => error || error.message);
+    .catch((error) => err(error || error.message));
 }
