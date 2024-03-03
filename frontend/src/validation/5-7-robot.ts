@@ -1,5 +1,4 @@
 import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGame";
-import { parenthesisCheck } from "./0-robot";
 
 export default {
   solveWithMinimumSteps: true,
@@ -18,5 +17,4 @@ export default {
       steps: 3
     },
   ],
-  validator: parenthesisCheck
 } as RobotGameProps;

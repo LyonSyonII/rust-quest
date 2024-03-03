@@ -143,7 +143,8 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     type Board as BoardProps,
     type RobotGameProps,
   } from "./RobotGame";
-import type { EvalResponse } from "@components/CodeBlock/evaluate";
+  import type { EvalResponse } from "@components/CodeBlock/evaluate";
+import { parenthesisCheck } from "../../validation/0-robot";
 
   type Board = BoardProps & {
     htmlTable: HTMLTableElement;
@@ -203,8 +204,8 @@ import type { EvalResponse } from "@components/CodeBlock/evaluate";
         this.resetBoards();
 
         const value = this.codeblock.getValue();
-
-        const v = await this.codeblock.validateSnippet(value);
+        
+        const v = parenthesisCheck(value) || await this.codeblock.validateSnippet(value);
         if (v !== undefined) {
           // Wait a bit to emphasize that the code is running
           await new Promise((resolve) => setTimeout(resolve, 50));

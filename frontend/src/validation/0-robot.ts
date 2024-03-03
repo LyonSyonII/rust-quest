@@ -1,21 +1,21 @@
-import { anyOf, createRegExp, global } from "magic-regexp";
+import { anyOf, createRegExp, exactly, global } from "magic-regexp";
 import type { CodeQuestion } from "./CodeQuestion";
 import { _ } from "./regex";
 
 export function parenthesisCheck(value: string): string | undefined {
-  const up = anyOf("up", "u").notBefore(_, "(", _, ")", _);
-  const down = anyOf("down", "d").notBefore(_, "(", _, ")", _);
-  const left = anyOf("left", "l").notBefore(_, "(", _, ")", _);
-  const right = anyOf("right", "r").notBefore(_, "(", _, ")", _);
+  const up = exactly("up").notBefore(_, "(", _, ")", _);
+  const down = exactly("down").notBefore(_, "(", _, ")", _);
+  const left = exactly("left").notBefore(_, "(", _, ")", _);
+  const right = exactly("right").notBefore(_, "(", _, ")", _);
   const isr = anyOf("isr", "is_slime_right").notBefore(_, "(", _, ")", _);
   const isl = anyOf("isl", "is_slime_left").notBefore(_, "(", _, ")", _);
 
   const parens = createRegExp(
     anyOf(up, down, left, right, isr, isl),
-    [global]
   );
   
   const match = value.match(parens);
+  console.log({match});
   if (match && match[0]) {
     return `You need to call the function '${match[0]}' with parenthesis.\ne.g. '${match[0]}()'`;
   }

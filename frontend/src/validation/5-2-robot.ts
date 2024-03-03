@@ -1,5 +1,4 @@
 import type { RobotGameProps } from "@components/RobotGame/RobotGame";
-import { parenthesisCheck } from "./0-robot";
 
 export default {
   boards: [
@@ -12,6 +11,5 @@ export default {
   rows: 3,
   cols: 3,
   start: 7,
-  validator: parenthesisCheck
 } as RobotGameProps;
 
