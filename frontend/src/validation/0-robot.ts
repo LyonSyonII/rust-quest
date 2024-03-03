@@ -1,4 +1,4 @@
-import { anyOf, createRegExp, exactly, global } from "magic-regexp";
+import { anyOf, createRegExp, exactly } from "magic-regexp";
 import type { CodeQuestion } from "./CodeQuestion";
 import { _ } from "./regex";
 
