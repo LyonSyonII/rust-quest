@@ -17,11 +17,13 @@ RUN cargo build --release --target x86_64-unknown-linux-musl
 
 # We do not need the Rust toolchain to run the binary!
 FROM alpine AS runtime
-RUN addgroup -S myuser && adduser -S myuser -G myuser
+# RUN addgroup --g 1000 groupcontainer
+# RUN adduser -u 1000 -G groupcontainer -h /home/user -D user
+# USER user
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/feedbacker /usr/local/bin/
-USER myuser
+#USER myuser
 
 ENV PORT="9090"
-ENV OUTPUT="/tmp/feedback.yml"
+ENV OUTPUT="/feedbacker/feedback.yml"
 
 ENTRYPOINT [ "/usr/local/bin/feedbacker" ]

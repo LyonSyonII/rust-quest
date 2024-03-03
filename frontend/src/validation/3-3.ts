@@ -1,4 +1,21 @@
+import { createRegExp, word } from "magic-regexp";
 import { codeMess, replace, type CodeQuestion } from "./CodeQuestion";
+import { _, end, integer, semicolon, start } from "./regex";
+
+function validator(value: string): string | undefined {
+  const regex = createRegExp(
+    start, "let", _, word.or("?").as("name"), _, "=", _, integer.or("?").as("num"), semicolon, end
+  );
+  const matches = value.match(regex);
+  if (!matches) return codeMess;
+  const { name, num } = matches.groups;
+  
+  return value.includes("?") && replace
+  || name === "apple" && "Remember to use the plural form of the label!"
+  || name !== "apples" && `We need to store 'apples', not '${name}'!`
+  || num !== "18" && `Remember that we need to store 18 apples, not ${num}!`
+  || undefined
+}
 
 export default {
   setup: `
@@ -6,10 +23,5 @@ export default {
       println!("Well done, the crate is now operative!");
       println!("SUCCESS");
     } else { println!("Not yet, keep trying!") }`,
-  validator: (value, test) =>
-    value.includes("?") && replace
-    || value.includes("apple ") && "Remember to use the plural form of the label!" 
-    || value.includes("let apples =") && !value.includes("18") && "Remember that you need to store 18 apples!"
-    || !test(/^let \w+ = \d+;$/) && codeMess
-    || undefined,
+  validator
 } as CodeQuestion;

@@ -55,7 +55,7 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind(("0.0.0.0", config.port))
         .await
         .unwrap();
-
+    
     eprintln!("{config:#?}");
     eprintln!("Listening on: http://{}", listener.local_addr().unwrap());
 

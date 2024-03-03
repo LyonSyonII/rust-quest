@@ -143,6 +143,8 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     type Board as BoardProps,
     type RobotGameProps,
   } from "./RobotGame";
+  import type { EvalResponse } from "@components/CodeBlock/evaluate";
+import { parenthesisCheck } from "../../validation/0-robot";
 
   type Board = BoardProps & {
     htmlTable: HTMLTableElement;
@@ -202,8 +204,8 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
         this.resetBoards();
 
         const value = this.codeblock.getValue();
-
-        const v = await this.codeblock.validateSnippet(value);
+        
+        const v = parenthesisCheck(value) || await this.codeblock.validateSnippet(value);
         if (v !== undefined) {
           // Wait a bit to emphasize that the code is running
           await new Promise((resolve) => setTimeout(resolve, 50));
@@ -211,8 +213,8 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
           this.codeblock.setRunning(false);
           return Promise.reject();
         }
-
-        const responses: [string, Board][] = await Promise.all(
+        
+        const responses: [EvalResponse, Board][] = await Promise.all(
           this.boards.map(async (board) => {
             const { rows, cols, start, enemies } = board;
             await this.setupCodeBlock(
@@ -228,11 +230,24 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
           }),
         );
 
-        if (responses === undefined) {
-          return;
+        console.log({ robotResponses: responses });
+
+        const simulationError = async () => {
+          this.codeblock.setOutput("There was an error during the simulation, please try again.");
+          await new Promise((r) => setTimeout(r, 1000));
+          this.codeblock.setRunning(false);
+          this.resetBoards();
+        };
+        
+        if (responses === undefined || responses.length !== this.boards.length) {
+          return simulationError();
         }
         
         for (const [response, board] of responses) {
+          if (typeof response !== "string") {
+            return simulationError();
+          }
+
           const steps = await this.handleResponse(response, board);
           if (steps === undefined) {
             this.codeblock.setOutput(this.loseText);
@@ -376,6 +391,8 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
 
         await wait(150);
       }
+
+      console.log({ killedEnemies, numEnemies: board.numEnemies })
 
       if (killedEnemies < board.numEnemies) {
         return undefined;

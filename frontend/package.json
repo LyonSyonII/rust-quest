@@ -21,8 +21,10 @@
     "@codemirror/view": "^6.24.1",
     "@lezer/highlight": "^1.2.0",
     "astro-compressor": "^0.4.1",
+    "astro-purgecss": "^4.1.0",
     "confettis": "^0.3.0",
-    "magic-regexp": "^0.7.0"
+    "magic-regexp": "^0.7.0",
+    "purgecss": "^5.0.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.5.6",

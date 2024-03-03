@@ -1,4 +1,5 @@
 import type { CodeQuestion } from "src/validation/CodeQuestion";
+import type { EvalResponse } from "./evaluate";
 
 class CodeBlock extends HTMLElement {
   public setProps(question: CodeQuestion): void;
@@ -11,7 +12,7 @@ class CodeBlock extends HTMLElement {
   public setOutput(output: string): void;
   public hideOutput(): void;
   public async validateSnippet(snippet: string): Promise<string | undefined>;
-  public async evaluateSnippet(snippet: string): Promise<string>;
+  public async evaluateSnippet(snippet: string): Promise<EvalResponse>;
 
   public addEventListener<K extends keyof CustomEventMap>(
     type: K,

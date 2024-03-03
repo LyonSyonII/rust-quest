@@ -1,4 +1,4 @@
-import { exactly, maybe, whitespace, word, char as _any } from "magic-regexp";
+import { exactly, maybe, whitespace, word, char as _any, digit, oneOrMore } from "magic-regexp";
 
 /** Matches start of string. */
 export const start = exactly().at.lineStart();
@@ -14,6 +14,12 @@ export const line = any.times.any()
 
 /** Matches `true` or `false`. */
 export const bool = exactly("true").or("false");
+
+/** Matches an integer (positive or negative). */
+export const integer = exactly(maybe("-"), oneOrMore(digit));
+
+/** Matches a number (with optional decimal point). */
+export const number = exactly(maybe("-"), oneOrMore(digit), maybe(".", oneOrMore(digit)));
 
 /** Accepts a string delimited with `'` and exactly one character. 
  * @example 'X'
@@ -47,6 +53,9 @@ export const string = exactly('"', word, '"');
 
 /** Accepts 0 or more whitespace. */
 export const _ = whitespace.times.any();
+
+/** Accepts 1 or more whitespace. */
+export const __ = oneOrMore(whitespace);
 
 /** Accepts a semicolon sorrounded by whitespace. */
 export const semicolon = exactly(_, ";", _);

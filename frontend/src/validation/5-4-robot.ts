@@ -15,6 +15,6 @@ export default {
   ],
   rows: 3,
   cols: 3,
-  start: 7,
+  start: 7
 } as RobotGameProps;
 

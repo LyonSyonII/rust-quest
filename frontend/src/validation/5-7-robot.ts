@@ -16,5 +16,5 @@ export default {
       enemies: [0],
       steps: 3
     },
-  ]
+  ],
 } as RobotGameProps;
