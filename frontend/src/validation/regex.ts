@@ -54,5 +54,8 @@ export const string = exactly('"', word, '"');
 /** Accepts 0 or more whitespace. */
 export const _ = whitespace.times.any();
 
+/** Accepts 1 or more whitespace. */
+export const __ = oneOrMore(whitespace);
+
 /** Accepts a semicolon sorrounded by whitespace. */
 export const semicolon = exactly(_, ";", _);
