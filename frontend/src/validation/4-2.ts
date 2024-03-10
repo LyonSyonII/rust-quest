@@ -18,9 +18,5 @@ function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boole
 export default {
   setup: `__VALUE__ println!("Your height is {height} meters, your weight is {weight} kilograms and you have {money} coins.SUCCESS");`,
   vars: [{ v: "NAME", d: "Hero" }],
-  onsuccess: (_, value) => {
-    const name = getAnswer("name = ", value).slice(1, -1);
-    localStorage.setItem("NAME", name);
-  },
   validator,
 } as CodeQuestion;
