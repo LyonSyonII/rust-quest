@@ -12,8 +12,7 @@ function validator(value: string): string | undefined {
     end
   );
   const matches = value.match(regex);
-  console.log(matches);
-
+  
   if (!matches) return codeMess;
   const { _let, _mut, line2 } = matches.groups;
   

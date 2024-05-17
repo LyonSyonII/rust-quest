@@ -8,6 +8,7 @@ import Portrait from "@components/Portrait/PortraitCard.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.astro";
 import Feedback from "@components/Feedback.astro";
+import Donate from "@components/Donate.astro";
 
 export const codeMess =
 `Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
@@ -161,6 +162,7 @@ If you mess up the code, click the "Reset" button to return it to its original s
     question=""
     id="2-8"
     code={'let name = "$NAME";'}
+    showLineNumbers={false}
   />
 </Checkpoint>
 

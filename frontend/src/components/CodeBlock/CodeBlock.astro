@@ -229,11 +229,11 @@ import type { EvalResponse } from "./evaluate";
       });
       const lineNums =
         this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
+            
       const basicSetup = [
         lineNums,
         highlightActiveLineGutter(),
         history(),
-/*         foldGutter(), */
         EditorState.allowMultipleSelections.of(true),
         indentOnInput(),
         bracketMatching(),
@@ -243,7 +243,7 @@ import type { EvalResponse } from "./evaluate";
         highlightSelectionMatches(),
         keymap.of([
           ...closeBracketsKeymap,
-          ...defaultKeymap,
+          ...defaultKeymap.filter(k => k.key !== "Mod-Enter"),
           ...historyKeymap,
           ...foldKeymap,
           indentWithTab,
@@ -251,6 +251,15 @@ import type { EvalResponse } from "./evaluate";
       ];
 
       const runKeymap = keymap.of([
+        {
+          key: "Mod-Enter",
+          run: () => {
+            this.handleRun();
+            return true;
+          },
+          stopPropagation: true,
+          preventDefault: true,
+        },
         {
           key: "Shift-Enter",
           run: () => {

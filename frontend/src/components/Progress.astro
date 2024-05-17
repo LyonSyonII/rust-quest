@@ -9,12 +9,13 @@ type Props = {
 
 const { id, total, confetti = true } = Astro.props;
 ---
+<script is:inline src="https://rust-quest.ck.page/commerce.js" async defer></script>
 
 <x-progress data-confetti={`${confetti}`}>
   <label for={id}>0 / {total}</label>
   <progress {id} max={total}></progress>
+    
   <button class="feedback">Give Feedback</button>
-
   <Feedback id={id} />
 
   {
