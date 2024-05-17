@@ -18,8 +18,7 @@ function validator(value: string): string | undefined {
   const { _let, _mut, line2 } = matches.groups;
   
   return value.includes("?") && replace
-  || value.includes("letmut") && "Good guess! But each directive should be on its own, maybe try adding a space?"
-  || value.includes("mutlet") && "Good guess! But each directive should be on its own, maybe try adding a space?"
+  || /letmut|mutlet/.test(value) && "Good guess! But each directive should be on its own, maybe try adding a space?"
   || !line2 && "Looks like you've modified the second line, replace only the ? part!"
   || _let === "mut" && _mut === "let" && "Almost! But the panel says to 'add' the directive, so maybe you need to use it in another order?"
   || _let === "mut" && !_mut && "You're nearly there, but remember the first magical word 'let'!\nThe panel says to 'add mut', not replace."
