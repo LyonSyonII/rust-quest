@@ -1,4 +1,4 @@
-# Source for Rust Quest
+# Source for the Rust Quest book
 
 > Learn programming in a new way!
 
