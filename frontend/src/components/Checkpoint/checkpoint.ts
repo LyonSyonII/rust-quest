@@ -1,87 +1,58 @@
-type Checkpoints = Map<string, Set<string>>;
+import * as idb from "idb-keyval";
 
-// TODO: Change to indexed db
+const store = idb.createStore("rustquest-checkpoints", "rustquest-checkpoints-store");
 
-class Persistent {
-  persistent: Checkpoints = new Map();
-  subscribers: Array<(checkpoints: Checkpoints) => void> = [];
-
-  constructor() {
-    this.persistent = this.deserialize();
-  }
-
-  private serialize() {
-    const serialized: Array<[string, string[]]> = [
-      ...this.persistent.entries(),
-    ].map(([k, v]) => [k, Array.from(v)]);
-    localStorage.setItem("checkpoints", JSON.stringify(serialized));
-  }
-
-  /* Old format
-    {"data":[["#$@__reference__1","1",{"data":["1-1"],"#$@__constructor__":"Set","#$@__reference__":2}],["#$@__reference__3","2",{"data":["2-1","2-2","2-3","2-4","2-5","2-6","2-7","2-8","2-confetti"],"#$@__constructor__":"Set","#$@__reference__":4}],["#$@__reference__5","3",{"data":["3-1"],"#$@__constructor__":"Set","#$@__reference__":6}],["#$@__reference__7","4",{"data":["4-1"],"#$@__constructor__":"Set","#$@__reference__":8}]],"#$@__constructor__":"Map","#$@__reference__":0} 
-  */
-  private deserialize(): Checkpoints {
-    const item = localStorage.getItem("checkpoints") as string;
-    const parsed: Array<[string, string[]]> = (item && JSON.parse(item)) || [];
-    if (!Array.isArray(parsed)) {
-      window.alert("Failed to load checkpoints, resetting progress.");
-      return new Map();
+export async function add(id: string) {
+  const level = getLevel(id);
+  
+  await idb.update<Set<string>>(level, (v) => {
+    if (!v) {
+      v = new Set();
     }
-    return new Map(parsed.map(([k, v]) => [k, new Set(v)]));
-  }
-
-  update(callback: (checkpoints: Checkpoints) => Checkpoints) {
-    this.persistent = callback(this.persistent);
-    this.serialize();
-    this.subscribers.forEach((subscriber) => subscriber(this.persistent));
-  }
-
-  subscribe(callback: (checkpoints: Checkpoints) => void) {
-    this.subscribers.push(callback);
-    callback(this.persistent);
-  }
+    v.add(id);
+    return v;
+  }, store);
+  callSubscribed(id);
 }
 
-const persistentCheckpoints = new Persistent();
-
-export function add(id: string) {
-  const k = id.split("-")[0];
-  if (k === undefined) {
-    throw "Invalid id";
-  }
-
-  persistentCheckpoints.update((checkpoints) => {
-    const checkpoint = checkpoints.get(k);
-    if (checkpoint === undefined) {
-      checkpoints.set(k, new Set([id]));
-    } else {
-      checkpoint.add(id);
+export async function remove(id: string) {
+  const level = getLevel(id);
+  await idb.update<Set<string>>(level, (v) => {
+    if (!v) {
+      v = new Set();
     }
-    return checkpoints;
-  });
+    v.delete(id);
+    return v;
+  }, store);
+  callSubscribed(id);
 }
 
-export function subscribe(id: string, run: (checkpoint: Set<string>) => void) {
-  const k = id.split("-")[0];
-  if (k === undefined) {
-    throw "Invalid id";
+export function subscribe(id: string, run: (checkpoints: Set<string>) => Promise<void>) {
+  const level = getLevel(id);
+  let events = subscribed.get(level);
+  if (events === undefined) {
+    events = [];
   }
-  persistentCheckpoints.update(
-    (checkpoints) =>
-      (!checkpoints.has(k) && checkpoints.set(k, new Set([]))) || checkpoints,
-  );
-  persistentCheckpoints.subscribe((checkpoints) => {
-    run(checkpoints.get(k) as Set<string>);
-  });
+  events.push(run);
+  subscribed.set(level, events);
+  console.log(subscribed);
 }
 
-export function remove(id: string) {
-  const k = id.split("-")[0];
-  if (k === undefined) {
-    throw "Invalid id";
+const subscribed: Map<string, ((checkpoints: Set<string>) => Promise<void>)[]> = new Map();
+
+async function callSubscribed(level: string) {
+  const events = subscribed.get(level);
+  if (!events) return;
+  
+  const checkpoints: Set<string> = await idb.get(level, store) || new Set();
+  
+  await Promise.allSettled(events.map(e => e(checkpoints)));
+}
+
+function getLevel(id: string): string {
+  const level = id.split("-")[0];
+  if (!level) {
+    throw `Invalid id: ${id}`;
   }
-  persistentCheckpoints.update((checkpoints) => {
-    checkpoints.delete(k);
-    return checkpoints;
-  });
+  return level;
 }

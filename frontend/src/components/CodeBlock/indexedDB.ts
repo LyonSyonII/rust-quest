@@ -2,8 +2,6 @@ import * as idb from "idb-keyval";
 
 const store = idb.createStore("rustquest-usercode", "rustquest-usercode-store");
 
-await idb.set("test", [1, 2, 3], store);
-
 export async function get(key: string): Promise<string | undefined> {
   return idb.get<string>(key, store);
 }
