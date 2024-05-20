@@ -1,7 +1,5 @@
 type Checkpoints = Map<string, Set<string>>;
 
-// TODO: Change to indexed db
-
 class Persistent {
   persistent: Checkpoints = new Map();
   subscribers: Array<(checkpoints: Checkpoints) => void> = [];

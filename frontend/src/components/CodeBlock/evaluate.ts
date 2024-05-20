@@ -1,13 +1,10 @@
 export type EvalResponse = string | { error: string };
 
 function err(error: string): EvalResponse {
-  return { error };
+  return { error }
 }
 
-export async function evaluate(
-  code: string,
-  error: string,
-): Promise<EvalResponse> {
+export async function evaluate(code: string, error: string): Promise<EvalResponse> {
   if (import.meta.env.DEV) {
     return Promise.race([
       godbolt(code, error),
@@ -20,10 +17,7 @@ export async function evaluate(
     godbolt(code, error),
     playground(code, error),
     new Promise((resolve, _) =>
-      setTimeout(
-        () => resolve(err("Execution timed out, please try again.")),
-        3000,
-      ),
+      setTimeout(() => resolve(err("Execution timed out, please try again.")), 3000),
     ) as Promise<EvalResponse>,
   ]).catch(() => err("There was an error during execution, please try again."));
 }
@@ -88,8 +82,8 @@ async function godbolt(code: string, error: string): Promise<EvalResponse> {
   const compilation = response.indexOf("# Compiler");
   const stderr_idx = response.indexOf("\nStandard error:", compilation);
   if (stderr_idx !== -1) {
-    return err(
-      error || response.substring(stderr_idx + "Standard error:\n".length + 1),
+    return (
+      err(error || response.substring(stderr_idx + "Standard error:\n".length + 1))
     );
   }
 
