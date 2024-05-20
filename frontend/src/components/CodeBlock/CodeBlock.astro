@@ -128,7 +128,7 @@ const props = {
   import {
     indentOnInput,
     bracketMatching,
-/*     foldGutter, */
+    /*     foldGutter, */
     foldKeymap,
   } from "@codemirror/language";
   import {
@@ -144,7 +144,8 @@ const props = {
   import { githubDark } from "src/codemirror-themes/github-dark";
   import { onThemeChange } from "src/utils/onThemeChange";
   import type { CodeQuestion } from "src/validation/CodeQuestion";
-import type { EvalResponse } from "./evaluate";
+  import type { EvalResponse } from "./evaluate";
+  import * as db from "./indexedDB";
 
   class RunEvent extends Event {
     readonly codeBlock: CodeBlock;
@@ -217,9 +218,9 @@ import type { EvalResponse } from "./evaluate";
       this.setup = this.getAttribute("setup") || this.setup;
       this.errorMsg = this.getAttribute("errorMsg")!;
 
-      import(`../../validation/${this.id}.ts`).then((q) => {
-        this.setProps(q.default as CodeQuestion),
-        this.setValue(this.code);
+      import(`../../validation/${this.id}.ts`).then(async (q) => {
+        this.setProps(q.default as CodeQuestion);
+        this.setValue((await db.get(this.id)) || this.code);
       });
 
       this.readonly = new Compartment();
@@ -233,7 +234,7 @@ import type { EvalResponse } from "./evaluate";
         lineNums,
         highlightActiveLineGutter(),
         history(),
-/*         foldGutter(), */
+        /*         foldGutter(), */
         EditorState.allowMultipleSelections.of(true),
         indentOnInput(),
         bracketMatching(),
@@ -354,12 +355,15 @@ import type { EvalResponse } from "./evaluate";
 
     async handleRun() {
       // If event is cancelled, don't run
-      if (this.dispatchEvent(new RunEvent(this)) === false) return;
+      if (this.dispatchEvent(new RunEvent(this)) === false) {
+        return;
+      }
 
       this.setOutput("Compiling...");
       this.setRunning(true);
 
       const value = this.getValue();
+      db.set(this.id, value);
       const v = await this.validateSnippet(value);
       if (v !== undefined) {
         // Wait a bit to emphasize that the code is running
@@ -368,9 +372,11 @@ import type { EvalResponse } from "./evaluate";
         this.setRunning(false);
         return;
       }
-      
+
       const response = await this.evaluateSnippet(value);
-      this.setResponse(typeof response === "string" ? response : response.error);
+      this.setResponse(
+        typeof response === "string" ? response : response.error,
+      );
     }
 
     /** Returns `undefined` if the validation was successful or a `string` with the error. */
@@ -390,7 +396,7 @@ import type { EvalResponse } from "./evaluate";
     public async evaluateSnippet(snippet: string): Promise<EvalResponse> {
       const setup = this.setup.replaceAll("__VALUE__", snippet);
       const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
-      
+
       return await import("./evaluate").then(({ evaluate }) =>
         evaluate(code, this.errorMsg),
       );
