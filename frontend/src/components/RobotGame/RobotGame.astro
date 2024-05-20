@@ -18,7 +18,7 @@ const {
   rows: rowsDef = 3,
   cols: colsDef = 3,
   boards,
-  solveWithMinimumSteps
+  solveWithMinimumSteps,
 }: RobotGameProps = (await import(`../../validation/${id}.ts`)).default;
 
 const slimes = (
@@ -33,38 +33,50 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
   <x-robot-game id={id}>
     <div id="boards">
       {
-        boards.map(({ rows = rowsDef, cols = colsDef, start, enemies, steps }, i) => (
-          <div id="board">
-            <table id={`${id}-${i}`}>
-              {[...Array(cols)].map((_, i) => (
-                <tr>
-                  {[...Array(rows)].map((_, j) => (
-                    <td>
-                      {(start == i * colsDef + j && (
-                        <Image src={Robot} alt="robot" id="robot" />
-                      )) ||
-                        (enemies.includes(i * colsDef + j) && (
-                          <Image src={getRandomSlime()} alt="slime" id="slime" />
-                        )) || <p>{i * colsDef + j}</p>}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </table>
-            { solveWithMinimumSteps && <label for={`${id}-${i}`}>Minimum Steps: {steps}</label> }
+        boards.map(
+          ({ rows = rowsDef, cols = colsDef, start, enemies, steps }, i) => (
+            <div id="board">
+              <table id={`${id}-${i}`}>
+                {[...Array(cols)].map((_, i) => (
+                  <tr>
+                    {[...Array(rows)].map((_, j) => (
+                      <td>
+                        {(start == i * colsDef + j && (
+                          <Image src={Robot} alt="robot" id="robot" />
+                        )) ||
+                          (enemies.includes(i * colsDef + j) && (
+                            <Image
+                              src={getRandomSlime()}
+                              alt="slime"
+                              id="slime"
+                            />
+                          )) || <p>{i * colsDef + j}</p>}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </table>
+              {solveWithMinimumSteps && (
+                <label for={`${id}-${i}`}>Minimum Steps: {steps}</label>
+              )}
             </div>
-            ))
-          }
+          ),
+        )
+      }
     </div>
-    { solveWithMinimumSteps && <b id="min-steps">Solve with the minimum steps possible</b> }
-    <CodeBlock id={id} code={code}/>
+    {
+      solveWithMinimumSteps && (
+        <b id="min-steps">Solve with the minimum steps possible</b>
+      )
+    }
+    <CodeBlock id={id} code={code} />
   </x-robot-game>
 </QuestionCard>
 
 <style define:vars={{ cellSize }}>
-  :root { }
+  :root {
+  }
   x-robot-game {
-
   }
   img {
     width: 80%;
@@ -89,7 +101,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
   #min-steps {
     font-size: 0.8rem;
     margin-top: 0;
-   /*  justify-self: flex-start; */
+    /*  justify-self: flex-start; */
   }
   #boards {
     display: flex;
@@ -144,7 +156,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
     type RobotGameProps,
   } from "./RobotGame";
   import type { EvalResponse } from "@components/CodeBlock/evaluate";
-import { parenthesisCheck } from "../../validation/0-robot";
+  import { parenthesisCheck } from "../../validation/0-robot";
 
   type Board = BoardProps & {
     htmlTable: HTMLTableElement;
@@ -172,26 +184,28 @@ import { parenthesisCheck } from "../../validation/0-robot";
       this.startingHtmlBoards = [...this.querySelectorAll("table")].map(
         (t) => t.cloneNode(true) as HTMLTableElement,
       );
-      
-      import(`../../validation/${this.id}.ts`).then(({default: props}: {default: RobotGameProps}) => {
-        this.functions = props.functions || this.functions;
-        this.winText = props.winText || this.winText;
-        this.loseText = props.loseText || this.loseText;
-        this.solveWithMinimumSteps =
-          props.solveWithMinimumSteps || this.solveWithMinimumSteps;
-        
-        this.boards = [...this.querySelectorAll("table")].map(
-          (htmlTable, i) => ({
-            htmlTable,
-            robot: htmlTable.querySelector("#robot")!,
-            tableChanged: false,
-            numEnemies: props.boards[i]?.enemies.length || 0,
-            rows: props.boards[i]?.rows || 3,
-            cols: props.boards[i]?.cols || 3,
-            ...props.boards[i]!,
-          }),
-        );
-      });
+
+      import(`../../validation/${this.id}.ts`).then(
+        ({ default: props }: { default: RobotGameProps }) => {
+          this.functions = props.functions || this.functions;
+          this.winText = props.winText || this.winText;
+          this.loseText = props.loseText || this.loseText;
+          this.solveWithMinimumSteps =
+            props.solveWithMinimumSteps || this.solveWithMinimumSteps;
+
+          this.boards = [...this.querySelectorAll("table")].map(
+            (htmlTable, i) => ({
+              htmlTable,
+              robot: htmlTable.querySelector("#robot")!,
+              tableChanged: false,
+              numEnemies: props.boards[i]?.enemies.length || 0,
+              rows: props.boards[i]?.rows || 3,
+              cols: props.boards[i]?.cols || 3,
+              ...props.boards[i]!,
+            }),
+          );
+        },
+      );
     }
 
     connectedCallback() {
@@ -204,8 +218,10 @@ import { parenthesisCheck } from "../../validation/0-robot";
         this.resetBoards();
 
         const value = this.codeblock.getValue();
-        
-        const v = parenthesisCheck(value) || await this.codeblock.validateSnippet(value);
+
+        const v =
+          parenthesisCheck(value) ||
+          (await this.codeblock.validateSnippet(value));
         if (v !== undefined) {
           // Wait a bit to emphasize that the code is running
           await new Promise((resolve) => setTimeout(resolve, 50));
@@ -213,7 +229,7 @@ import { parenthesisCheck } from "../../validation/0-robot";
           this.codeblock.setRunning(false);
           return Promise.reject();
         }
-        
+
         const responses: [EvalResponse, Board][] = await Promise.all(
           this.boards.map(async (board) => {
             const { rows, cols, start, enemies } = board;
@@ -224,7 +240,7 @@ import { parenthesisCheck } from "../../validation/0-robot";
               enemies,
               this.functions,
             );
-            
+
             const response = await this.codeblock.evaluateSnippet(value);
             return [response, board];
           }),
@@ -233,16 +249,21 @@ import { parenthesisCheck } from "../../validation/0-robot";
         console.log({ robotResponses: responses });
 
         const simulationError = async () => {
-          this.codeblock.setOutput("There was an error during the simulation, please try again.");
+          this.codeblock.setOutput(
+            "There was an error during the simulation, please try again.",
+          );
           await new Promise((r) => setTimeout(r, 1000));
           this.codeblock.setRunning(false);
           this.resetBoards();
         };
-        
-        if (responses === undefined || responses.length !== this.boards.length) {
+
+        if (
+          responses === undefined ||
+          responses.length !== this.boards.length
+        ) {
           return simulationError();
         }
-        
+
         for (const [response, board] of responses) {
           if (typeof response !== "string") {
             return simulationError();
@@ -305,18 +326,18 @@ import { parenthesisCheck } from "../../validation/0-robot";
         if (!board.tableChanged) {
           break;
         }
-        
+
         board.tableChanged = false;
         board.htmlTable.style.opacity = "0";
         await new Promise((r) => setTimeout(r, 200));
         this.startingHtmlBoards[i]!.style.opacity = "0";
-        
+
         const newTable = this.startingHtmlBoards[i]!.cloneNode(
           true,
         ) as HTMLTableElement;
         board.htmlTable.replaceWith(newTable);
         board.htmlTable = newTable;
-        
+
         await new Promise((r) => setTimeout(r, 20));
         board.htmlTable.style.opacity = "1";
         board.robot = board.htmlTable.querySelector("#robot")!;
@@ -328,7 +349,10 @@ import { parenthesisCheck } from "../../validation/0-robot";
      *
      *  If the robot didn't kill all the slimes, return `undefined`.
      */
-    async handleResponse(response: string, board: Board): Promise<number | undefined> {
+    async handleResponse(
+      response: string,
+      board: Board,
+    ): Promise<number | undefined> {
       const cells = board.htmlTable.querySelectorAll("td");
       let killedEnemies = 0;
       let currentPos = board.start;
@@ -351,7 +375,7 @@ import { parenthesisCheck } from "../../validation/0-robot";
           killedEnemies,
         ));
       };
-      
+
       this.codeblock.setOutput("Simulating...");
 
       for (const c of response.split("\n")) {
@@ -392,7 +416,7 @@ import { parenthesisCheck } from "../../validation/0-robot";
         await wait(150);
       }
 
-      console.log({ killedEnemies, numEnemies: board.numEnemies })
+      console.log({ killedEnemies, numEnemies: board.numEnemies });
 
       if (killedEnemies < board.numEnemies) {
         return undefined;

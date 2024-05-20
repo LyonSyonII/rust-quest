@@ -8,9 +8,8 @@
     {
       devShells.x86_64-linux.default = mkShell {
         buildInputs = [
-          nodejs_21
+          nodejs_22
           nodePackages.pnpm
-          nil
         ];
       };
     };
