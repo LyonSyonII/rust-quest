@@ -30,44 +30,6 @@ import type { CodeQuestion } from "src/validation/CodeQuestion";
 import type { EvalResponse } from "./evaluate";
 import * as db from "./indexedDB";
 
-class RunEvent extends Event {
-  readonly codeBlock: CodeBlock;
-
-  constructor(cb: CodeBlock) {
-    super("run", {
-      bubbles: true,
-      cancelable: true,
-    });
-    this.codeBlock = cb;
-  }
-}
-
-class ResponseEvent extends Event {
-  readonly codeBlock: CodeBlock;
-  readonly response: string;
-
-  constructor(cb: CodeBlock, response: string) {
-    super("response", {
-      bubbles: true,
-      cancelable: true,
-    });
-    this.codeBlock = cb;
-    this.response = response;
-  }
-}
-
-class ResetEvent extends Event {
-  readonly codeBlock: CodeBlock;
-
-  constructor(cb: CodeBlock) {
-    super("reset", {
-      bubbles: true,
-      cancelable: true,
-    });
-    this.codeBlock = cb;
-  }
-}
-
 export class CodeBlock extends HTMLElement {
   output: HTMLOutputElement;
   runButton: HTMLButtonElement;
@@ -177,6 +139,10 @@ export class CodeBlock extends HTMLElement {
     this.querySelector("pre")?.replaceWith(this.editor.dom);
     // To avoid line gutter collapsing
     setTimeout(() => this.editor.requestMeasure(), 300);
+
+    this.addEventListener("change", () => {
+      this.persistCode();
+    })
   }
 
   public setProps({ setup, vars = [], validator, onsuccess }: CodeQuestion) {
@@ -197,7 +163,6 @@ export class CodeBlock extends HTMLElement {
   }
 
   public setValue(value: string) {
-    db.set(this.id, value);
     this.editor.dispatch({
       changes: { from: 0, to: this.editor.state.doc.length, insert: value },
     });
@@ -305,5 +270,54 @@ export class CodeBlock extends HTMLElement {
     }
     
     return true;
+  }
+
+  persistCode(value?: string) {
+    db.set(this.id, value || this.getValue());
+  }
+}
+
+
+export interface CustomEventMap {
+  run: RunEvent;
+  response: ResponseEvent;
+  reset: ResetEvent;
+}
+
+export class RunEvent extends Event {
+  readonly codeBlock: CodeBlock;
+
+  constructor(cb: CodeBlock) {
+    super("run", {
+      bubbles: true,
+      cancelable: true,
+    });
+    this.codeBlock = cb;
+  }
+}
+
+export class ResponseEvent extends Event {
+  readonly codeBlock: CodeBlock;
+  readonly response: string;
+  
+  constructor(cb: CodeBlock, response: string) {
+    super("response", {
+      bubbles: true,
+      cancelable: true,
+    });
+    this.codeBlock = cb;
+    this.response = response;
+  }
+}
+
+export class ResetEvent extends Event {
+  readonly codeBlock: CodeBlock;
+  
+  constructor(cb: CodeBlock) {
+    super("reset", {
+      bubbles: true,
+      cancelable: true,
+    });
+    this.codeBlock = cb;
   }
 }

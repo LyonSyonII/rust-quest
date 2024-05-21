@@ -22,4 +22,4 @@ stats.html
 .DS_Store
 
 **/target/
-**/.direnv/
+**/.direnv
