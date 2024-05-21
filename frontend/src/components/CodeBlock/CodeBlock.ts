@@ -230,7 +230,7 @@ export class CodeBlock extends HTMLElement {
   public async setSuccess() {
     (await import("../Checkpoint/checkpoint")).add(this.id);
   }
-
+  
   public async setOutput(output: string) {
     const out = output.replace("SUCCESS", "");
     if (this.id && output.length !== out.length) {

@@ -10,9 +10,10 @@ export async function add(id: string) {
       v = new Set();
     }
     v.add(id);
+    console.log("updated", {v});
     return v;
   }, store);
-  callSubscribed(id);
+  await callSubscribed(level);
 }
 
 export async function remove(id: string) {
@@ -24,10 +25,10 @@ export async function remove(id: string) {
     v.delete(id);
     return v;
   }, store);
-  callSubscribed(id);
+  await callSubscribed(level);
 }
 
-export function subscribe(id: string, run: (checkpoints: Set<string>) => Promise<void>) {
+export function subscribe(id: string, run: (checkpoints: Set<string>) => Promise<void>, runOnSubscribed: boolean = false) {
   const level = getLevel(id);
   let events = subscribed.get(level);
   if (events === undefined) {
@@ -35,7 +36,7 @@ export function subscribe(id: string, run: (checkpoints: Set<string>) => Promise
   }
   events.push(run);
   subscribed.set(level, events);
-  console.log(subscribed);
+  runOnSubscribed && callSubscribed(level);
 }
 
 const subscribed: Map<string, ((checkpoints: Set<string>) => Promise<void>)[]> = new Map();
@@ -45,7 +46,6 @@ async function callSubscribed(level: string) {
   if (!events) return;
   
   const checkpoints: Set<string> = await idb.get(level, store) || new Set();
-  
   await Promise.allSettled(events.map(e => e(checkpoints)));
 }
 
