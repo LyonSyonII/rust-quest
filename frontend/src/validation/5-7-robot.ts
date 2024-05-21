@@ -1,4 +1,4 @@
-import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGame";
+import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGameTypes";
 
 export default {
   solveWithMinimumSteps: true,

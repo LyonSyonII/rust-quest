@@ -1,4 +1,4 @@
-import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGame";
+import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGameTypes";
 import { codeMess, replace } from "./CodeQuestion";
 import { createRegExp } from "magic-regexp";
 import { _, end, line, semicolon, start } from "./regex";

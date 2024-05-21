@@ -28,7 +28,7 @@ import { githubDark } from "src/codemirror-themes/github-dark";
 import { onThemeChange } from "src/utils/onThemeChange";
 import type { CodeQuestion } from "src/validation/CodeQuestion";
 import type { EvalResponse } from "./evaluate";
-import * as db from "./indexedDB";
+import * as persistence from "./persistence";
 
 export class CodeBlock extends HTMLElement {
   output: HTMLOutputElement;
@@ -65,7 +65,7 @@ export class CodeBlock extends HTMLElement {
 
     import(`../../validation/${this.id}.ts`).then(async (q) => {
       this.setProps(q.default as CodeQuestion);
-      this.setValue((await db.get(this.id)) || this.code);
+      this.setValue((await persistence.get(this.id)) || this.code);
     });
     
     this.readonly = new Compartment();
@@ -140,7 +140,7 @@ export class CodeBlock extends HTMLElement {
     // To avoid line gutter collapsing
     setTimeout(() => this.editor.requestMeasure(), 300);
 
-    this.addEventListener("change", () => {
+    this.addEventListener("keydown", () => {
       this.persistCode();
     })
   }
@@ -273,7 +273,7 @@ export class CodeBlock extends HTMLElement {
   }
 
   persistCode(value?: string) {
-    db.set(this.id, value || this.getValue());
+    persistence.set(this.id, value || this.getValue());
   }
 }
 

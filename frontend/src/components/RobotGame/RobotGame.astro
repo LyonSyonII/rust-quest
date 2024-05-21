@@ -1,9 +1,9 @@
 ---
-import type { RobotGameProps } from "./RobotGame.ts";
 import { Image } from "astro:assets";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
 import Robot from "@assets/robot.svg";
 import QuestionCard from "@components/QuestionCard.astro";
+import type { RobotGameProps } from "./RobotGameTypes";
 
 type Props = {
   id: string;
@@ -129,6 +129,9 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
   td > :global(p) {
     opacity: 0.5;
     font-weight: bold;
+  }
+  p {
+    color: rgb(66, 52, 50);
   }
   #robot {
     transition: transform 0.35s ease-out;
