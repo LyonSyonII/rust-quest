@@ -2,7 +2,7 @@ import { confetti } from "src/utils/confetti";
 import type { CodeBlock, ResetEvent } from "@components/CodeBlock/CodeBlock";
 import type { EvalResponse } from "@components/CodeBlock/evaluate";
 import { parenthesisCheck } from "../../validation/0-robot";
-import { type BoardProps, Functions, type Board, type RobotGameProps } from "./RobotGameTypes";
+import { Functions, type Board, type RobotGameProps } from "./RobotGameTypes";
 
 export class RobotGame extends HTMLElement {
   readonly codeblock: CodeBlock;
