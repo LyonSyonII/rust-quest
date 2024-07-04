@@ -6,6 +6,7 @@ const { id } = Astro.props;
 ---
 
 <!-- https://codepen.io/vsync/pen/AmwKXE -->
+<x-feedback>
 <dialog>
   <form class="not-content" id={id} action="" method="dialog">
     <label for="score-wrapper">How would you rate this chapter?</label>
@@ -27,38 +28,7 @@ const { id } = Astro.props;
     </div>
   </form>
 </dialog>
-
-<script>
-  const dialog = document.querySelector("dialog")!;
-  const form = document.querySelector("form")!;
-  const cancel = form.querySelector("#cancel")!;
-  cancel.addEventListener("click", () => dialog.close());
-  const submit = form.querySelector("#submit")!;
-  submit.innerHTML = "Submit";
-
-  form.onsubmit = async () => {
-    // e.preventDefault();
-    const data = {
-      id: form.id,
-      score: parseInt((form.querySelector("#score") as HTMLInputElement).value),
-      review: (
-        form.querySelector("#review") as HTMLTextAreaElement
-      ).value.trim(),
-    };
-
-    console.log(data);
-
-    await fetch("http://rust-quest.garriga.dev", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    dialog.close();
-  };
-</script>
+</x-feedback>
 
 <style>
   dialog {
@@ -125,3 +95,9 @@ const { id } = Astro.props;
     background-color: var(--sl-color-primary);
   }
 </style>
+
+<script>
+  import { FeedbackElement } from "./Feedback";
+
+  customElements.define("x-feedback", FeedbackElement)
+</script>

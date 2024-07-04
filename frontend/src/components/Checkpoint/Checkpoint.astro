@@ -50,13 +50,13 @@ const { id } = Astro.props;
     connectedCallback() {
       const id = this.getAttribute("id") as string;
 
-      subscribe(id, async (s) => {
-        if (!s.has(id)) {
+      subscribe(id, async (updated) => {
+        if (!updated.has(id)) {
           return;
         }
 
         this.style.display = "block";
-      });
+      }, true);
     }
   }
   customElements.define("x-checkpoint", Checkpoint);

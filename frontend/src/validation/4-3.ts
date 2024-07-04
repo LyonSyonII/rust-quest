@@ -1,9 +1,9 @@
 import { type CodeQuestion, replace, codeMess } from "./CodeQuestion";
-import { createRegExp } from "magic-regexp";
+import { createRegExp, word } from "magic-regexp";
 import { _, semicolon, stringZ, char, wrongCharZ, start, end } from "./regex";
 
 function validator(value: string): string | undefined {
-  const answer = wrongCharZ.or(stringZ).or("?").optionally();
+  const answer = wrongCharZ.or(stringZ).or(word).or("?").optionally();
   
   const regex = createRegExp(
     start,
@@ -29,8 +29,10 @@ function validator(value: string): string | undefined {
   || initial2.length > 3 && "[initial2] An initial has only one character!"
   || initial2.includes('"') && "[initial2] You're almost there, but an initial has only one character, so there's a better way to write it!\nLook closely at how 'initial1' is written."
   || initial2.toUpperCase() !== initial2 && "[initial2] An initial should be uppercase!"
+  || !initial2.includes("'") && "[initial2] Something's wrong with the way you wrote your initial.\nLook closely at how the first one is written."
   || cardinal.includes("?") && fillCardinal
   || cardinal.includes('"') && "[cardinal] You're almost there, but a cardinal point has only one character, so there's a better way to write it!\nLook closely at how 'initial1' is written."
+  || !cardinal.includes("'") && "[cardinal] Something's wrong with the way you wrote the cardinal point.\nLook closely at how 'initial1' is written."
   || !(/'[nsew]'/i).test(cardinal) && `[cardinal] ${cardinal} is not a cardinal point! Try 'N', 'S', 'E' or 'W'.`
   || value.includes("?") && replace
   || undefined

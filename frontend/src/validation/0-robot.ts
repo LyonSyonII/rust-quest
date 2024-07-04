@@ -15,7 +15,6 @@ export function parenthesisCheck(value: string): string | undefined {
   );
   
   const match = value.match(parens);
-  console.log({match});
   if (match && match[0]) {
     return `You need to call the function '${match[0]}' with parenthesis.\ne.g. '${match[0]}()'`;
   }

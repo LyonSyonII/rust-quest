@@ -1,4 +1,4 @@
-import type { RobotGameProps } from "@components/RobotGame/RobotGame";
+import type { RobotGameProps } from "@components/RobotGame/RobotGameTypes";
 
 export default {
   boards: [

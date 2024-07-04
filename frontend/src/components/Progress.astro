@@ -1,5 +1,7 @@
 ---
-import Feedback from "./Feedback.astro";
+import Feedback from "./Feedback/Feedback.astro";
+import Donate from "./Donate.astro";
+import Checkpoint from "./Checkpoint/Checkpoint.astro";
 
 type Props = {
   id: string;
@@ -9,12 +11,15 @@ type Props = {
 
 const { id, total, confetti = true } = Astro.props;
 ---
+<Checkpoint id=`${id}-${total}`>
+  <Donate />
+</Checkpoint>
 
 <x-progress data-confetti={`${confetti}`}>
   <label for={id}>0 / {total}</label>
   <progress {id} max={total}></progress>
+    
   <button class="feedback">Give Feedback</button>
-
   <Feedback id={id} />
 
   {
@@ -57,15 +62,15 @@ const { id, total, confetti = true } = Astro.props;
 </style>
 
 <script>
-  import { subscribe, add, remove } from "./Checkpoint/checkpoint";
+  import { subscribe, add, removeAll } from "./Checkpoint/checkpoint";
   import { confetti } from "../utils/confetti";
 
   class Progress extends HTMLElement {
     constructor() {
       super();
-
-      const progress = this.querySelector("progress") as HTMLProgressElement;
-      const label = this.querySelector("label") as HTMLLabelElement;
+    
+      const progress = this.querySelector<HTMLProgressElement>("progress")!;
+      const label = this.querySelector<HTMLLabelElement>("label")!;
       const launchConfetti: boolean = this.dataset.confetti === "true";
       const id: string = progress.id;
       const total: number = progress.max;
@@ -75,22 +80,23 @@ const { id, total, confetti = true } = Astro.props;
         label.innerText = `${value} / ${total}`;
         progress.value = value;
         const confettiId = `${id}-confetti`;
-        if (!launchConfetti || value !== total || checkpoint.has(confettiId)) {
+        if (value !== total) {
           return;
         }
-
-        confetti();
-        add(confettiId);
+        if (launchConfetti && !checkpoint.has(confettiId)) {
+          confetti();
+          add(confettiId);
+        }
       });
 
       const feedback = this.querySelector("dialog")!;
       this.querySelector(".feedback")!.addEventListener("click", () =>
         feedback.showModal(),
       );
-
+      
       if (import.meta.env.DEV) {
-        this.querySelector(".reset")!.addEventListener("click", () => {
-          remove(id);
+        this.querySelector(".reset")!.addEventListener("click", async () => {
+          await removeAll(id);
           location.reload();
         });
       }

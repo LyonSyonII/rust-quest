@@ -11,7 +11,7 @@ import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.astro";
-import Feedback from "@components/Feedback.astro";
+import Feedback from "@components/Feedback/Feedback.astro";
 import RobotGame from "@components/RobotGame/RobotGame.astro";
 import Hint from "@components/Hint.astro";
 import { Content as WIP } from "@components/WIP.mdx";
@@ -158,6 +158,33 @@ if ? {
 Good!  
 Work smarter, not harder 😉.
 
+<Hint>
+If you're receiving the "You don't need more than two instructions" message, it means that the problem can be solved with a more general approach.  
+
+Read you code and see if you can simplify it.  
+For example, the following code:
+```rust
+if is_slime_left() {
+  down(); // repeated
+  left();
+}
+if is_slime_right() {
+  down();  // repeated
+  right();
+}
+```
+Can be simplified to:
+```rust
+down(); // no longer repeated
+if is_slime_left() {
+  left();
+}
+if is_slime_right() {
+  right();
+}
+```
+</Hint>
+
 <RobotGame 
 id="5-6-robot"
 question="Murder those monsters!"
@@ -176,6 +203,15 @@ if ? {
 </Checkpoint>
 
 <Checkpoint id="5-6-robot">
+:::note[Why only 2 instructions in each condition?]
+In this exercise, I forced you to write only two instructions in each `if`, why?
+
+Well, code repetition should be avoided, "be as lazy as possible", they say.  
+Imagine that instead of only `up()`, the extra code was 20 lines long, seems harder to manage, right?
+
+Try always simplifying your code, it will pay off.
+:::
+
 Well done, all slimes will tremble in fear when they hear your name!
 
 <Hint>
