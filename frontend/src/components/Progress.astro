@@ -17,7 +17,7 @@ const { id, total, confetti = true } = Astro.props;
 
 <x-progress data-confetti={`${confetti}`}>
   <label for={id}>0 / {total}</label>
-  <progress {id} max={total}></progress>
+  <progress {id} value={0} max={total}></progress>
     
   <button class="feedback">Give Feedback</button>
   <Feedback id={id} />
