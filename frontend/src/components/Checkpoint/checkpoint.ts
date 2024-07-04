@@ -23,7 +23,15 @@ export async function remove(id: string) {
       v = new Set();
     }
     v.delete(id);
+    v.delete(`${level}-confetti`);
     return v;
+  }, store);
+  await callSubscribed(level);
+}
+
+export async function removeAll(level: string) {
+  await idb.update<Set<string>>(level, () => {
+    return new Set();
   }, store);
   await callSubscribed(level);
 }

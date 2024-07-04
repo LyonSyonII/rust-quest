@@ -131,6 +131,7 @@ export class CodeBlock extends HTMLElement {
           this.theme.of(theme === "light" ? githubLight : githubDark),
           EditorView.editable.of(editable),
           this.readonly.of(EditorState.readOnly.of(!editable)),
+          EditorView.updateListener.of(view => view.docChanged && this.persistCode())
         ],
       }),
     });
@@ -140,9 +141,14 @@ export class CodeBlock extends HTMLElement {
     // To avoid line gutter collapsing
     setTimeout(() => this.editor.requestMeasure(), 300);
 
-    this.addEventListener("keydown", () => {
-      this.persistCode();
-    })
+    if (import.meta.env.DEV) {
+      const reset = this.querySelector<HTMLButtonElement>(".DEV-RESET")!;
+      reset.addEventListener("click", async () => {
+        const remove = (await import("../Checkpoint/checkpoint")).remove;
+        await remove(this.id);
+        location.reload();
+      });
+    }
   }
 
   public setProps({ setup, vars = [], validator, onsuccess }: CodeQuestion) {
@@ -271,7 +277,7 @@ export class CodeBlock extends HTMLElement {
     
     return true;
   }
-
+  
   persistCode(value?: string) {
     persistence.set(this.id, value || this.getValue());
   }

@@ -58,6 +58,13 @@ const props = {
   <output>
     <p></p>
   </output>
+  {
+    import.meta.env.DEV && (
+      <button class="DEV-RESET">
+        <b>RESET</b>
+      </button>
+    )
+  }
 </x-code-block>
 
 <style>
