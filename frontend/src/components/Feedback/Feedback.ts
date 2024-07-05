@@ -18,9 +18,7 @@ export class FeedbackElement extends HTMLElement {
           form.querySelector("#review") as HTMLTextAreaElement
         ).value.trim(),
       };
-
-      console.log(data);
-
+      
       await fetch("http://rust-quest.garriga.dev", {
         method: "POST",
         headers: {
