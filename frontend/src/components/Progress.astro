@@ -11,7 +11,7 @@ type Props = {
 
 const { id, total, confetti = true } = Astro.props;
 ---
-<Checkpoint id=`${id}-${total}`>
+<Checkpoint id=`${id}-completed`>
   <Donate />
 </Checkpoint>
 
@@ -79,14 +79,14 @@ const { id, total, confetti = true } = Astro.props;
         const value = checkpoint.size < total ? checkpoint.size : total;
         label.innerText = `${value} / ${total}`;
         progress.value = value;
-        const confettiId = `${id}-confetti`;
         if (value !== total) {
           return;
         }
-        if (launchConfetti && !checkpoint.has(confettiId)) {
+        const completedId = `${id}-completed`
+        if (launchConfetti && !checkpoint.has(completedId)) {
           confetti();
-          add(confettiId);
         }
+        add(completedId);
       });
 
       const feedback = this.querySelector("dialog")!;

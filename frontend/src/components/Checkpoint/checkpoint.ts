@@ -10,7 +10,6 @@ export async function add(id: string) {
       v = new Set();
     }
     v.add(id);
-    console.log("updated", {v});
     return v;
   }, store);
   await callSubscribed(level);
@@ -23,7 +22,7 @@ export async function remove(id: string) {
       v = new Set();
     }
     v.delete(id);
-    v.delete(`${level}-confetti`);
+    v.delete(`${level}-completed`);
     return v;
   }, store);
   await callSubscribed(level);
