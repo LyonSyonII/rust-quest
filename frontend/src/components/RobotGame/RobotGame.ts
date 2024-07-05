@@ -66,8 +66,8 @@ export class RobotGame extends HTMLElement {
         this.codeblock.setRunning(false);
         return Promise.reject();
       }
-
-      const responses: [EvalResponse, Board][] = await Promise.all(
+      
+      const responses: [Promise<EvalResponse>, Board][] = await Promise.all(
         this.boards.map(async (board) => {
           const { rows, cols, start, enemies } = board;
           await this.setupCodeBlock(
@@ -77,14 +77,12 @@ export class RobotGame extends HTMLElement {
             enemies,
             this.functions,
           );
-
-          const response = await this.codeblock.evaluateSnippet(value);
+          
+          const response = this.codeblock.evaluateSnippet(value);
           return [response, board];
         }),
       );
-
-      console.log({ robotResponses: responses });
-
+      
       const simulationError = async () => {
         this.codeblock.setOutput(
           "There was an error during the simulation, please try again.",
@@ -101,7 +99,8 @@ export class RobotGame extends HTMLElement {
         return simulationError();
       }
 
-      for (const [response, board] of responses) {
+      for (const [r, board] of responses) {
+        const response = await r;
         if (typeof response !== "string") {
           return simulationError();
         }
@@ -252,8 +251,6 @@ export class RobotGame extends HTMLElement {
 
       await wait(150);
     }
-
-    console.log({ killedEnemies, numEnemies: board.numEnemies });
 
     if (killedEnemies < board.numEnemies) {
       return undefined;
