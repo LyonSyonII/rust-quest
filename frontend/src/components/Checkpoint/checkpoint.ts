@@ -46,6 +46,24 @@ export function subscribe(id: string, run: (checkpoints: Set<string>) => Promise
   runOnSubscribed && callSubscribed(level);
 }
 
+export async function getAll() {
+  return idb.entries(store);
+}
+
+export async function stringifyStore(): Promise<string> {
+  const entries = (await idb.entries(store))
+  .map(([k, v]: [IDBValidKey, Set<string>]) => [k, JSON.stringify([...v.values()])]);
+  return JSON.stringify(entries);
+}
+
+/** Parses a specified JSON, sets the store to the parsed values and returns it. */
+export async function parseStore(json: string): Promise<[IDBValidKey, Set<string>][]> {
+  const parsed = JSON.parse(json) as [ IDBValidKey, string ][];
+  const entries: [IDBValidKey, Set<string>][] = parsed.map(([k, v]) => [k, new Set(JSON.parse(v))]);
+  await idb.setMany(entries);
+  return entries;
+}
+
 const subscribed: Map<string, ((checkpoints: Set<string>) => Promise<void>)[]> = new Map();
 
 async function callSubscribed(level: string) {
