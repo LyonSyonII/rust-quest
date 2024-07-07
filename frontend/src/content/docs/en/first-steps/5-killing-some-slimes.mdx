@@ -16,10 +16,7 @@ import RobotGame from "@components/RobotGame/RobotGame.astro";
 import Hint from "@components/Hint.astro";
 import { Content as WIP } from "@components/WIP.mdx";
 
-:::danger[Page in testing phase]
-This page should be finished, but there might be some bugs or things that are hard to understand.  
-Proceed with caution!
-:::
+<WIP />
 
 After long days of paperwork and chores, you've finally recieved your first real quest!  
 You can't contain the excitement and quickly open the letter:
@@ -66,6 +63,9 @@ If you have any issue, don't hesitate to reach out to our customer support for f
 We wish you a happy monster extermination!
 </QuestionCard>
 
+
+Woops, while you were reading one of these gelatinous things approached you.
+
 <Hint>
 Remember the instructions:
 - `up();`
@@ -84,21 +84,21 @@ Don't forget the semicolon at the end of each function!
 
 <Checkpoint id="5-2-robot">
 
-Once the simulation is complete, the robot swiftly starts moving and punches the slime to death.
+Once the simulation is complete, the robot swiftly moves and punches the slime to death, well done!.
 
-One down, many more to go!
+But the machine's fighting isn't specially stealthy, causing it to alert a nearby monster.
 
 <RobotGame
   id="5-3-robot"
-  question="Kill another one!"
+  question="Finish another one!"
 />
 </Checkpoint>
 
 <Checkpoint id="5-3-robot">
-Another slime bites the dust!
 
-Now there's two simulations?  
-No problem, you can handle this!
+The robot tries to follow your instructions, but the slime is surprisingly quick, and dodges every blow.
+
+Seems like only one simulation isn't enough, let's try with two!
 
 <Hint>
 Each "simulation" is represented by a different board.  
@@ -114,7 +114,9 @@ Try solving the first simulation and see what happens.
 
 <Checkpoint id="5-4-robot">
 
-Seems like you're getting the hang of it!
+This time the monster tries to dodge like before, but the machine predicts the movement and explodes it with a very cool rocket fist.
+
+> robotpunchingslime.png
 
 <QuestionCard background="var(--color-paper)" border={false} rounded>
 #### New functions unlocked
@@ -129,9 +131,17 @@ Two new functions have been unlocked:
 If a function name is too long, you can abreviate it to only the initials.  
 For example, `is_slime_left()` can be called as `isl()`.
 
-This is only for this book, don't try doing it in real code!
+*This is only for this book, don't try doing it in real code!*
 :::
 </QuestionCard>
+
+Great, new instructions!  
+But why would these unlock now?  
+
+<b style="color: red; text-decoration: underline;">WARNING WARNING, THE ROBOT IS OVERHEATED, PLEASE REDUCE THE SIMULATION STEPS TO A MINIMUM</b>
+
+...Well, here we have the answer.  
+Maybe we can use them to avoid unnecessary steps?
 
 <Hint>
 See the "Minimum Steps" message below every simulation?  
@@ -155,14 +165,15 @@ if ? {
 </Checkpoint>
 
 <Checkpoint id="5-5-robot">
-Good!  
-Work smarter, not harder 😉.
+Good! Work smarter, not harder 😉.
+
+Unaware of your power, more slimes come to you.
 
 <Hint>
 If you're receiving the "You don't need more than two instructions" message, it means that the problem can be solved with a more general approach.  
 
-Read you code and see if you can simplify it.  
-For example, the following code:
+Read your code and see if you can simplify it.  
+For example, the following snippet:
 ```rust
 if is_slime_left() {
   down(); // repeated
@@ -204,18 +215,21 @@ if ? {
 
 <Checkpoint id="5-6-robot">
 :::note[Why only 2 instructions in each condition?]
-In this exercise, I forced you to write only two instructions in each `if`, why?
+In this exercise, you've been forced to write only two instructions in each `if`, why?
 
 Well, code repetition should be avoided, "be as lazy as possible", they say.  
 Imagine that instead of only `up()`, the extra code was 20 lines long, seems harder to manage, right?
 
-Try always simplifying your code, it will pay off.
+Try to always write simpler code, it will pay off.
 :::
 
-Well done, all slimes will tremble in fear when they hear your name!
+Well done, all slimes will tremble in fear when they hear your name!  
+
+...Or at least most of them, because the ones in front of you seem completely unfazed with your killing.  
+Let's teach them a lesson!
 
 <Hint>
-If you're in doubt, try solving it without accounting for the minimum steps and then think on what you can do to reduce them.
+If you're in doubt, try solving it without accounting for the minimum steps and then think of what you can do to reduce them.
 
 A good way to know when to use conditionals is to solve the problem aloud:  
 *if the slime is on the left of the robot, go there, if not...*
@@ -227,7 +241,10 @@ question="Different minimum steps?"
 </Checkpoint>
 
 <Checkpoint id="5-7-robot">
-You even handled a different amount of steps for simulation, excellent job!
+You even handled a different amount of steps for simulation, excellent job!  
+
+But then you hear a characteristic _squish_, you look behind and there they are, it's an ambush!  
+<b style="color: red; text-decoration: underline">WARNING WARNING, IMPOSSIBLE SITUATION FOUND, USE OF `else` IS REQUIRED</b>  
 
 Okay, I know `if`, but... What's this `else`?
 <Hint>
@@ -256,7 +273,12 @@ In this case the normal line of thought would be to use a `is_slime_up()` functi
 For this reason, we can use `else` to signify a case where none of our previous conditions is met.
 :::
 
-And finally, the last one!  
+No slimes in sight, at last, your job is done.
+
+Or so you thought, because to your horror three slimes fall from the sky, prepared for the final fight.  
+
+> threeslimesfight.png
+
 Hang on, you're almost there!
 
 <Hint>
