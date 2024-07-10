@@ -80,7 +80,6 @@ export class CodeBlock extends HTMLElement {
       lineNums,
       highlightActiveLineGutter(),
       history(),
-      /*         foldGutter(), */
       EditorState.allowMultipleSelections.of(true),
       indentOnInput(),
       bracketMatching(),
@@ -279,7 +278,8 @@ export class CodeBlock extends HTMLElement {
   }
   
   persistCode(value?: string) {
-    persistence.set(this.id, value || this.getValue());
+    value = value || this.getValue();
+    value && persistence.set(this.id, value);
   }
 }
 

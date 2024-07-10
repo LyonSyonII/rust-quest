@@ -8,30 +8,22 @@ export async function evaluate(
   code: string,
   error: string,
 ): Promise<EvalResponse> {
-  if (import.meta.env.DEV) {
-    return Promise.race([
-      godbolt(code, error),
-      playground(code, error) /* , server(code, error) */,
-    ]);
-  }
-
   return Promise.race([
     // server(code, error),
-    godbolt(code, error),
-    playground(code, error),
-    new Promise((resolve, _) =>
+    godbolt(code, error).catch(() => playground(code, error)),
+    new Promise<EvalResponse>((resolve, _) =>
       setTimeout(
         () => resolve(err("Execution timed out, please try again.")),
         3000,
       ),
-    ) as Promise<EvalResponse>,
+    )
   ]).catch(() => err("There was an error during execution, please try again."));
 }
 
 async function godbolt(code: string, error: string): Promise<EvalResponse> {
   const params = {
     source: code,
-    bypassCache: 2,
+    bypassCache: 0,
     compiler: "nightly",
     options: {
       userArguments: "",

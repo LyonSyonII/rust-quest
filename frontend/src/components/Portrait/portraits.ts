@@ -35,12 +35,3 @@ export function portrait(portrait: Portrait): {
   const bgDark = bgToDark(bg);
   return { img, bg, bgDark };
 }
-
-/* <Highlight bg={colors.purple}> Purple </Highlight>
-<Highlight bg={colors.green}> Green </Highlight>
-<Highlight bg={colors.red}> Red </Highlight>
-<Highlight bg={colors.yellow}> Yellow </Highlight>
-<Highlight bg={colors.orange}> Orange </Highlight>
-<Highlight bg={colors.blue}> Blue </Highlight>
-<Highlight bg={colors.pink}> Pink </Highlight>
-<Highlight bg={colors.gray}> Gray </Highlight> */
