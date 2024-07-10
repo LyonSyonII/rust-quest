@@ -14,6 +14,7 @@ import Progress from "@components/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
 import RobotGame from "@components/RobotGame/RobotGame.astro";
 import Hint from "@components/Hint.astro";
+import Comic from "@components/Comic.astro";
 import { Content as WIP } from "@components/WIP.mdx";
 
 <WIP />
@@ -116,7 +117,7 @@ Try solving the first simulation and see what happens.
 
 This time, the monster tries to dodge like before, but the machine predicts the movement and blows it up with a very cool rocket fist.
 
-> robotpunchingslime.png
+<Comic src="/comics/robotpunch.svg" alt="robot punching slime" />
 
 <QuestionCard background="var(--color-paper)" border={false} rounded>
 #### New functions unlocked
@@ -141,7 +142,7 @@ But why would these unlock now?
 <b style="color: red; text-decoration: underline;">WARNING WARNING, THE ROBOT IS OVERHEATED, PLEASE REDUCE THE SIMULATION STEPS TO A MINIMUM</b>
 
 ...Well, here's the answer.  
-Maybe we can use them to avoid unnecessary steps?
+Maybe we can use these to avoid unnecessary steps?
 
 <Hint>
 See the "Minimum Steps" message below every simulation?  
