@@ -1,5 +1,6 @@
 import GuildGirl from "@assets/portraits/AdventurersGuildGirl.svg";
 import Grocery from "@assets/portraits/GroceryStore.svg";
+import FishShop from "@assets/portraits/FishShop.svg";
 import { bgToDark } from "src/utils/colors";
 
 export const colors = {
@@ -22,6 +23,10 @@ const portraits = {
     img: Grocery,
     bg: colors.green,
   },
+  "fish-shop": {
+    img: FishShop,
+    bg: colors.blue
+  }
 };
 
 export type Portrait = keyof typeof portraits;

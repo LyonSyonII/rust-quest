@@ -1,0 +1,58 @@
+---
+title: Quality control
+description: Do you really know how to be assertive?
+---
+
+import CodeQuestion from "@components/CodeQuestion.astro";
+import QuestionCard from "@components/QuestionCard.astro";
+import Portrait from "@components/Portrait/PortraitCard.astro";
+import { colors } from "@components/Portrait/portraits";
+import PText from "@components/Portrait/PortraitText.astro";
+import Highlight from "@components/Highlight.astro";
+import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
+import Progress from "@components/Progress.astro";
+import Feedback from "@components/Feedback/Feedback.astro";
+import Hint from "@components/Hint.astro";
+import Comic from "@components/Comic.astro";
+import { Content as WIP } from "@components/WIP.mdx";
+
+export function Guild(props) {
+  return <Portrait 
+    src="guild-girl" 
+    {...props} 
+  />
+}
+export function Fish(props) {
+  return <Portrait 
+    src="fish-shop" 
+    {...props} 
+  />
+}
+
+<WIP />
+
+Being pretty exhausted from yesterday's mission, you decide to take it easy and get a less demanding one.
+
+<Guild>
+Oh, you want an easier mission?  
+Let me see...  
+
+Here, I think this is a good one!  
+It's a petition to add quality control directives to some Magic Boxes™.  
+</Guild>
+
+Well then, let's see what this is about.
+
+---
+
+After a bit of walking, you get to the address you were provided.  
+It's a small but well-mantained shop, with a big fish silhouette engraved in the door.
+
+Before you have time to knock, the door opens and reveals a smiling girl.
+
+<Fish>
+Welcome adventurer!  
+I've been waiting, those boxes won't get ready on their own!
+</Fish>
+
+Leaving no time for you to reply, she takes your hand and pulls you inside the shop.  
