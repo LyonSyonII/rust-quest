@@ -1,0 +1,15 @@
+---
+type Props = {
+  src: string,
+  alt: string
+};
+const { src, alt } = Astro.props;
+---
+
+<img {src} {alt} />
+
+<style>
+  :root[data-theme="dark"] img {
+    filter: invert(0.85)
+  }
+</style>
