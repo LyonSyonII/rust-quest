@@ -14,7 +14,7 @@ export async function evaluate(
     new Promise<EvalResponse>((resolve, _) =>
       setTimeout(
         () => resolve(err("Execution timed out, please try again.")),
-        3000,
+        5000,
       ),
     )
   ]).catch(() => err("There was an error during execution, please try again."));
