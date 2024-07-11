@@ -12,6 +12,7 @@ import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
 import Hint from "@components/Hint.astro";
+import Comic from "@components/Comic.astro";
 
 export function Grocer(props) {
   return (
@@ -68,6 +69,8 @@ The Adventurer's Guild`;
 
   You follow the owner to the back of the store, where he has crates full of vegetables.  
   Each crate has a label indicating its contents and a panel with a number.
+
+  <Comic src="/comics/box-empty.svg" />
   
   <Grocer>
   See all these crates? They are magical boxes!  
@@ -82,7 +85,6 @@ The Adventurer's Guild`;
   So, as a Programmer, could you find a way to automate this?
   
   I have this code thing that represents our magical crates and what's in them, check it out:
-
   </Grocer>
   
   <Hint>
@@ -135,6 +137,9 @@ code="let ? = ?;"
 </Checkpoint>
 
 <Checkpoint id="3-3">
+
+<Comic src="/comics/box-apples-18.svg" />
+ 
 After configuring the box, you walk to the counter to tell the grocer of your success, but he yells: <GT>Hey, adventurer! Bring me two apples from the box, please</GT>.
 
 Okay, that shouldn't be difficult, just take two apples and... Huh? Why is your hand being stopped in the air?  
