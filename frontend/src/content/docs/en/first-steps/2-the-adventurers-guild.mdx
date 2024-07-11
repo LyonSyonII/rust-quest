@@ -9,6 +9,7 @@ import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
 import Donate from "@components/Donate.astro";
+import Comic from "@components/Comic.astro";
 
 export const codeMess =
 `Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
@@ -23,7 +24,9 @@ export function Guild(props) {
   />
 }
 
-<Portrait src="guild-girl" >
+<Comic src="/comics/guild.svg" />
+
+<Guild>
 Good morning, welcome to Newlia, where new heroes are born!
 
 Are you here to register as an adventurer? And you want to choose the "Programmer" class?  
@@ -33,7 +36,7 @@ This class requires a small test, to make sure you have the minimum problem-solv
 It'll take just a moment.
 
 Please, fill in the blanks in the following statements, replacing **`?`** with the correct answer.
-</Portrait>
+</Guild>
 
 :::note[Don't worry]
 If you mess up the code, click the "Reset" button to return it to its original state.
