@@ -72,7 +72,7 @@ async function godbolt(code: string, error: string): Promise<EvalResponse> {
 
   const execution = response.indexOf("# Exec");
   const stdout_idx = response.indexOf("# Standard out:", execution);
-
+  
   if (stdout_idx !== -1) {
     return response.substring(stdout_idx + " Standard out:\n".length + 1);
   }
@@ -84,8 +84,8 @@ async function godbolt(code: string, error: string): Promise<EvalResponse> {
       error || response.substring(stderr_idx + "Standard error:\n".length + 1),
     );
   }
-
-  return err("UNKNOWN ERROR");
+  
+  return "";
 }
 
 async function playground(code: string, error: string): Promise<EvalResponse> {

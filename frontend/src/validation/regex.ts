@@ -1,4 +1,4 @@
-import { exactly, maybe, whitespace, word, char as _any, digit, oneOrMore } from "magic-regexp";
+import { exactly, maybe, whitespace, word, char as _any, digit, oneOrMore, wordChar, anyOf } from "magic-regexp";
 
 /** Matches start of string. */
 export const start = exactly().at.lineStart();
@@ -57,5 +57,9 @@ export const _ = whitespace.times.any();
 /** Accepts 1 or more whitespace. */
 export const __ = oneOrMore(whitespace);
 
-/** Accepts a semicolon sorrounded by whitespace. */
+/** Accepts a semicolon surrounded by whitespace. */
 export const semicolon = exactly(_, ";", _);
+
+export const ident = oneOrMore(anyOf(wordChar, "_"));
+
+export const fn = ident.and("()")
