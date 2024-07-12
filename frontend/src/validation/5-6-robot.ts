@@ -1,7 +1,7 @@
 import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGameTypes";
 import { codeMess, replace } from "./CodeQuestion";
-import { createRegExp, exactly, maybe, not, oneOrMore, word } from "magic-regexp";
-import { _, end, line, start } from "./regex";
+import { char, createRegExp, exactly, maybe, oneOrMore } from "magic-regexp";
+import { _, __, end, fn, line, start } from "./regex";
 
 export default {
   solveWithMinimumSteps: true,
@@ -24,20 +24,21 @@ export default {
 } as RobotGameProps;
 
 function validator(value: string): string | undefined {
-  const instructions = exactly(_, oneOrMore(not.whitespace)).times.any();
+  const instructions = exactly(oneOrMore(char), __).times.any();
   const regex = createRegExp(
     start, _,
     line, _,
-    "if", _, exactly("?").or(word, "()", maybe(";")).as("first"), _, "{", instructions.as("inst1"), _, "}", _,
-    "if", _, exactly("?").or(word, "()", maybe(";")).as("second"), _, "{", instructions.as("inst2"), _, "}", _,
+    "if", _, exactly("?").or(fn, maybe(";")).as("first"), _, "{", _, instructions.as("inst1"), "}", _,
+    "if", _, exactly("?").or(fn, maybe(";")).as("second"), _, "{", _, instructions.as("inst2"), "}", _,
     end
   );
+  console.log(regex.source)
   const matches = value.match(regex);
   if (!matches) return codeMess;
   
   const { first, second, inst1 = "", inst2 = "" } = matches.groups;
   if (!first || !second) return codeMess;
-
+  
   const wrong = "Look closely at the instructions, you don't need a semicolon!";
   
   // slice to remove last semicolon

@@ -2,6 +2,14 @@ import { anyOf, createRegExp, exactly } from "magic-regexp";
 import type { CodeQuestion } from "./CodeQuestion";
 import { _ } from "./regex";
 
+export const up = exactly("up");
+export const down = exactly("down");
+export const left = exactly("left");
+export const right = exactly("right");
+export const is_slime_right = anyOf("is_slime_right", "isr");
+export const is_slime_left = anyOf("is_slime_left", "isl");
+export const robotFunction = anyOf(up, down, left, right, is_slime_left, is_slime_right);
+
 export function parenthesisCheck(value: string): string | undefined {
   const up = exactly("up").notBefore(_, "(", _, ")", _);
   const down = exactly("down").notBefore(_, "(", _, ")", _);
