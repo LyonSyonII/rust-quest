@@ -83,9 +83,9 @@ export class RobotGame extends HTMLElement {
         }),
       );
       
-      const simulationError = async () => {
+      const simulationError = async (err?: { error: string }) => {
         this.codeblock.setOutput(
-          "There was an error during the simulation, please try again.",
+          err?.error || "There was an error during the simulation, please try again.",
         );
         await new Promise((r) => setTimeout(r, 1000));
         this.codeblock.setRunning(false);
@@ -102,7 +102,7 @@ export class RobotGame extends HTMLElement {
       for (const [r, board] of responses) {
         const response = await r;
         if (typeof response !== "string") {
-          return simulationError();
+          return simulationError(response);
         }
 
         const steps = await this.handleResponse(response, board);
