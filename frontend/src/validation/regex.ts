@@ -57,7 +57,7 @@ export const _ = whitespace.times.any();
 /** Accepts 1 or more whitespace. */
 export const __ = oneOrMore(whitespace);
 
-/** Accepts a semicolon sorrounded by whitespace. */
+/** Accepts a semicolon surrounded by whitespace. */
 export const semicolon = exactly(_, ";", _);
 
 export const ident = oneOrMore(anyOf(wordChar, "_"));
