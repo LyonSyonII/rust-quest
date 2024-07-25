@@ -11,7 +11,7 @@ export default {
    *  If it returns `Some`, it will be displayed in the output and the code will not be executed. */
   validator: (value, test) =>
     value.includes("?") && "Hint: Just replace ? with your name!" 
-    || !test(/^let name = "\w+";$/) && codeMess
+    || !test(/^let name = "[A-Za-zÀ-ÖØ-öø-ÿ]+";$/) && codeMess
     || undefined,
   /** Callback that will be called when "SUCCESS" is returned. */
   onsuccess: (stdout: string) => {
