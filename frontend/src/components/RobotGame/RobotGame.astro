@@ -36,13 +36,13 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!
         boards.map(
           ({ rows = rowsDef, cols = colsDef, start, enemies, steps }, i) => (
             <div id="board">
-              <table id={`${id}-${i}`}>
+              <table class="not-content" id={`${id}-${i}`}>
                 {[...Array(cols)].map((_, i) => (
-                  <tr>
+                  <tr class="not-content">
                     {[...Array(rows)].map((_, j) => (
-                      <td>
+                      <td class="not-content">
                         {(start == i * colsDef + j && (
-                          <Image src={Robot} alt="robot" id="robot" />
+                          <Image src={Robot} alt="robot" id="robot"/>
                         )) ||
                           (enemies.includes(i * colsDef + j) && (
                             <Image
@@ -78,31 +78,6 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!
   }
   x-robot-game {
   }
-  img {
-    width: 80%;
-    height: 80%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  #board table {
-    table-layout: fixed;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 0rem;
-    margin-top: 0;
-    transition: opacity 0.2s ease-in-out;
-  }
-  label {
-    font-size: 0.8rem;
-    text-align: center;
-    margin-top: 0 !important;
-  }
-  #min-steps {
-    font-size: 0.8rem;
-    margin-top: 0;
-    /*  justify-self: flex-start; */
-  }
   #boards {
     display: flex;
     justify-content: space-around;
@@ -112,26 +87,54 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!
     margin-bottom: 0.5rem;
   }
   #board {
-    margin-top: 0 !important;
+    margin-top: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
+  #board table {
+    table-layout: fixed;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0rem;
+    margin-top: 0;
+    border-collapse: collapse;
+    transition: opacity 0.2s ease-in-out;
+  }
   tr {
-    background-color: white !important;
+    background-color: var(--sl-color-black);
   }
   td {
     width: var(--cellSize);
     height: var(--cellSize);
-    padding: 0 !important;
+    padding: 0;
     text-align: center;
+    vertical-align: middle;
+    border: 1px solid var(--sl-color-hairline-light);
   }
-  td > :global(p) {
-    opacity: 0.5;
+  td > p {
+    opacity: 0.75;
     font-weight: bold;
+    color: var(--sl-color-text);
   }
-  p {
-    color: rgb(66, 52, 50);
+  #board img {
+    display: block;
+    width: 80%;
+    height: auto;
+    
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #board > label {
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 0;
+  }
+  #min-steps {
+    font-size: 0.8rem;
+    margin-top: 0;
+    /*  justify-self: flex-start; */
   }
   #robot {
     transition: transform 0.35s ease-out;
