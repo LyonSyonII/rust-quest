@@ -1,4 +1,4 @@
-import { codeMess, replace, type CodeQuestion } from "./CodeQuestion";
+import { type CodeQuestion, codeMess, replace } from "./CodeQuestion";
 
 type SimpleQuestion = {
   answer: string;

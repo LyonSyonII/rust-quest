@@ -1,32 +1,32 @@
 ---
-import { Image } from "astro:assets";
-import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
-import Robot from "@assets/robot.svg";
-import QuestionCard from "@components/QuestionCard.astro";
-import type { RobotGameProps } from "./RobotGameTypes";
+import { Image } from "astro:assets"
+import Robot from "@assets/robot.svg"
+import CodeBlock from "@components/CodeBlock/CodeBlock.astro"
+import QuestionCard from "@components/QuestionCard.astro"
+import type { RobotGameProps } from "./RobotGameTypes"
 
 type Props = {
-  id: string;
-  question?: string;
-  code?: string;
-  cellSize?: string;
-};
+  id: string
+  question?: string
+  code?: string
+  cellSize?: string
+}
 
-const { id, question = "", code = "", cellSize = "3rem" } = Astro.props;
+const { id, question = "", code = "", cellSize = "3rem" } = Astro.props
 
 const {
   rows: rowsDef = 3,
   cols: colsDef = 3,
   boards,
   solveWithMinimumSteps,
-}: RobotGameProps = (await import(`../../validation/${id}.ts`)).default;
+}: RobotGameProps = (await import(`../../validation/${id}.ts`)).default
 
 const slimes = (
   await Astro.glob<Record<string, ImageMetadata>>(
     "/src/assets/monsters/slime/*",
   )
-).map((v) => v.default!);
-const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!;
+).map((v) => v.default!)
+const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)]!
 ---
 
 <QuestionCard question={question} gap="0">

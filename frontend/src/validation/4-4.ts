@@ -1,6 +1,6 @@
-import { type CodeQuestion, codeMess } from "./CodeQuestion";
 import { createRegExp } from "magic-regexp";
-import { _, semicolon, start, end, bool, any } from "./regex";
+import { type CodeQuestion, codeMess } from "./CodeQuestion";
+import { _, any, bool, end, semicolon, start } from "./regex";
 
 function validator(value: string): string | undefined {
   const regex = createRegExp(

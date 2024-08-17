@@ -1,23 +1,23 @@
 ---
-import { translation } from "@i18n/_CodeBlock";
-import type { Langs } from "@i18n/_langs";
+import { translation } from "@i18n/_CodeBlock"
+import type { Langs } from "@i18n/_langs"
 
 /** CodeBlock */
 export type Props = {
   /** Checkpoint that will be activated when "SUCCESS" is returned. */
-  id?: string;
-  code?: string;
-  setup?: string;
-  placeholder?: string;
-  errorMsg?: string;
-  showLineNumbers?: boolean;
-  editable?: boolean;
-  showOutput?: boolean;
-};
+  id?: string
+  code?: string
+  setup?: string
+  placeholder?: string
+  errorMsg?: string
+  showLineNumbers?: boolean
+  editable?: boolean
+  showOutput?: boolean
+}
 
-const l = translation(Astro.url.pathname.split("/")[1] as Langs);
+const l = translation(Astro.url.pathname.split("/")[1] as Langs)
 
-Astro.props.code = Astro.props.code?.trim().replaceAll("$\\n", "") || "";
+Astro.props.code = Astro.props.code?.trim().replaceAll("$\\n", "") || ""
 
 const {
   id = "",
@@ -27,7 +27,7 @@ const {
   showLineNumbers = true,
   editable = true,
   showOutput,
-} = Astro.props;
+} = Astro.props
 
 const props = {
   id,
@@ -37,7 +37,7 @@ const props = {
   showLineNumbers: showLineNumbers.toString(),
   editable: editable.toString(),
   showOutput,
-};
+}
 ---
 
 <x-code-block class="not-content" {...props}>

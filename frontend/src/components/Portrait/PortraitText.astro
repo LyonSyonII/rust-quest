@@ -1,12 +1,12 @@
 ---
-import Highlight from "@components/Highlight.astro";
-import { portrait, type Portrait } from "./portraits";
+import Highlight from "@components/Highlight.astro"
+import { type Portrait, portrait } from "./portraits"
 
 interface Props {
-  src: Portrait;
+  src: Portrait
 }
 
-const { bg, bgDark } = portrait(Astro.props.src);
+const { bg, bgDark } = portrait(Astro.props.src)
 ---
 
 <Highlight bg={bg} bgDark={bgDark}>

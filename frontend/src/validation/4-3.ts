@@ -1,6 +1,6 @@
-import { type CodeQuestion, replace, codeMess } from "./CodeQuestion";
 import { createRegExp, word } from "magic-regexp";
-import { _, semicolon, stringZ, char, wrongCharZ, start, end } from "./regex";
+import { type CodeQuestion, codeMess, replace } from "./CodeQuestion";
+import { _, char, end, semicolon, start, stringZ, wrongCharZ } from "./regex";
 
 function validator(value: string): string | undefined {
   const answer = wrongCharZ.or(stringZ).or(word).or("?").optionally();

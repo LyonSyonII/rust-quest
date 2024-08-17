@@ -1,4 +1,4 @@
-import { exactly, maybe, whitespace, word, char as _any, digit, oneOrMore, wordChar, anyOf } from "magic-regexp";
+import { char as _any, anyOf, digit, exactly, maybe, oneOrMore, whitespace, word, wordChar } from "magic-regexp";
 
 /** Matches start of string. */
 export const start = exactly().at.lineStart();

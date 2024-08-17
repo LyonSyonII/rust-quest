@@ -1,12 +1,12 @@
 ---
-import { bgToDark } from "src/utils/colors";
+import { bgToDark } from "src/utils/colors"
 
 type Props = {
-  bg: string;
-  bgDark?: string;
-};
+  bg: string
+  bgDark?: string
+}
 
-const { bg, bgDark = bgToDark(bg) } = Astro.props;
+const { bg, bgDark = bgToDark(bg) } = Astro.props
 ---
 
 <span class="highlight">

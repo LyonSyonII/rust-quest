@@ -1,4 +1,4 @@
-import { codeMess, type CodeQuestion } from "./CodeQuestion";
+import { type CodeQuestion, codeMess } from "./CodeQuestion";
 
 export default {
   /** Invisible part of the code.
@@ -15,7 +15,7 @@ export default {
     || undefined,
   /** Callback that will be called when "SUCCESS" is returned. */
   onsuccess: (stdout: string) => {
-    let name = stdout.substring(0, stdout.indexOf(","));
+    const name = stdout.substring(0, stdout.indexOf(","));
     localStorage.setItem("NAME", name);
   },
 } as CodeQuestion;

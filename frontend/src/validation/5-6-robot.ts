@@ -1,6 +1,6 @@
 import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGameTypes";
-import { codeMess, replace } from "./CodeQuestion";
 import { char, createRegExp, exactly, maybe, oneOrMore } from "magic-regexp";
+import { codeMess, replace } from "./CodeQuestion";
 import { _, __, end, fn, line, start } from "./regex";
 
 export default {

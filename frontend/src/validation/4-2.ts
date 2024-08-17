@@ -1,4 +1,4 @@
-import { type CodeQuestion, getAnswer, replace, codeMess } from "./CodeQuestion";
+import { type CodeQuestion, codeMess, getAnswer, replace } from "./CodeQuestion";
 
 function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boolean) => boolean): string | undefined {
   const height = getAnswer("height = ", value);
