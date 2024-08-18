@@ -3,7 +3,6 @@ import * as idb from "idb-keyval";
 const store = idb.createStore("rustquest-usercode", "rustquest-usercode-store");
 
 export async function get(key: string): Promise<string | undefined> {
-  console.log(await stringifyStore()); // REMOVE
   return idb.get<string>(key, store);
 }
 

@@ -28,7 +28,7 @@ import { githubLight } from "src/codemirror-themes/github-light";
 import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
 import type { CodeQuestion } from "src/validation/CodeQuestion";
-import type { EvalResponse } from "./evaluate";
+import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
 
 export class CodeBlock extends HTMLElement {
@@ -262,10 +262,7 @@ export class CodeBlock extends HTMLElement {
   public async evaluateSnippet(snippet: string): Promise<EvalResponse> {
     const setup = this.setup.replaceAll("__VALUE__", snippet);
     const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
-
-    return await import("./evaluate").then(({ evaluate }) =>
-      evaluate(code, this.errorMsg),
-    );
+    return evaluate(code, this.errorMsg);
   }
 
   setResponse(response: string): boolean {
@@ -279,7 +276,7 @@ export class CodeBlock extends HTMLElement {
 
     return true;
   }
-
+  
   persistCode(value?: string) {
     value = value || this.getValue();
     value && persistence.set(this.id, value);

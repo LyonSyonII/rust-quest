@@ -1,13 +1,18 @@
+import { Interpreter } from "src/interpreter";
+
 export type EvalResponse = string | { error: string };
 
-function err(error: string): EvalResponse {
-  return { error };
-}
+const interpreter = new Interpreter();
+interpreter.onAssetDownloaded((a) => console.log(`Downloaded "${a}"`));
+interpreter.onLoaded(() => console.log("Interpreter loaded!"));
 
 export async function evaluate(
   code: string,
   error: string,
 ): Promise<EvalResponse> {
+  if (interpreter.isLoaded()) {
+    return interpreter.runAsync(code);
+  }
   return Promise.race([
     // server(code, error),
     godbolt(code, error).catch(() => playground(code, error)),
@@ -113,4 +118,8 @@ async function playground(code: string, error: string): Promise<EvalResponse> {
       response.error === null ? response.result : err(error || response.error),
     )
     .catch((error) => err(error || error.message));
+}
+
+function err(error: string): EvalResponse {
+  return { error };
 }
