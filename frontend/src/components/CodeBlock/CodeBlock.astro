@@ -1,23 +1,23 @@
 ---
-import { translation } from "@i18n/_CodeBlock"
-import type { Langs } from "@i18n/_langs"
+import { translation } from "@i18n/_CodeBlock";
+import type { Langs } from "@i18n/_langs";
 
 /** CodeBlock */
 export type Props = {
   /** Checkpoint that will be activated when "SUCCESS" is returned. */
-  id?: string
-  code?: string
-  setup?: string
-  placeholder?: string
-  errorMsg?: string
-  showLineNumbers?: boolean
-  editable?: boolean
-  showOutput?: boolean
-}
+  id?: string;
+  code?: string;
+  setup?: string;
+  placeholder?: string;
+  errorMsg?: string;
+  showLineNumbers?: boolean;
+  editable?: boolean;
+  showOutput?: boolean;
+};
 
-const l = translation(Astro.url.pathname.split("/")[1] as Langs)
+const l = translation(Astro.url.pathname.split("/")[1] as Langs);
 
-Astro.props.code = Astro.props.code?.trim().replaceAll("$\\n", "") || ""
+Astro.props.code = Astro.props.code?.trim().replaceAll("$\\n", "") || "";
 
 const {
   id = "",
@@ -27,7 +27,7 @@ const {
   showLineNumbers = true,
   editable = true,
   showOutput,
-} = Astro.props
+} = Astro.props;
 
 const props = {
   id,
@@ -37,7 +37,7 @@ const props = {
   showLineNumbers: showLineNumbers.toString(),
   editable: editable.toString(),
   showOutput,
-}
+};
 ---
 
 <x-code-block class="not-content" {...props}>
@@ -55,9 +55,7 @@ const props = {
       <svg xmlns=svgtp://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z" /></svg>
     </button>
   </div>
-  <output>
-    <p></p>
-  </output>
+  <output />
   {
     import.meta.env.DEV && (
       <button class="DEV-RESET">

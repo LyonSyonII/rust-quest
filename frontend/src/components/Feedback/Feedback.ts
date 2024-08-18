@@ -1,13 +1,13 @@
 export class FeedbackElement extends HTMLElement {
   constructor() {
-    super()
+    super();
 
-    const dialog = this.querySelector("dialog")!
-    const form = dialog.querySelector("form")!
-    const cancel = form.querySelector("#cancel")!
-    cancel.addEventListener("click", () => dialog.close())
-    const submit = form.querySelector("#submit")!
-    submit.innerHTML = "Submit"
+    const dialog = this.querySelector("dialog")!;
+    const form = dialog.querySelector("form")!;
+    const cancel = form.querySelector("#cancel")!;
+    cancel.addEventListener("click", () => dialog.close());
+    const submit = form.querySelector("#submit")!;
+    submit.innerHTML = "Submit";
 
     form.onsubmit = async () => {
       // e.preventDefault();
@@ -19,7 +19,7 @@ export class FeedbackElement extends HTMLElement {
         review: (
           form.querySelector("#review") as HTMLTextAreaElement
         ).value.trim(),
-      }
+      };
 
       await fetch("http://rust-quest.garriga.dev", {
         method: "POST",
@@ -27,9 +27,9 @@ export class FeedbackElement extends HTMLElement {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-      })
+      });
 
-      dialog.close()
-    }
+      dialog.close();
+    };
   }
 }

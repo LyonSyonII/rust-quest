@@ -1,20 +1,20 @@
 ---
-import type { Langs } from "@i18n/_langs"
-import CodeBlock from "./CodeBlock/CodeBlock.astro"
-import QuestionCard from "./QuestionCard.astro"
+import type { Langs } from "@i18n/_langs";
+import CodeBlock from "./CodeBlock/CodeBlock.astro";
+import QuestionCard from "./QuestionCard.astro";
 
 export type Props = {
-  question?: string
-  id?: string
-  code: string
-  errorMsg?: string
-  placeholder?: string
-  showLineNumbers?: boolean
-  editable?: boolean
-  lang?: Langs
-}
+  question?: string;
+  id?: string;
+  code: string;
+  errorMsg?: string;
+  placeholder?: string;
+  showLineNumbers?: boolean;
+  editable?: boolean;
+  lang?: Langs;
+};
 
-const { question, code, ...other } = Astro.props
+const { question, code, ...other } = Astro.props;
 ---
 
 <QuestionCard question={question}>

@@ -1,11 +1,11 @@
-import starlight from "@astrojs/starlight"
-import compress from "astro-compress"
-import compressor from "astro-compressor"
-import purgecss from "astro-purgecss"
-import robotsTxt from "astro-robots-txt"
-import { defineConfig } from "astro/config"
-import { MagicRegExpTransformPlugin } from "magic-regexp/transform"
-import { visualizer } from "rollup-plugin-visualizer"
+import starlight from "@astrojs/starlight";
+import compress from "astro-compress";
+import compressor from "astro-compressor";
+import purgecss from "astro-purgecss";
+import robotsTxt from "astro-robots-txt";
+import { defineConfig } from "astro/config";
+import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://astro.build/config
 export default defineConfig({
@@ -77,4 +77,4 @@ export default defineConfig({
     clientPrerender: true,
     contentCollectionCache: false,
   },
-})
+});

@@ -1,9 +1,9 @@
-import type { Langs } from "./_langs"
+import type { Langs } from "./_langs";
 type Translations = {
-  placeholder: string
-  compiling: string
-  error: string
-}
+  placeholder: string;
+  compiling: string;
+  error: string;
+};
 
 const translations: Record<Langs, Translations> = {
   en: {
@@ -24,8 +24,8 @@ const translations: Record<Langs, Translations> = {
     error:
       'Vaya, ¡algo ha ido mal y el código no compila!\nSi has estropeado el código por error, haz clic en el botón "Reset" para devolverlo a su estado original.\n\nRecuerda sustituir ? con tu respuesta.',
   },
-}
+};
 
 export function translation(lang: Langs): Translations {
-  return translations[lang]
+  return translations[lang];
 }

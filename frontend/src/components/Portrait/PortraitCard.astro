@@ -1,14 +1,14 @@
 ---
-import { Image } from "astro:assets"
-import { type Portrait, portrait } from "./portraits"
+import { Image } from "astro:assets";
+import { type Portrait, portrait } from "./portraits";
 
 interface Props {
-  src: Portrait
+  src: Portrait;
 }
-const { src } = Astro.props
+const { src } = Astro.props;
 
-const { img, bg, bgDark } = portrait(src)
-const portraitSize = 80
+const { img, bg, bgDark } = portrait(src);
+const portraitSize = 80;
 ---
 
 <article>

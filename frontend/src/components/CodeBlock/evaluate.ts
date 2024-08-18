@@ -1,7 +1,7 @@
-export type EvalResponse = string | { error: string }
+export type EvalResponse = string | { error: string };
 
 function err(error: string): EvalResponse {
-  return { error }
+  return { error };
 }
 
 export async function evaluate(
@@ -17,7 +17,7 @@ export async function evaluate(
         5000,
       ),
     ),
-  ]).catch(() => err("There was an error during execution, please try again."))
+  ]).catch(() => err("There was an error during execution, please try again."));
 }
 
 async function godbolt(code: string, error: string): Promise<EvalResponse> {
@@ -55,7 +55,7 @@ async function godbolt(code: string, error: string): Promise<EvalResponse> {
     lang: "rust",
     files: [],
     allowStoreCodeDebug: true,
-  }
+  };
 
   const response = await fetch(
     "https://godbolt.org/api/compiler/nightly/compile",
@@ -67,25 +67,25 @@ async function godbolt(code: string, error: string): Promise<EvalResponse> {
       mode: "cors",
       body: JSON.stringify(params),
     },
-  ).then((r) => r.text())
-  console.log({ params, response })
+  ).then((r) => r.text());
+  console.log({ params, response });
 
-  const execution = response.indexOf("# Exec")
-  const stdout_idx = response.indexOf("# Standard out:", execution)
+  const execution = response.indexOf("# Exec");
+  const stdout_idx = response.indexOf("# Standard out:", execution);
 
   if (stdout_idx !== -1) {
-    return response.substring(stdout_idx + " Standard out:\n".length + 1)
+    return response.substring(stdout_idx + " Standard out:\n".length + 1);
   }
 
-  const compilation = response.indexOf("# Compiler")
-  const stderr_idx = response.indexOf("\nStandard error:", compilation)
+  const compilation = response.indexOf("# Compiler");
+  const stderr_idx = response.indexOf("\nStandard error:", compilation);
   if (stderr_idx !== -1) {
     return err(
       error || response.substring(stderr_idx + "Standard error:\n".length + 1),
-    )
+    );
   }
 
-  return ""
+  return "";
 }
 
 async function playground(code: string, error: string): Promise<EvalResponse> {
@@ -94,7 +94,7 @@ async function playground(code: string, error: string): Promise<EvalResponse> {
     optimize: "0",
     code,
     edition: "2021",
-  }
+  };
 
   return fetch("https://play.rust-lang.org/evaluate.json", {
     headers: {
@@ -106,15 +106,11 @@ async function playground(code: string, error: string): Promise<EvalResponse> {
   })
     .then((response) => response.json())
     .then((response) => {
-      console.log({ params, response })
-      return response
+      console.log({ params, response });
+      return response;
     })
-    .then((response) => {
-      if (response.error === null) {
-        return response.result
-      } else {
-        return err(error || response.error)
-      }
-    })
-    .catch((error) => err(error || error.message))
+    .then((response) =>
+      response.error === null ? response.result : err(error || response.error),
+    )
+    .catch((error) => err(error || error.message));
 }

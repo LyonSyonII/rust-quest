@@ -1,15 +1,15 @@
 ---
-import Checkpoint from "./Checkpoint/Checkpoint.astro"
-import Donate from "./Donate.astro"
-import Feedback from "./Feedback/Feedback.astro"
+import Checkpoint from "./Checkpoint/Checkpoint.astro";
+import Donate from "./Donate.astro";
+import Feedback from "./Feedback/Feedback.astro";
 
 type Props = {
-  id: string
-  total: number
-  confetti: boolean
-}
+  id: string;
+  total: number;
+  confetti: boolean;
+};
 
-const { id, total, confetti = true } = Astro.props
+const { id, total, confetti = true } = Astro.props;
 ---
 <Checkpoint id=`${id}-completed`>
   <Donate />

@@ -1,19 +1,19 @@
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete"
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import {
   defaultKeymap,
   history,
   historyKeymap,
   indentWithTab,
-} from "@codemirror/commands"
-import { rust } from "@codemirror/lang-rust"
+} from "@codemirror/commands";
+import { rust } from "@codemirror/lang-rust";
 import {
   bracketMatching,
   /*     foldGutter, */
   foldKeymap,
   indentOnInput,
-} from "@codemirror/language"
-import { highlightSelectionMatches } from "@codemirror/search"
-import { Compartment, EditorState } from "@codemirror/state"
+} from "@codemirror/language";
+import { highlightSelectionMatches } from "@codemirror/search";
+import { Compartment, EditorState } from "@codemirror/state";
 import {
   EditorView,
   highlightActiveLine,
@@ -22,59 +22,60 @@ import {
   lineNumbers,
   placeholder,
   rectangularSelection,
-} from "@codemirror/view"
-import { githubDark } from "src/codemirror-themes/github-dark"
-import { githubLight } from "src/codemirror-themes/github-light"
-import { onThemeChange } from "src/utils/onThemeChange"
-import type { CodeQuestion } from "src/validation/CodeQuestion"
-import type { EvalResponse } from "./evaluate"
-import * as persistence from "./persistence"
+} from "@codemirror/view";
+import { githubDark } from "src/codemirror-themes/github-dark";
+import { githubLight } from "src/codemirror-themes/github-light";
+import { onThemeChange } from "src/utils/onThemeChange";
+import { $ } from "src/utils/querySelector";
+import type { CodeQuestion } from "src/validation/CodeQuestion";
+import type { EvalResponse } from "./evaluate";
+import * as persistence from "./persistence";
 
 export class CodeBlock extends HTMLElement {
-  output: HTMLOutputElement
-  runButton: HTMLButtonElement
-  resetButton: HTMLButtonElement
+  output: HTMLOutputElement;
+  runButton: HTMLButtonElement;
+  resetButton: HTMLButtonElement;
 
-  code = ""
-  setup = "__VALUE__"
+  code = "";
+  setup = "__VALUE__";
   validator: (
     value: string,
     test: (regex: RegExp) => boolean,
-  ) => string | undefined = () => undefined
-  onsuccess: (stdout: string, value: string) => void = () => {}
-  errorMsg: string
+  ) => string | undefined = () => undefined;
+  onsuccess: (stdout: string, value: string) => void = () => {};
+  errorMsg: string;
 
-  editor: EditorView
-  readonly: Compartment
-  theme: Compartment
-  themeObserver: MutationObserver
+  editor: EditorView;
+  readonly: Compartment;
+  theme: Compartment;
+  themeObserver: MutationObserver;
 
   constructor() {
-    super()
+    super();
 
-    this.output = this.querySelector("output")!
-    this.runButton = this.querySelector(".run")!
-    this.resetButton = this.querySelector(".reset")!
-    this.runButton.addEventListener("click", () => this.handleRun())
+    this.output = $("output", this);
+    this.runButton = $(".run", this);
+    this.resetButton = $(".reset", this);
+    this.runButton.addEventListener("click", () => this.handleRun());
     this.resetButton.addEventListener("click", () => {
-      this.setValue(this.code)
-      this.dispatchEvent(new ResetEvent(this))
-    })
-    this.setup = this.getAttribute("setup") || this.setup
-    this.errorMsg = this.getAttribute("errorMsg")!
+      this.setValue(this.code);
+      this.dispatchEvent(new ResetEvent(this));
+    });
+    this.setup = this.getAttribute("setup") || this.setup;
+    this.errorMsg = this.getAttribute("errorMsg") || "ERROR NOT DEFINED";
 
     import(`../../validation/${this.id}.ts`).then(async (q) => {
-      this.setProps(q.default as CodeQuestion)
-      this.setValue((await persistence.get(this.id)) || this.code)
-    })
+      this.setProps(q.default as CodeQuestion);
+      this.setValue((await persistence.get(this.id)) || this.code);
+    });
 
-    this.readonly = new Compartment()
-    this.theme = new Compartment()
+    this.readonly = new Compartment();
+    this.theme = new Compartment();
     this.themeObserver = onThemeChange((theme) => {
-      this.setTheme(theme)
-    })
+      this.setTheme(theme);
+    });
     const lineNums =
-      this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : []
+      this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
 
     const basicSetup = [
       lineNums,
@@ -94,14 +95,14 @@ export class CodeBlock extends HTMLElement {
         ...foldKeymap,
         indentWithTab,
       ]),
-    ]
+    ];
 
     const runKeymap = keymap.of([
       {
         key: "Mod-Enter",
         run: () => {
-          this.handleRun()
-          return true
+          this.handleRun();
+          return true;
         },
         stopPropagation: true,
         preventDefault: true,
@@ -109,15 +110,15 @@ export class CodeBlock extends HTMLElement {
       {
         key: "Shift-Enter",
         run: () => {
-          this.handleRun()
-          return true
+          this.handleRun();
+          return true;
         },
         stopPropagation: true,
         preventDefault: true,
       },
-    ])
-    const editable = this.getAttribute("editable") === "true"
-    const theme = document.documentElement.dataset.theme || "light"
+    ]);
+    const editable = this.getAttribute("editable") === "true";
+    const theme = document.documentElement.dataset.theme || "light";
 
     this.editor = new EditorView({
       state: EditorState.create({
@@ -126,7 +127,9 @@ export class CodeBlock extends HTMLElement {
           basicSetup,
           rust(),
           runKeymap,
-          placeholder(this.getAttribute("placeholder")!),
+          placeholder(
+            this.getAttribute("placeholder") || "PLACEHOLDER NOT DEFINED",
+          ),
           this.theme.of(theme === "light" ? githubLight : githubDark),
           EditorView.editable.of(editable),
           this.readonly.of(EditorState.readOnly.of(!editable)),
@@ -135,20 +138,20 @@ export class CodeBlock extends HTMLElement {
           ),
         ],
       }),
-    })
+    });
     // Can't disable outline in any other way
-    this.editor.dom.style.outline = "none"
-    this.querySelector("pre")?.replaceWith(this.editor.dom)
+    this.editor.dom.style.outline = "none";
+    this.querySelector("pre")?.replaceWith(this.editor.dom);
     // To avoid line gutter collapsing
-    setTimeout(() => this.editor.requestMeasure(), 300)
+    setTimeout(() => this.editor.requestMeasure(), 300);
 
     if (import.meta.env.DEV) {
-      const reset = this.querySelector<HTMLButtonElement>(".DEV-RESET")!
+      const reset = $(".DEV-RESET", this);
       reset.addEventListener("click", async () => {
-        const remove = (await import("../Checkpoint/checkpoint")).remove
-        await remove(this.id)
-        location.reload()
-      })
+        const remove = (await import("../Checkpoint/checkpoint")).remove;
+        await remove(this.id);
+        location.reload();
+      });
     }
   }
 
@@ -158,27 +161,27 @@ export class CodeBlock extends HTMLElement {
         (acc, { v, d, c = (v) => v }) =>
           acc.replaceAll(`$${v}`, c(localStorage.getItem(v) || d)),
         r,
-      )
-    this.code = replaceVars(this.getAttribute("code") || this.code)
-    this.setup = replaceVars(setup || this.setup)
-    this.validator = validator || this.validator
-    this.onsuccess = onsuccess || this.onsuccess
+      );
+    this.code = replaceVars(this.getAttribute("code") || this.code);
+    this.setup = replaceVars(setup || this.setup);
+    this.validator = validator || this.validator;
+    this.onsuccess = onsuccess || this.onsuccess;
   }
 
   public getValue(): string {
-    return this.editor.state.doc.toString()
+    return this.editor.state.doc.toString();
   }
 
   public setValue(value: string) {
     this.editor.dispatch({
       changes: { from: 0, to: this.editor.state.doc.length, insert: value },
-    })
+    });
   }
 
   public setReadonly(readonly: boolean) {
     this.editor.dispatch({
       effects: this.readonly.reconfigure(EditorState.readOnly.of(readonly)),
-    })
+    });
   }
 
   public setTheme(theme: "light" | "dark") {
@@ -186,60 +189,60 @@ export class CodeBlock extends HTMLElement {
       effects: this.theme.reconfigure(
         theme === "light" ? githubLight : githubDark,
       ),
-    })
+    });
   }
 
   public setRunning(running: boolean) {
     if (running) {
-      this.setReadonly(true)
-      this.runButton.disabled = this.resetButton.disabled = true
+      this.setReadonly(true);
+      this.runButton.disabled = this.resetButton.disabled = true;
     } else {
-      this.setReadonly(false)
-      this.runButton.disabled = this.resetButton.disabled = false
+      this.setReadonly(false);
+      this.runButton.disabled = this.resetButton.disabled = false;
     }
   }
 
   public async setSuccess() {
-    ;(await import("../Checkpoint/checkpoint")).add(this.id)
+    (await import("../Checkpoint/checkpoint")).add(this.id);
   }
 
   public async setOutput(output: string) {
-    const out = output.replace("SUCCESS", "")
+    const out = output.replace("SUCCESS", "");
     if (this.id && output.length !== out.length) {
-      await this.setSuccess()
-      this.onsuccess(out.trim(), this.getValue())
+      await this.setSuccess();
+      this.onsuccess(out.trim(), this.getValue());
     }
 
-    this.output.querySelector("p")!.innerText = out.trim()
-    this.output.style.display = "block"
+    this.output.innerText = out.trim();
+    this.output.style.display = "block";
   }
 
   public hideOutput() {
-    this.output.querySelector("p")!.innerText = ""
-    this.output.style.display = "none"
+    this.output.innerText = "";
+    this.output.style.display = "none";
   }
 
   async handleRun() {
     // If event is cancelled, don't run
     if (this.dispatchEvent(new RunEvent(this)) === false) {
-      return
+      return;
     }
 
-    this.setOutput("Compiling...")
-    this.setRunning(true)
+    this.setOutput("Compiling...");
+    this.setRunning(true);
 
-    const value = this.getValue()
-    const v = await this.validateSnippet(value)
+    const value = this.getValue();
+    const v = await this.validateSnippet(value);
     if (v !== undefined) {
       // Wait a bit to emphasize that the code is running
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      this.setResponse(v)
-      this.setRunning(false)
-      return
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      this.setResponse(v);
+      this.setRunning(false);
+      return;
     }
 
-    const response = await this.evaluateSnippet(value)
-    this.setResponse(typeof response === "string" ? response : response.error)
+    const response = await this.evaluateSnippet(value);
+    this.setResponse(typeof response === "string" ? response : response.error);
   }
 
   /** Returns `undefined` if the validation was successful or a `string` with the error. */
@@ -250,79 +253,79 @@ export class CodeBlock extends HTMLElement {
         ignoreWhitespace
           ? regex.test(snippet.replaceAll(/\s/g, ""))
           : regex.test(snippet),
-    )?.trim()
+    )?.trim();
 
-    return v
+    return v;
   }
 
   /** Evaluates `snippet` and returns the response. */
   public async evaluateSnippet(snippet: string): Promise<EvalResponse> {
-    const setup = this.setup.replaceAll("__VALUE__", snippet)
-    const code = `#![allow(warnings)] fn main() { \n${setup}\n }`
+    const setup = this.setup.replaceAll("__VALUE__", snippet);
+    const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
 
     return await import("./evaluate").then(({ evaluate }) =>
       evaluate(code, this.errorMsg),
-    )
+    );
   }
 
   setResponse(response: string): boolean {
     // Only show output if there is something and event isn't cancelled
     if (this.dispatchEvent(new ResponseEvent(this, response)) && response) {
-      this.setOutput(response)
-      this.setRunning(false)
+      this.setOutput(response);
+      this.setRunning(false);
     } else {
-      this.hideOutput()
+      this.hideOutput();
     }
 
-    return true
+    return true;
   }
 
   persistCode(value?: string) {
-    value = value || this.getValue()
-    value && persistence.set(this.id, value)
+    value = value || this.getValue();
+    value && persistence.set(this.id, value);
   }
 }
 
 export interface CustomEventMap {
-  run: RunEvent
-  response: ResponseEvent
-  reset: ResetEvent
+  run: RunEvent;
+  response: ResponseEvent;
+  reset: ResetEvent;
 }
 
 export class RunEvent extends Event {
-  readonly codeBlock: CodeBlock
+  readonly codeBlock: CodeBlock;
 
   constructor(cb: CodeBlock) {
     super("run", {
       bubbles: true,
       cancelable: true,
-    })
-    this.codeBlock = cb
+    });
+    this.codeBlock = cb;
   }
 }
 
 export class ResponseEvent extends Event {
-  readonly codeBlock: CodeBlock
-  readonly response: string
+  readonly codeBlock: CodeBlock;
+  readonly response: string;
 
   constructor(cb: CodeBlock, response: string) {
     super("response", {
       bubbles: true,
       cancelable: true,
-    })
-    this.codeBlock = cb
-    this.response = response
+    });
+    this.codeBlock = cb;
+    this.response = response;
   }
 }
 
 export class ResetEvent extends Event {
-  readonly codeBlock: CodeBlock
+  readonly codeBlock: CodeBlock;
 
   constructor(cb: CodeBlock) {
     super("reset", {
       bubbles: true,
       cancelable: true,
-    })
-    this.codeBlock = cb
+    });
+    this.codeBlock = cb;
   }
 }

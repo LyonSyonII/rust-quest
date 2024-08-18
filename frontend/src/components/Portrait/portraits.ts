@@ -1,7 +1,7 @@
-import GuildGirl from "@assets/portraits/AdventurersGuildGirl.svg"
-import FishShop from "@assets/portraits/FishShop.svg"
-import Grocery from "@assets/portraits/GroceryStore.svg"
-import { bgToDark } from "src/utils/colors"
+import GuildGirl from "@assets/portraits/AdventurersGuildGirl.svg";
+import FishShop from "@assets/portraits/FishShop.svg";
+import Grocery from "@assets/portraits/GroceryStore.svg";
+import { bgToDark } from "src/utils/colors";
 
 export const colors = {
   purple: "#ede9fe",
@@ -12,7 +12,7 @@ export const colors = {
   blue: "#e0f2fe",
   pink: "#fbcfe8",
   gray: "#e5e7eb",
-}
+};
 
 const portraits = {
   "guild-girl": {
@@ -27,16 +27,16 @@ const portraits = {
     img: FishShop,
     bg: colors.blue,
   },
-}
+};
 
-export type Portrait = keyof typeof portraits
+export type Portrait = keyof typeof portraits;
 
 export function portrait(portrait: Portrait): {
-  img: ImageMetadata
-  bg: string
-  bgDark: string
+  img: ImageMetadata;
+  bg: string;
+  bgDark: string;
 } {
-  const { img, bg } = portraits[portrait]
-  const bgDark = bgToDark(bg)
-  return { img, bg, bgDark }
+  const { img, bg } = portraits[portrait];
+  const bgDark = bgToDark(bg);
+  return { img, bg, bgDark };
 }

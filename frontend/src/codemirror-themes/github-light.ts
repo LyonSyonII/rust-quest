@@ -1,7 +1,7 @@
-import { HighlightStyle, syntaxHighlighting } from "@codemirror/language"
-import type { Extension } from "@codemirror/state"
-import { EditorView } from "@codemirror/view"
-import { tags as t } from "@lezer/highlight"
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import type { Extension } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
+import { tags as t } from "@lezer/highlight";
 
 export const config = {
   name: "githubLight",
@@ -28,7 +28,7 @@ export const config = {
   heading: "#005cc5",
   invalid: "#cb2431",
   regexp: "#032f62",
-}
+};
 
 export const githubLightTheme = EditorView.theme(
   {
@@ -99,7 +99,7 @@ export const githubLightTheme = EditorView.theme(
     },
   },
   { dark: config.dark },
-)
+);
 
 export const githubLightHighlightStyle: any = HighlightStyle.define([
   { tag: t.keyword, color: config.keyword },
@@ -134,9 +134,9 @@ export const githubLightHighlightStyle: any = HighlightStyle.define([
   { tag: [t.atom, t.bool, t.special(t.variableName)], color: config.variable },
   { tag: t.invalid, color: config.invalid },
   { tag: t.strikethrough, textDecoration: "line-through" },
-])
+]);
 
 export const githubLight: Extension = [
   githubLightTheme,
   syntaxHighlighting(githubLightHighlightStyle),
-]
+];
