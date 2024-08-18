@@ -76,7 +76,7 @@ export async function parseStore(
     k,
     new Set(JSON.parse(v)),
   ]);
-  await idb.setMany(entries);
+  await idb.setMany(entries, store);
   return entries;
 }
 
