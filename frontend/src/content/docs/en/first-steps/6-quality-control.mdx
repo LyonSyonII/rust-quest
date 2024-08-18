@@ -85,7 +85,7 @@ First of all, you look at the instructions left from the previous programmer:
 
 <QuestionCard background="var(--color-paper)" border={false} rounded>
 #### Temperature Regulating Magic Boxes™
-This program helps regulate the boxes' temperature to the desired range by adjusting the target depending on the current temperature.  
+This program helps regulate the boxes' temperature to the desired range by adjusting the target depending on the boxes' current temperature.  
 The boxes will try to match this temperature until it changes.
 
 If the temperature is too low, the target will be raised, and if too high lowered.  
@@ -106,9 +106,9 @@ This ensures the actual temperature is always between the minimum and the maximu
   id="6-1"
   code={`
 if temp > MAX_TEMP {
-  target = MAX_TEMP + 1;
+  target = MAX_TEMP;
 } else if temp < MIN_TEMP {
-  target = MIN_TEMP - 1;
+  target = MIN_TEMP;
 }
 `}
 />

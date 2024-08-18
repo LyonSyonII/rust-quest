@@ -35,3 +35,10 @@ export type CodeQuestion = {
   /** Callback that will be called when "SUCCESS" is returned. */
   onsuccess?: (stdout: string, value: string) => void;
 };
+
+/** Generates a random number in Rust */
+export const rustRandomNum = `{
+  use std::collections::hash_map::RandomState;
+  use std::hash::{BuildHasher, Hasher};
+  RandomState::new().build_hasher().finish()
+}`.trim();
