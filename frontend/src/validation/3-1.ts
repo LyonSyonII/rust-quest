@@ -7,5 +7,5 @@ We expect great things of you.
 The Adventurer's Guild`;
 
 export default {
-  validator: () => quest + "SUCCESS\n",
+  validator: () => `${quest}SUCCESS\n`,
 } as CodeQuestion;

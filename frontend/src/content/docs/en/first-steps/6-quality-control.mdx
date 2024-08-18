@@ -88,29 +88,27 @@ First of all, you look at the instructions left from the previous programmer:
 This program helps regulate the boxes' temperature to the desired range by adjusting the target depending on the current temperature.  
 The boxes will try to match this temperature until it changes.
 
-If the temperature is too low, the target will be raised to the maximum, and viceversa, ensuring the actual temperature is always between the minimum and the maximum.
+If the temperature is too low, the target will be raised, and if too high lowered.  
+This ensures the actual temperature is always between the minimum and the maximum.
 
 ##### 1. Available values
 
-| Value           | Description                                                            |
-| --------------- | ---------------------------------------------------------------------- |
+| Value      | Description                                                            |
+| ---------- | ---------------------------------------------------------------------- |
 | `MIN_TEMP` | Constant that describes the **minimum temperature** the fish can be at |
 | `MAX_TEMP` | Constant that describes the **maximum temperature** the fish can be at |
-| `target`        | Variable that represents the **target temperature**            |
-| `temp`        | Variable that represents the **current temperature**            |
+| `target`   | Variable that represents the boxes' **target temperature**             |
+| `temp`     | Variable that represents the boxes' **current temperature**            |
 </QuestionCard>
 
 <CodeQuestion
   question="See what's wrong and fix the program!"
   id="6-1"
   code={`
-// if above MAX, set target to MIN
 if temp > MAX_TEMP {
-  target = MAX_TEMP;
-} 
-// if below MIN, set target to MAX
-else if temp < MIN_TEMP {
-  target = MIN_TEMP;
+  target = MAX_TEMP + 1;
+} else if temp < MIN_TEMP {
+  target = MIN_TEMP - 1;
 }
 `}
 />
