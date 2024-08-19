@@ -8,7 +8,7 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "prettier": "prettier --write .",
+    "biome": "biome check . --fix",
     "analyze": "source-map-explorer 'dist/_astro/*.js'"
   },
   "dependencies": {

@@ -101,7 +101,7 @@ export const githubDarkTheme = EditorView.theme(
   { dark: config.dark },
 );
 
-export const githubDarkHighlightStyle: any = HighlightStyle.define([
+export const githubDarkHighlightStyle = HighlightStyle.define([
   { tag: t.keyword, color: config.keyword },
   {
     tag: [t.name, t.deleted, t.character, t.macroName],

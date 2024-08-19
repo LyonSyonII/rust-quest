@@ -1,24 +1,22 @@
+import { $ } from "src/utils/querySelector";
+
 export class FeedbackElement extends HTMLElement {
   constructor() {
     super();
 
-    const dialog = this.querySelector("dialog")!;
-    const form = dialog.querySelector("form")!;
-    const cancel = form.querySelector("#cancel")!;
+    const dialog = $("dialog", this);
+    const form = $("form", dialog);
+    const cancel = $("#cancel", form);
     cancel.addEventListener("click", () => dialog.close());
-    const submit = form.querySelector("#submit")!;
+    const submit = $("#submit", form);
     submit.innerHTML = "Submit";
 
     form.onsubmit = async () => {
       // e.preventDefault();
       const data = {
         id: form.id,
-        score: Number.parseInt(
-          (form.querySelector("#score") as HTMLInputElement).value,
-        ),
-        review: (
-          form.querySelector("#review") as HTMLTextAreaElement
-        ).value.trim(),
+        score: Number.parseInt($("input#score", form).value),
+        review: $("textarea#review", form).value.trim(),
       };
 
       await fetch("http://rust-quest.garriga.dev", {
