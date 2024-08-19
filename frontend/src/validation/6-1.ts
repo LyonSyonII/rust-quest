@@ -71,7 +71,8 @@ export default {
     
     const { first = "", second = "" } = matches.groups;
     const valid = ["MAX_TEMP", "MIN_TEMP"];
-    return !valid.includes(first.trim()) && `There's an error in the assignment on the 2nd line.\n${instructions}`
+    return value.split("\n").length > 5 && "You don't need more than 5 lines!"
+      || !valid.includes(first.trim()) && `There's an error in the assignment on the 2nd line.\n${instructions}`
       || !valid.includes(second.trim()) && `There's an error in the assignment on the 4th line.\n${instructions}`
       || undefined;
   }
