@@ -1,5 +1,5 @@
-import * as wasi from "./wasi_defs.js";
 import { Fd, Inode } from "./fd.js";
+import * as wasi from "./wasi_defs.js";
 
 // Shim for https://developer.mozilla.org/en-US/docs/Web/API/FileSystemSyncAccessHandle
 // This is not part of the public interface.
@@ -64,7 +64,7 @@ export class SyncOPFSFile extends Inode {
 
 export class OpenSyncOPFSFile extends Fd {
   file: SyncOPFSFile;
-  position: bigint = 0n;
+  position = 0n;
 
   constructor(file: SyncOPFSFile) {
     super();

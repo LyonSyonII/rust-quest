@@ -1,6 +1,6 @@
-import * as wasi from "./wasi_defs.js";
-import { Fd } from "./fd.js";
 import { debug } from "./debug.js";
+import type { Fd } from "./fd.js";
+import * as wasi from "./wasi_defs.js";
 
 export interface Options {
   debug?: boolean;
@@ -64,9 +64,13 @@ export default class WASI {
     this.fds = fds;
     this.inst = {
       exports: {
-        memory: new WebAssembly.Memory({ initial: 0, maximum: 0, shared: false })
-      }
-    }
+        memory: new WebAssembly.Memory({
+          initial: 0,
+          maximum: 0,
+          shared: false,
+        }),
+      },
+    };
     const self = this;
     this.wasiImport = {
       args_sizes_get(argc: number, argv_buf_size: number): number {

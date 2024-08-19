@@ -276,7 +276,7 @@ export class CodeBlock extends HTMLElement {
 
     return true;
   }
-  
+
   persistCode(value?: string) {
     value = value || this.getValue();
     value && persistence.set(this.id, value);

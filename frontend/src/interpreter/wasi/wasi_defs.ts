@@ -184,7 +184,7 @@ export const FILETYPE_SYMBOLIC_LINK = 7;
 
 export class Dirent {
   d_next: bigint;
-  d_ino: bigint = 0n;
+  d_ino = 0n;
   d_namlen: number;
   d_type: number;
   dir_name: Uint8Array;
@@ -237,8 +237,8 @@ export const FDFLAGS_SYNC = 1 << 4;
 export class Fdstat {
   fs_filetype: number;
   fs_flags: number;
-  fs_rights_base: bigint = 0n;
-  fs_rights_inherited: bigint = 0n;
+  fs_rights_base = 0n;
+  fs_rights_inherited = 0n;
 
   constructor(filetype: number, flags: number) {
     this.fs_filetype = filetype;
@@ -264,14 +264,14 @@ export const OFLAGS_EXCL = 1 << 2;
 export const OFLAGS_TRUNC = 1 << 3;
 
 export class Filestat {
-  dev: bigint = 0n;
-  ino: bigint = 0n;
+  dev = 0n;
+  ino = 0n;
   filetype: number;
-  nlink: bigint = 0n;
+  nlink = 0n;
   size: bigint;
-  atim: bigint = 0n;
-  mtim: bigint = 0n;
-  ctim: bigint = 0n;
+  atim = 0n;
+  mtim = 0n;
+  ctim = 0n;
 
   constructor(filetype: number, size: bigint) {
     this.filetype = filetype;

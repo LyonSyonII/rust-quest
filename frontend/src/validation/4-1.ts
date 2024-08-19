@@ -1,4 +1,4 @@
-import { codeMess, type CodeQuestion, getAnswer, replace } from "./CodeQuestion";
+import { type CodeQuestion, codeMess, getAnswer, replace } from "./CodeQuestion";
 
 function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boolean) => boolean): string | undefined {
   const surname = getAnswer("surname = ", value);

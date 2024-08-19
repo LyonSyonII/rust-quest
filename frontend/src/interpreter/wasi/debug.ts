@@ -3,10 +3,7 @@ class Debug {
   log: (...args: unknown[]) => void;
 
   constructor(private isEnabled: boolean) {
-    this.log = createLogger(
-      isEnabled,
-      this.prefix,
-    );
+    this.log = createLogger(isEnabled, this.prefix);
   }
 
   // Recreate the logger function with the new enabled state.

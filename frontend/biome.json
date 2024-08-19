@@ -42,6 +42,5 @@
       "quoteStyle": "double",
       "attributePosition": "auto"
     }
-  },
-  "overrides": [{ "include": ["*.astro"] }]
+  }
 }

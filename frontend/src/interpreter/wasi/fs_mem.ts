@@ -1,10 +1,10 @@
 import { debug } from "./debug.js";
-import * as wasi from "./wasi_defs.js";
 import { Fd, Inode } from "./fd.js";
+import * as wasi from "./wasi_defs.js";
 
 export class OpenFile extends Fd {
   file: File;
-  file_pos: bigint = 0n;
+  file_pos = 0n;
 
   constructor(file: File) {
     super();
@@ -507,7 +507,7 @@ export class File extends Inode {
 
 class Path {
   parts: string[] = [];
-  is_dir: boolean = false;
+  is_dir = false;
 
   static from(path: string): { ret: number; path: Path | null } {
     const self = new Path();
