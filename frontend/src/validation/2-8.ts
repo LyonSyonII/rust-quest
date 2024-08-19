@@ -1,4 +1,4 @@
-import { type CodeQuestion, codeMess } from "./CodeQuestion";
+import { type CodeQuestion, codeMessQuestion } from "./CodeQuestion";
 
 export default {
   /** Invisible part of the code.
@@ -11,7 +11,7 @@ export default {
    *  If it returns `Some`, it will be displayed in the output and the code will not be executed. */
   validator: (value, test) =>
     value.includes("?") && "Hint: Just replace ? with your name!" 
-    || !test(/^let name = "[A-Za-zÀ-ÖØ-öø-ÿ]+";$/) && codeMess
+    || !test(/^let name = "[A-Za-zÀ-ÖØ-öø-ÿ]+";$/) && codeMessQuestion
     || undefined,
   /** Callback that will be called when "SUCCESS" is returned. */
   onsuccess: (stdout: string) => {

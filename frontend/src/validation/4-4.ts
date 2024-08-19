@@ -1,5 +1,5 @@
 import { createRegExp } from "magic-regexp";
-import { type CodeQuestion, codeMess } from "./CodeQuestion";
+import { type CodeQuestion, codeMessQuestion } from "./CodeQuestion";
 import { _, any, bool, end, semicolon, start } from "./regex";
 
 function validator(value: string): string | undefined {
@@ -12,7 +12,7 @@ function validator(value: string): string | undefined {
     end
   );
   const matches = value.match(regex);
-  if (!matches) return codeMess;
+  if (!matches) return codeMessQuestion;
   let { human, registered, dead, glasses } = matches.groups;
   
   const fillHuman = "[is_human] Fill in if you're human!";

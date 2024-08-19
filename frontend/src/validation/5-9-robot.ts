@@ -1,6 +1,6 @@
 import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGameTypes";
 import { createRegExp, exactly, maybe, word } from "magic-regexp";
-import { codeMess, replace } from "./CodeQuestion";
+import { codeMessQuestion, replace } from "./CodeQuestion";
 import { _, end, line, semicolon, start } from "./regex";
 
 export default {
@@ -39,10 +39,10 @@ function validator(value: string): string | undefined {
     end
   );
   const matches = value.match(regex);
-  if (!matches) return codeMess;
+  if (!matches) return codeMessQuestion;
 
   const { first, second, extra1, extra2, extra3 } = matches.groups;
-  if (!first || !second) return codeMess;
+  if (!first || !second) return codeMessQuestion;
 
   const wrong = "Look closely at the instructions, you don't need a semicolon!";
   

@@ -1,8 +1,19 @@
-import { type CodeQuestion, codeMess, replace, rustRandomNum } from "./CodeQuestion";
+import { createRegExp } from "magic-regexp";
+import { type CodeQuestion, codeMessLines, codeMessQuestion, replace, rustRandomNum } from "./CodeQuestion";
+import { _, any, end, line, start } from "./regex";
 
 const MAX_TEMP = 0;
 const MIN_TEMP = -2;
-const temps = [MAX_TEMP + 5, MIN_TEMP - 5];
+
+export const code = `
+if temp > MAX_TEMP {
+  target = MAX_TEMP;
+} else if temp < MIN_TEMP {
+  target = MIN_TEMP;
+}
+`;
+
+const instructions = "Remember the instructions, set 'target' to the minimum or maximum temperature!";
 
 export default {
   setup: `
@@ -21,7 +32,7 @@ export default {
       println!("The current and target temperatures are too low, the fish will freeze!");
       return false;
     } else if target != MAX_TEMP && target != MIN_TEMP {
-      println!("Remember the instructions, set 'target' to the minimum or maximum temperature!");
+      println!("${instructions}");
       return false;
     }
     return true;
@@ -47,6 +58,21 @@ export default {
   println!("The temperature target now adjusts correctly!\nSUCCESS");
   `,
   validator: (value, test) => {
-    return undefined;
+    const regex = createRegExp(
+      start, _,
+      "if", _, "temp", _, ">", _, "MAX_TEMP", _, "{", _,
+      "target", _, "=", _, any.times.any().as("first"), _, ";", _,
+      "}", _, "else", _, "if", _, "temp", _, "<", _, "MIN_TEMP", _, "{", _,
+      "target", _, "=", _, any.times.any().as("second"), _, ";", _,
+      "}", _, end
+    );
+    const matches = value.match(regex);
+    if (!matches) return codeMessLines([2, 4]);
+    
+    const { first = "", second = "" } = matches.groups;
+    const valid = ["MAX_TEMP", "MIN_TEMP"];
+    return !(first in valid) && `There's an error in the assignment on the 2nd line.\n${instructions}`
+      || !(second in valid) && `There's an error in the assignment on the 4th line.\n${instructions}`
+      || undefined;
   }
 } as CodeQuestion;

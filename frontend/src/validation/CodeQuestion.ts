@@ -1,10 +1,32 @@
 export const replace = "Replace ? with your answer.";
-export const codeMess =
-`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
+export const codeMess = 
+`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.`;
+export const codeMessQuestion =
+`${codeMess}
 Remember to only modify the ? symbol.`
 export const codeMessBlanks =
-`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
+`${codeMess}
 Remember to only modify the blank spaces.`
+export const codeMessLines = (lines: number[]) => {
+  let msg = codeMess;
+  if (lines.length === 0) return msg;
+  
+  const mkLine = (line: number) => {
+    const ends = ["th", "st", "nd", "rd"];
+    return `${line}${ends[line] || ends[0]}`;
+  };
+
+  if (lines.length === 1) {
+    return `${msg}\nYou only need to modify the ${mkLine(lines[0])} line.`;
+  }
+  msg += "\nYou only need to modify the ";
+  // 1st, 3rd, and 4th lines.
+  for (const line of lines.slice(0, -2)) {
+    msg += `${mkLine(line)}, `;
+  }
+  const [l, l2] = lines.slice(-2);
+  return `${msg}${mkLine(l)} and ${mkLine(l2)} lines.`;
+};
 
 /** Gets a substring between `s` and `;` */
 export function getAnswer(s: string, value: string): string {

@@ -1,5 +1,5 @@
 import { createRegExp, word } from "magic-regexp";
-import { type CodeQuestion, codeMess, replace } from "./CodeQuestion";
+import { type CodeQuestion, codeMessQuestion, replace } from "./CodeQuestion";
 import { _, char, end, semicolon, start, stringZ, wrongCharZ } from "./regex";
 
 function validator(value: string): string | undefined {
@@ -13,7 +13,7 @@ function validator(value: string): string | undefined {
     end
   );
   const matches = value.match(regex);
-  if (!matches) return codeMess;
+  if (!matches) return codeMessQuestion;
   const { initial1, initial2, cardinal } = matches.groups;
   
   const fillFirst = "[initial1] Fill in your first initial!";

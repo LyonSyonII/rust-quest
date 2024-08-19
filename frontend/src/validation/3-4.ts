@@ -1,5 +1,5 @@
 import { createRegExp, exactly, maybe, word } from "magic-regexp";
-import { type CodeQuestion, codeMess, replace } from "./CodeQuestion";
+import { type CodeQuestion, codeMessQuestion, replace } from "./CodeQuestion";
 import { _, end, line, semicolon, start } from "./regex";
 
 function validator(value: string): string | undefined {
@@ -13,7 +13,7 @@ function validator(value: string): string | undefined {
   );
   const matches = value.match(regex);
   
-  if (!matches) return codeMess;
+  if (!matches) return codeMessQuestion;
   const { _let, _mut, line2 } = matches.groups;
   
   return value.includes("?") && replace

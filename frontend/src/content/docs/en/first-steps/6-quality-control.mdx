@@ -16,6 +16,8 @@ import Hint from "@components/Hint.astro";
 import Comic from "@components/Comic.astro";
 import { Content as WIP } from "@components/WIP.mdx";
 
+import { code as _6_1 } from "src/validation/6-1";
+
 export function Guild(props) {
   return <Portrait 
     src="guild-girl" 
@@ -104,11 +106,5 @@ This ensures the actual temperature is always between the minimum and the maximu
 <CodeQuestion
   question="See what's wrong and fix the program!"
   id="6-1"
-  code={`
-if temp > MAX_TEMP {
-  target = MAX_TEMP;
-} else if temp < MIN_TEMP {
-  target = MIN_TEMP;
-}
-`}
+  code={_6_1}
 />

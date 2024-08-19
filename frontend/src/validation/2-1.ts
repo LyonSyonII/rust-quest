@@ -1,4 +1,4 @@
-import { type CodeQuestion, codeMess, replace } from "./CodeQuestion";
+import { type CodeQuestion, codeMessQuestion, replace } from "./CodeQuestion";
 
 type SimpleQuestion = {
   answer: string;
@@ -19,7 +19,7 @@ export function SimpleQuestion({answer, getAnswer, correct, wrong, integrity}: S
     `;
   return { setup, validator: (value: string, test) => 
     value.includes("?") && replace
-    || !test(integrity, true) && codeMess
+    || !test(integrity, true) && codeMessQuestion
     || undefined };
 }
 
@@ -35,7 +35,7 @@ export function FreeQuestion({correct, validators = []}: FreeQuestion): CodeQues
     setup, 
     validator: (value: string, test) => 
       value.includes("?") && replace
-      || !validators.some((v) => test(v, true)) && codeMess
+      || !validators.some((v) => test(v, true)) && codeMessQuestion
       || undefined 
   };
 }

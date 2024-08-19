@@ -1,4 +1,4 @@
-import { type CodeQuestion, getAnswer, replace } from "./CodeQuestion";
+import { codeMess, type CodeQuestion, getAnswer, replace } from "./CodeQuestion";
 
 function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boolean) => boolean): string | undefined {
   const surname = getAnswer("surname = ", value);
@@ -8,11 +8,11 @@ function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boole
       || test(/let surname = (\?|"");/) && "[surname] Fill in your surname!"
       || !surname.includes('"') && "[surname] Something is wrong with your surname.\nLook closely to how 'name' is written!"
       || (age.includes("?") || age.trim().length === 0) && "[age] Fill in your age!"
-      || isNaN(Number(age)) && "[age] Age must be a number!"
+      || Number.isNaN(Number(age)) && "[age] Age must be a number!"
       || Number(age) < 0 && "[age] Age can't be negative, can it? 😉"
       || Number(age) < 15 && "[age] You must be at least 15 years old to go adventuring!"
       || value.includes("?") && replace
-      || !test(/^let name = ".*";\nlet surname = ".*";\nlet mut age = \d+;$/) && "Seems like you've messed up the code, click the 'Reset' button to return it back to its original state."
+      || !test(/^let name = ".*";\nlet surname = ".*";\nlet mut age = \d+;$/) && codeMess
       || undefined;
 }
 
