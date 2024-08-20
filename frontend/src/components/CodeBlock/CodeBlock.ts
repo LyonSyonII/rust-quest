@@ -44,7 +44,7 @@ export class CodeBlock extends HTMLElement {
   ) => string | undefined = () => undefined;
   onsuccess: (stdout: string, value: string) => void = () => {};
   errorMsg: string;
-
+  
   editor: EditorView;
   readonly: Compartment;
   theme: Compartment;
@@ -63,9 +63,9 @@ export class CodeBlock extends HTMLElement {
     });
     this.setup = this.getAttribute("setup") || this.setup;
     this.errorMsg = this.getAttribute("errorMsg") || "ERROR NOT DEFINED";
-
-    import(`../../validation/${this.id}.ts`).then(async (q) => {
-      this.setProps(q.default as CodeQuestion);
+    
+    import(`../../validation/${this.id}.ts`).then(async ({ question }: { question: CodeQuestion }) => {
+      this.setProps(question);
       this.setValue((await persistence.get(this.id)) || this.code);
     });
 

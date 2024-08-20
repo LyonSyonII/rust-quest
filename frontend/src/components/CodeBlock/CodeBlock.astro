@@ -1,13 +1,13 @@
 ---
 import { translation } from "@i18n/_CodeBlock";
 import type { Langs } from "@i18n/_langs";
+import type { CodeQuestion } from "src/validation/CodeQuestion";
 
 /** CodeBlock */
 export type Props = {
   /** Checkpoint that will be activated when "SUCCESS" is returned. */
   id?: string;
   code?: string;
-  setup?: string;
   placeholder?: string;
   errorMsg?: string;
   showLineNumbers?: boolean;
@@ -17,17 +17,24 @@ export type Props = {
 
 const l = translation(Astro.url.pathname.split("/")[1] as Langs);
 
-Astro.props.code = Astro.props.code?.trim().replaceAll("$\\n", "") || "";
-
 const {
   id = "",
   placeholder = l.placeholder,
-  code = "",
   errorMsg = l.error,
   showLineNumbers = true,
   editable = true,
   showOutput,
 } = Astro.props;
+
+const code = (
+  Astro.props.code !== undefined
+    ? Astro.props.code
+    : (await import(`../../validation/${id}.ts`).then(
+        (q) => q.question.code,
+      )) || ""
+)
+  .trim()
+  .replaceAll("$\\n", "");
 
 const props = {
   id,

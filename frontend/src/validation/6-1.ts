@@ -1,21 +1,19 @@
 import { createRegExp } from "magic-regexp";
-import { type CodeQuestion, codeMessLines, codeMessQuestion, replace, rustRandomNum } from "./CodeQuestion";
-import { _, any, end, line, start } from "./regex";
+import { type CodeQuestion, codeMessLines, rustRandomNum } from "./CodeQuestion";
+import { _, any, end, start } from "./regex";
 
 const MAX_TEMP = 0;
 const MIN_TEMP = -2;
 
-export const code = `
+const instructions = "Remember the instructions, set 'target' to the minimum or maximum temperature!";
+
+export const question: CodeQuestion = {
+  code: `
 if temp > MAX_TEMP {
   target = MAX_TEMP;
 } else if temp < MIN_TEMP {
   target = MIN_TEMP;
-}
-`;
-
-const instructions = "Remember the instructions, set 'target' to the minimum or maximum temperature!";
-
-export default {
+}`,
   setup: `
   const MAX_TEMP: i32 = ${MAX_TEMP};
   const MIN_TEMP: i32 = ${MIN_TEMP};
@@ -76,4 +74,4 @@ export default {
       || !valid.includes(second.trim()) && `There's an error in the assignment on the 4th line.\n${instructions}`
       || undefined;
   }
-} as CodeQuestion;
+} as const;

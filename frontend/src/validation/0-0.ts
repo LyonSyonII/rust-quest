@@ -1,6 +1,6 @@
 import type { CodeQuestion } from "./CodeQuestion";
 
-export default {
+export const question: CodeQuestion = {
   /** Invisible part of the code.
    *
    *  All instances of `__VALUE__` will be replaced with the current editor value. */
@@ -22,4 +22,4 @@ export default {
     (test(/something/) && "ERROR") || undefined,
   /** Callback that will be called when "SUCCESS" is returned. */
   onsuccess: (_stdout: string, _value: string) => {},
-} as CodeQuestion;
+} as const;

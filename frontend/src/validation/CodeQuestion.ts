@@ -35,6 +35,8 @@ export function getAnswer(s: string, value: string): string {
 }
 
 export type CodeQuestion = {
+  /** Code of the question, if blank a placeholder will be shown instead. */
+  code: string | "";
   /** Invisible part of the code.
    *
    *  All instances of `__VALUE__` will be replaced with the current editor value. */

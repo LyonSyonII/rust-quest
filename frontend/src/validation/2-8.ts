@@ -1,6 +1,7 @@
 import { type CodeQuestion, codeMessQuestion } from "./CodeQuestion";
 
-export default {
+export const question: CodeQuestion = {
+  code: 'let name = "$NAME";',
   /** Invisible part of the code.
    *
    *  All instances of `__VALUE__` will be replaced with the current editor value. */
@@ -18,4 +19,4 @@ export default {
     const name = stdout.substring(0, stdout.indexOf(","));
     localStorage.setItem("NAME", name);
   },
-} as CodeQuestion;
+};

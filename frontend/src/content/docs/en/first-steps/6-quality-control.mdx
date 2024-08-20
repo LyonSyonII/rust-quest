@@ -16,8 +16,6 @@ import Hint from "@components/Hint.astro";
 import Comic from "@components/Comic.astro";
 import { Content as WIP } from "@components/WIP.mdx";
 
-import { code as _6_1 } from "src/validation/6-1";
-
 export function Guild(props) {
   return <Portrait 
     src="guild-girl" 
@@ -106,5 +104,23 @@ This ensures the actual temperature is always between the minimum and the maximu
 <CodeQuestion
   question="See what's wrong and fix the program!"
   id="6-1"
-  code={_6_1}
 />
+
+<Checkpoint id="6-1">
+  <Fish>
+  Thank you, the fish won't spoil anymore!
+
+  I know this was supposed to be all but... Could you help me set up some more directives?  
+  I'd really apreciate having it done by today instead of waiting for another programmer to show up.
+  </Fish>
+
+  The task was easy, and you don't have a lot to do for today.  
+  Why not, let's help her!
+
+  <Fish>
+  Great 😁!
+
+  See, the fisherman brings me different kinds of fish everyday, and writing new labels is a bit wasteful.  
+  Could you program the boxes to recognize each species and set the price and name accordingly? 
+  </Fish>
+</Checkpoint>
