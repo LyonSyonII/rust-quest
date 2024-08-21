@@ -19,14 +19,6 @@ export function Guild(props) {
     />
 }
 
-export const replace = "Replace ? with your answer.";
-export const getAnswer = `
-const getAnswer = (s) => {
-    const f = value.indexOf(s) + s.length;
-    return value.substring(f, value.indexOf(";", f)).trim();
-}
-`;
-
 :::danger[Page in testing phase]
 This page should be finished, but there might be some bugs or things that are hard to understand.  
 Proceed with caution!
@@ -48,13 +40,9 @@ Please fill in the remaining information in the blanks provided:
 </Guild>
 
 <CodeQuestion 
-id="4-1"
-question="Fill in your name and age:"
-code={`
-let name = "$NAME";
-let surname = ?;
-let mut age = ?;
-`}/>
+  id="4-1"
+  question="Fill in your name and age:"
+/>
 :::note[Why is age mutable?]
 Well, you are getting older, right?  
 
@@ -68,13 +56,8 @@ Thought that was it? We're just getting started!
 </Guild>
 
 <CodeQuestion 
-id="4-2"
-question="Enter your height (meters), weight (kilograms) and current money:"
-code={`
-let mut height = ?;
-let mut weight = ?;
-let mut money = 12.50;
-`}
+  id="4-2"
+  question="Enter your height (meters), weight (kilograms) and current money:"
 />
 </Checkpoint>
 
@@ -95,13 +78,8 @@ We've had some problems with traps before, you know, the "step on a pressure pla
 *Ahem*, shall we continue?
 </Guild>
 <CodeQuestion 
-id="4-3"
-question="Enter your initials and your favourite cardinal point (N / S / E / W):"
-code={`
-let initial1 = '$NAME';
-let initial2 = ?;
-let mut cardinal = ?;
-`}
+  id="4-3"
+  question="Enter your initials and your favourite cardinal point (N / S / E / W):"
 />
 </Checkpoint>
 
@@ -121,14 +99,8 @@ Well... I can't really argue with that.
 Unfortunately, there's only one form left, let's get to it!
 </Guild>
 <CodeQuestion 
-id="4-4"
-question="Answer with true or false to the following questions:"
-code={`
-let is_human = true;
-let mut registered = false;
-let mut dead = ?;
-let mut wears_glasses = ?;
-`}
+  id="4-4"
+  question="Answer with true or false to the following questions:"
 />
 </Checkpoint>
 

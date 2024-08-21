@@ -41,16 +41,8 @@ Kill some monsters? Rescue a lost princess?
 
 Let's find out!
 
-export const quest = 
-`Welcome Adventurer.
-Your first quest is... To assist the local grocery store!
-
-We expect great things of you.
-The Adventurer's Guild`;
-
 <CodeQuestion
   id="3-1"
-  code="read_quest(0)"
   editable={false}
   showLineNumbers={false}
 />
@@ -94,15 +86,9 @@ The Adventurer's Guild`;
   </Hint>
   
   <CodeQuestion 
-id = "3-2"
-question = "What's the total number of vegetables in the grocery?"
-code = {`
-let potatoes = 5;
-let carrots = 4;
-let onions = 2;
-
-let total = ? + ? + ?;
-`} />
+    id = "3-2"
+    question = "What's the total number of vegetables in the grocery?"
+  />
 </Checkpoint>
 
 <Checkpoint id="3-2">
@@ -129,9 +115,8 @@ In the panel appears: "Please, fill in the label with the name of the contents o
 You're on your own for this one. Let's get to it!
 
 <CodeQuestion 
-id="3-3"
-question="Create a magical box to store 18 apples!"
-code="let ? = ?;"
+  id="3-3"
+  question="Create a magical box to store 18 apples!"
 />
 
 </Checkpoint>
@@ -153,12 +138,8 @@ Knowing that you are making the owner wait, you hurry and try to fix it.
 The grocer before said `let` to activate the box, maybe you need to do the same with this `mut` thing?
 { /* TODO: Test if a single ? is enough. If not, put two */ }
 <CodeQuestion
-id="3-4"
-question="Fix the box and take two apples from it!"
-code={`
-? apples = 18;
-apples = apples - 2;
-`}
+  id="3-4"
+  question="Fix the box and take two apples from it!"
 />
 
 :::note[What does the second line mean?]
@@ -180,10 +161,6 @@ Seems like some of the shipment was still outside, can you help me add them to t
 <CodeQuestion
 id="3-5"
 question="Add 64 apples to their crate!"
-code={`
-let mut apples = 16;
-?;
-`}
 />
 </Checkpoint>
 

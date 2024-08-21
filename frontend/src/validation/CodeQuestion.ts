@@ -1,16 +1,13 @@
 export const replace = "Replace ? with your answer.";
-export const codeMess = 
-`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.`;
-export const codeMessQuestion =
-`${codeMess}
-Remember to only modify the ? symbol.`
-export const codeMessBlanks =
-`${codeMess}
-Remember to only modify the blank spaces.`
+export const codeMess = `Seems like you've messed up the code, click the "Reset" button to return it back to its original state.`;
+export const codeMessQuestion = `${codeMess}
+Remember to only modify the ? symbol.`;
+export const codeMessBlanks = `${codeMess}
+Remember to only modify the blank spaces.`;
 export const codeMessLines = (lines: number[]) => {
   let msg = codeMess;
   if (lines.length === 0) return msg;
-  
+
   const mkLine = (line: number) => {
     const ends = ["th", "st", "nd", "rd"];
     return `${line}${ends[line] || ends[0]}`;
@@ -34,30 +31,32 @@ export function getAnswer(s: string, value: string): string {
   return value.substring(f, value.indexOf(";", f)).trim();
 }
 
+export type Validator = (
+  value: string,
+  test: (regex: RegExp, ignoreWhitespace?: boolean) => boolean,
+) => string | undefined;
+
 export type CodeQuestion = {
   /** Code of the question, if blank a placeholder will be shown instead. */
-  code: string | "";
+  readonly code: string | "";
   /** Invisible part of the code.
    *
    *  All instances of `__VALUE__` will be replaced with the current editor value. */
-  setup?: string;
-  vars?: {
+  readonly setup?: string;
+  readonly vars?: {
     /** Name of the variable. */
-    v: string;
+    readonly v: string;
     /** Default value if variable does not exist. */
-    d: string;
+    readonly d: string;
     /** Transform the variable's value before replacing it. */
-    c?: (value: string) => string;
+    readonly c?: (value: string) => string;
   }[];
   /** Function to validate the code entered by the user.
    *
    *  If it returns `Some`, it will be displayed in the output and the code will not be executed. */
-  validator?: (
-    value: string,
-    test: (regex: RegExp, ignoreWhitespace?: boolean) => boolean,
-  ) => string | undefined;
+  readonly validator?: Validator;
   /** Callback that will be called when "SUCCESS" is returned. */
-  onsuccess?: (stdout: string, value: string) => void;
+  readonly onsuccess?: (stdout: string, value: string) => void;
 };
 
 /** Generates a random number in Rust */

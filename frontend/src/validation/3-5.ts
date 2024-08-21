@@ -1,7 +1,7 @@
 import { type CodeQuestion, codeMessQuestion, replace } from "./CodeQuestion";
 
-
-export default {
+export const question: CodeQuestion = {
+  code: "let mut apples = 16;\n?;",
   setup: `
   __VALUE__
   if apples == 16 + 64 {
@@ -20,4 +20,4 @@ export default {
         || !test(/^let mut apples = 16;\n.*;$/) && codeMessQuestion
         || undefined
   }
-} as CodeQuestion;
+};

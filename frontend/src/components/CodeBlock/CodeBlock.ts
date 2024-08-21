@@ -133,9 +133,6 @@ export class CodeBlock extends HTMLElement {
           this.theme.of(theme === "light" ? githubLight : githubDark),
           EditorView.editable.of(editable),
           this.readonly.of(EditorState.readOnly.of(!editable)),
-          EditorView.updateListener.of(
-            (view) => view.docChanged && this.persistCode(),
-          ),
         ],
       }),
     });
@@ -204,6 +201,7 @@ export class CodeBlock extends HTMLElement {
 
   public async setSuccess() {
     (await import("../Checkpoint/checkpoint")).add(this.id);
+    this.persistCode();
   }
 
   public async setOutput(output: string) {
@@ -260,7 +258,8 @@ export class CodeBlock extends HTMLElement {
 
   /** Evaluates `snippet` and returns the response. */
   public async evaluateSnippet(snippet: string): Promise<EvalResponse> {
-    const setup = this.setup.replaceAll("__VALUE__", snippet);
+    // minimize code by removing all extra spaces and newlines
+    const setup = this.setup.replaceAll("__VALUE__", snippet).replaceAll(/\s+/g, " ");
     const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
     return evaluate(code, this.errorMsg);
   }

@@ -1,6 +1,16 @@
-import { type CodeQuestion, codeMess, getAnswer, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMess, getAnswer, replace } from "./CodeQuestion";
 
-function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boolean) => boolean): string | undefined {
+const code = `
+let name = "$NAME";
+let surname = ?;
+let mut age = ?;
+`;
+
+const setup =  `
+  __VALUE__ 
+  println!("Welcome, {name} {surname}!\\nYou're {age} years old.SUCCESS");`
+
+const validator: Validator = (value, test) => {
   const surname = getAnswer("surname = ", value);
   const age = getAnswer("age = ", value);
   return test(/let name = "";/) && "[name] Fill in your name!"
@@ -16,12 +26,13 @@ function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boole
       || undefined;
 }
 
-export default {
-  setup: `__VALUE__ println!("Welcome, {name} {surname}!\\nYou're {age} years old.SUCCESS");`,
+export const question: CodeQuestion = {
+  code,
+  setup,
   vars: [{ v: "NAME", d: "Hero" }],
   onsuccess: (_, value) => {
     const name = getAnswer("name = ", value).slice(1, -1);
     localStorage.setItem("NAME", name);
   },
   validator,
-} as CodeQuestion;
+};

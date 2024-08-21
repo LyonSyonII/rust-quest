@@ -1,6 +1,17 @@
-import { type CodeQuestion, codeMessQuestion, getAnswer, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion, getAnswer, replace } from "./CodeQuestion";
 
-function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boolean) => boolean): string | undefined {
+const code = `
+let mut height = ?;
+let mut weight = ?;
+let mut money = 12.50;
+`;
+
+const setup = `
+__VALUE__
+println!("Your height is {height} meters, your weight is {weight} kilograms and you have {money} coins.SUCCESS");
+`;
+
+const validator: Validator = (value, test) => {
   const height = getAnswer("height = ", value);
   const weight = getAnswer("weight = ", value);
   return height.includes("?") && "[height] Fill in your height!"
@@ -15,8 +26,9 @@ function validator(value: string, test: (regex: RegExp, ignoreWhitespace?: boole
       || undefined
 }
 
-export default {
-  setup: `__VALUE__ println!("Your height is {height} meters, your weight is {weight} kilograms and you have {money} coins.SUCCESS");`,
+export const question: CodeQuestion = {
+  code,
+  setup,
   vars: [{ v: "NAME", d: "Hero" }],
   validator,
-} as CodeQuestion;
+};

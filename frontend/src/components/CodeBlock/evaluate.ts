@@ -14,7 +14,6 @@ export async function evaluate(
     return interpreter.runAsync(code);
   }
   return Promise.race([
-    // server(code, error),
     godbolt(code, error).catch(() => playground(code, error)),
     new Promise<EvalResponse>((resolve, _) =>
       setTimeout(

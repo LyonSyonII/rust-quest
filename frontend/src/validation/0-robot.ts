@@ -23,7 +23,7 @@ export function parenthesisCheck(value: string): string | undefined {
   );
   
   const match = value.match(parens);
-  if (match && match[0]) {
+  if (match?.[0]) {
     return `You need to call the function '${match[0]}' with parenthesis.\ne.g. '${match[0]}()'`;
   }
 
@@ -38,6 +38,7 @@ export function parenthesisCheck(value: string): string | undefined {
 
 /** `up` / `down` / `left` / `right` */
 export const basicMovement: CodeQuestion = {
+  code: "",
   setup: `
   fn up() { println!("UP") }
   fn down() { println!("DOWN") }
@@ -49,8 +50,8 @@ export const basicMovement: CodeQuestion = {
   let l = left;
   let r = right;
   __VALUE__
-  `.replaceAll("\n", "")
-} as const;
+  `
+};
 
 export const lookLeftRight: (
   rows: number,
@@ -59,6 +60,7 @@ export const lookLeftRight: (
   enemies: number[]
   ) => CodeQuestion = (rows, cols, start, enemies) => {
   return {
+    code: "",
     setup: `
     const ROWS: usize = ${rows};
     const COLS: usize = ${cols};
@@ -129,7 +131,7 @@ export const lookLeftRight: (
     let r = right;
 
     __VALUE__
-    `.replaceAll(/\s\s|\n/g, "")
+    `
   }
 };
 

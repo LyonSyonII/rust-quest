@@ -1,8 +1,17 @@
 import { createRegExp, word } from "magic-regexp";
-import { type CodeQuestion, codeMessQuestion, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion, replace } from "./CodeQuestion";
 import { _, end, integer, semicolon, start } from "./regex";
 
-function validator(value: string): string | undefined {
+const code = "let ? = ?;"
+const setup = `
+if "__VALUE__".replace(" ", "") == "letapples=18;" {
+  println!("Well done, the crate is now operative!");
+  println!("SUCCESS");
+} else {
+ println!("Not yet, keep trying!")
+}`;
+
+const validator: Validator = (value) => {
   const regex = createRegExp(
     start, "let", _, word.or("?").as("name"), _, "=", _, integer.or("?").as("num"), semicolon, end
   );
@@ -17,11 +26,8 @@ function validator(value: string): string | undefined {
   || undefined
 }
 
-export default {
-  setup: `
-    if "__VALUE__".replace(" ", "") == "letapples=18;" {
-      println!("Well done, the crate is now operative!");
-      println!("SUCCESS");
-    } else { println!("Not yet, keep trying!") }`,
+export const question: CodeQuestion = {
+  code,
+  setup,
   validator
-} as CodeQuestion;
+};

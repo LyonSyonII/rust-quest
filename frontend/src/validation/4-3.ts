@@ -1,8 +1,26 @@
 import { createRegExp, word } from "magic-regexp";
-import { type CodeQuestion, codeMessQuestion, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion, replace } from "./CodeQuestion";
 import { _, char, end, semicolon, start, stringZ, wrongCharZ } from "./regex";
 
-function validator(value: string): string | undefined {
+const code = `
+let initial1 = '$NAME';
+let initial2 = ?;
+let mut cardinal = ?;
+`;
+
+const setup = `
+__VALUE__
+let cardinal = match cardinal {
+    'N' => "North",
+    'S' => "South",
+    'E' => "East",
+    'W' => "West",
+    _ => unreachable!()
+};
+println!("Your initials are {initial1}.{initial2}. and your favourite cardinal point is {cardinal}.SUCCESS");
+`;
+
+const validator: Validator = (value) => {
   const answer = wrongCharZ.or(stringZ).or(word).or("?").optionally();
   
   const regex = createRegExp(
@@ -38,22 +56,13 @@ function validator(value: string): string | undefined {
   || undefined
 }
 
-export default {
-  setup: `
-  __VALUE__
-  let cardinal = match cardinal {
-      'N' => "North",
-      'S' => "South",
-      'E' => "East",
-      'W' => "West",
-      _ => unreachable!()
-  };
-  println!("Your initials are {initial1}.{initial2}. and your favourite cardinal point is {cardinal}.\\nSUCCESS");
-  `,
+export const question: CodeQuestion = {
+  code,
+  setup,
   vars: [{
     v: "NAME",
     d: "Hero",
     c: (v) => v[0]?.toUpperCase()
   }],
   validator,
-} as CodeQuestion;
+};

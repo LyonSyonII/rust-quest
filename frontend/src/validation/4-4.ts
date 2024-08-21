@@ -1,8 +1,24 @@
 import { createRegExp } from "magic-regexp";
-import { type CodeQuestion, codeMessQuestion } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion } from "./CodeQuestion";
 import { _, any, bool, end, semicolon, start } from "./regex";
 
-function validator(value: string): string | undefined {
+const code = `
+let is_human = true;
+let mut registered = false;
+let mut dead = ?;
+let mut wears_glasses = ?;
+`;
+
+const setup = `
+__VALUE__;
+let glasses = match wears_glasses {
+    true => "And I also wear glasses, we match!",
+    false => "And good! As an adventurer, it's better if you don't need glasses."
+};
+println!("I'm glad you're not dead!\\n{glasses}\\nSUCCESS");
+`;
+
+const validator: Validator = (value) => {
   const regex = createRegExp(
     start,
     "let is_human =", _, bool.as("human"), semicolon,
@@ -31,25 +47,19 @@ function validator(value: string): string | undefined {
   const wrong = " The answer has to be 'true' or 'false', look closely at the previous values.";
   return dead.includes("?") && "[dead] Are you dead or alive?"
       || dead === "true" && "[dead] Are you sure you're dead? How are you answering this question?"
-      || dead !== "false" && "[dead]" + wrong
+      || dead !== "false" && `[dead]${wrong}`
       || glasses.includes("?") && "[wears_glasses] Do you wear glasses?"
-      || !(/true|false/).test(glasses) && "[wears_glasses]" + wrong
+      || !(/true|false/).test(glasses) && `[wears_glasses]${wrong}`
       || undefined
 }
 
-export default {
-  setup: `
-  __VALUE__;
-  let glasses = match wears_glasses {
-      true => "And I also wear glasses, we match!",
-      false => "And good! As an adventurer, it's better if you don't need glasses."
-  };
-  println!("I'm glad you're not dead!\\n{glasses}\\nSUCCESS");
-  `,
+export const question: CodeQuestion = {
+  code,
+  setup,
   vars: [{
     v: "NAME",
     d: "Hero",
     c: (v) => v[0]?.toUpperCase()
   }],
   validator,
-} as CodeQuestion;
+};

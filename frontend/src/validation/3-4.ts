@@ -1,8 +1,22 @@
 import { createRegExp, exactly, maybe, word } from "magic-regexp";
-import { type CodeQuestion, codeMessQuestion, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion, replace } from "./CodeQuestion";
 import { _, end, line, semicolon, start } from "./regex";
 
-function validator(value: string): string | undefined {
+const code = `
+? apples = 18;
+apples = apples - 2;
+`;
+
+const setup = `
+__VALUE__
+if apples == 16 {
+  println!("Once you say the magical words 'let mut' the barrier surrounding the box disappears, and you're able to take the apples.\\nGood job!");
+  println!("SUCCESS");
+} else {
+  println!("There should be 16 apples in the box, but you have {apples}, did you replace some values?");
+}`;
+
+const validator: Validator = (value) => {
   const keyword = maybe(word);
 
   const regex = createRegExp(
@@ -25,14 +39,8 @@ function validator(value: string): string | undefined {
   || undefined
 }
 
-export default {
-  setup: `
-    __VALUE__
-    if apples == 16 {
-      println!("Once you say the magical words 'let mut' the barrier surrounding the box disappears, and you're able to take the apples.\\nGood job!");
-      println!("SUCCESS");
-    } else {
-      println!("There should be 16 apples in the box, but you have {apples}, did you replace some values?");
-    }`,
+export const question: CodeQuestion = {
+  code,
+  setup,
   validator
-} as CodeQuestion;
+};
