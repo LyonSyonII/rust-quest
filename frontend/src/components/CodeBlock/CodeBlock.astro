@@ -1,6 +1,7 @@
 ---
 import { translation } from "@i18n/_CodeBlock";
 import type { Langs } from "@i18n/_langs";
+import { importQuestion } from "src/content/questions/CodeQuestion";
 
 /** CodeBlock */
 export type Props = {
@@ -25,19 +26,13 @@ const {
   showOutput,
 } = Astro.props;
 
-const importCode = async () => {
-  return (await import(`../../validation/${id}.ts`).then(
-    (q) => q.question.code,
-  )) || ""
-}
-
 const code = (
   Astro.props.code !== undefined
     ? Astro.props.code
-    : await importCode()
+    : (await importQuestion(id)).code
 )
   .trim()
-  .replaceAll("$\\n", "\\n");
+  .replaceAll("$\\n", "");
 
 const props = {
   id,

@@ -2,9 +2,9 @@ import type { CodeBlock, ResetEvent } from "@components/CodeBlock/CodeBlock";
 import type { EvalResponse } from "@components/CodeBlock/evaluate";
 import { confetti } from "src/utils/confetti";
 import { $ } from "src/utils/querySelector";
-import type { CodeQuestion } from "src/validation/CodeQuestion";
-import { parenthesisCheck } from "../../validation/0-robot";
-import { type Board, Functions, type RobotGameProps } from "./RobotGameTypes";
+import { importRobotQuestion, type CodeQuestion } from "src/content/questions/CodeQuestion";
+import { parenthesisCheck } from "../../content/questions/0-robot";
+import { type Board, Functions } from "./RobotGameTypes";
 
 export class RobotGame extends HTMLElement {
   readonly codeblock: CodeBlock;
@@ -23,9 +23,9 @@ export class RobotGame extends HTMLElement {
     this.startingHtmlBoards = [...this.querySelectorAll("table")].map(
       (t) => t.cloneNode(true) as HTMLTableElement,
     );
-
-    import(`../../validation/${this.id}.ts`).then(
-      ({ default: props }: { default: RobotGameProps }) => {
+    
+    importRobotQuestion(this.id).then(
+      (props) => {
         this.functions = props.functions || this.functions;
         this.winText = props.winText || this.winText;
         this.loseText = props.loseText || this.loseText;
@@ -132,7 +132,11 @@ export class RobotGame extends HTMLElement {
     enemies: number[],
     functions: Functions,
   ) {
-    const questions = await import("../../validation/0-robot");
+    const questions = await import("../../content/questions/0-robot");
+    
+    if (this.id === "5-5-robot") {
+      console.log(functions, enemies);
+    }
 
     let question: CodeQuestion;
     switch (functions) {

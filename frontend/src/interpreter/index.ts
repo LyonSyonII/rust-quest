@@ -4,7 +4,7 @@ type WorkerMessage = {
   data:
     | { downloaded: string }
     | { loaded: boolean }
-    | { result: EvalResponse }
+    | { result: EvalResponse, code: string }
     | { other?: string };
 };
 /**
@@ -93,7 +93,8 @@ export class Interpreter {
     this.worker.postMessage({ code });
     return await new Promise((resolve) => {
       const callback = ({ data }: WorkerMessage) => {
-        if ("result" in data) {
+        if ("result" in data && code === data.code) {
+          console.log("received message with data", {data});
           this.worker.removeEventListener("message", callback);
           resolve(data.result);
         }

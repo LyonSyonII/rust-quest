@@ -3,7 +3,7 @@ import { Image } from "astro:assets";
 import Robot from "@assets/robot.svg";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
 import QuestionCard from "@components/QuestionCard.astro";
-import type { RobotGameProps } from "./RobotGameTypes";
+import { importRobotQuestion } from "src/content/questions/CodeQuestion";
 
 type Props = {
   id: string;
@@ -12,14 +12,19 @@ type Props = {
   cellSize?: string;
 };
 
-const { id, question = "", code = "", cellSize = "3rem" } = Astro.props;
+const { id, question = "", code: propsCode, cellSize = "3rem" } = Astro.props;
 
 const {
+  code: questionCode,
   rows: rowsDef = 3,
   cols: colsDef = 3,
   boards,
   solveWithMinimumSteps,
-}: RobotGameProps = (await import(`../../validation/${id}.ts`)).default;
+} = await importRobotQuestion(id);
+
+const code = (propsCode !== undefined
+    ? propsCode
+    : questionCode || "");
 
 const slimes = (
   await Astro.glob<Record<string, ImageMetadata>>(

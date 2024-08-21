@@ -27,7 +27,7 @@ import { githubDark } from "src/codemirror-themes/github-dark";
 import { githubLight } from "src/codemirror-themes/github-light";
 import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
-import type { CodeQuestion } from "src/validation/CodeQuestion";
+import { importQuestion, type CodeQuestion } from "src/content/questions/CodeQuestion";
 import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
 
@@ -64,8 +64,8 @@ export class CodeBlock extends HTMLElement {
     this.setup = this.getAttribute("setup") || this.setup;
     this.errorMsg = this.getAttribute("errorMsg") || "ERROR NOT DEFINED";
     
-    import(`../../validation/${this.id}.ts`).then(async ({ question }: { question: CodeQuestion }) => {
-      this.setProps(question);
+    importQuestion(this.id).then(async (q) => {
+      this.setProps(q);
       this.setValue((await persistence.get(this.id)) || this.code);
     });
 
@@ -259,7 +259,7 @@ export class CodeBlock extends HTMLElement {
   /** Evaluates `snippet` and returns the response. */
   public async evaluateSnippet(snippet: string): Promise<EvalResponse> {
     // minimize code by removing all extra spaces and newlines
-    const setup = this.setup.replaceAll("__VALUE__", snippet).replaceAll(/\s+/g, " ");
+    const setup = this.setup.replaceAll("__VALUE__", snippet)//.replaceAll(/\s+/g, " ");
     const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
     return evaluate(code, this.errorMsg);
   }

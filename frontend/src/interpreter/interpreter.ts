@@ -112,7 +112,7 @@ class Interpreter {
     const inst = await WebAssembly.instantiate(this.miri, {
       env: {
         memory: new WebAssembly.Memory({
-          initial: 256,
+          initial: 0,
           maximum: 1024 * 4,
           shared: false,
         }),
