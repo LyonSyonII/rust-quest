@@ -8,7 +8,6 @@ import {
 import { rust } from "@codemirror/lang-rust";
 import {
   bracketMatching,
-  /*     foldGutter, */
   foldKeymap,
   indentOnInput,
 } from "@codemirror/language";
@@ -63,11 +62,6 @@ export class CodeBlock extends HTMLElement {
     });
     this.setup = this.getAttribute("setup") || this.setup;
     this.errorMsg = this.getAttribute("errorMsg") || "ERROR NOT DEFINED";
-    
-    importQuestion(this.id).then(async (q) => {
-      this.setProps(q);
-      this.setValue((await persistence.get(this.id)) || this.code);
-    });
 
     this.readonly = new Compartment();
     this.theme = new Compartment();
@@ -138,9 +132,15 @@ export class CodeBlock extends HTMLElement {
     });
     // Can't disable outline in any other way
     this.editor.dom.style.outline = "none";
-    this.querySelector("pre")?.replaceWith(this.editor.dom);
-    // To avoid line gutter collapsing
-    setTimeout(() => this.editor.requestMeasure(), 300);
+    
+    importQuestion(this.id).then(async (q) => {
+      this.setProps(q);
+      this.setValue((await persistence.get(this.id)) || this.code);
+      // replace placeholder with the real editor
+      this.querySelector("pre")?.replaceWith(this.editor.dom);
+      // avoid line gutter collapsing
+      this.editor.requestMeasure();
+    });
 
     if (import.meta.env.DEV) {
       const reset = $(".DEV-RESET", this);
@@ -259,7 +259,7 @@ export class CodeBlock extends HTMLElement {
           ? regex.test(snippet.replaceAll(/\s/g, ""))
           : regex.test(snippet),
     )?.trim();
-
+    
     return v;
   }
 
