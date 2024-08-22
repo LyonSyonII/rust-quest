@@ -133,10 +133,6 @@ export class RobotGame extends HTMLElement {
   ) {
     const questions = await import("../../content/questions/0-robot");
 
-    if (this.id === "5-5-robot") {
-      console.log(functions, enemies);
-    }
-
     let question: CodeQuestion;
     switch (functions) {
       case Functions.BASIC:
