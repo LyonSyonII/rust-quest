@@ -42,7 +42,8 @@ export function getAnswer(s: string, value: string): string {
 
 /** Dynamically imports a question from  */
 export async function importQuestion(id: string): Promise<CodeQuestion> {
-  const module: { question: CodeQuestion } | { default: CodeQuestion } = await import(`../questions/${id}.ts`);
+  const module: { question: CodeQuestion } | { default: CodeQuestion } =
+    await import(`../questions/${id}.ts`);
   if ("question" in module) {
     return module.question;
   }
@@ -54,7 +55,7 @@ export async function importRobotQuestion(id: string): Promise<RobotGameProps> {
   if ("boards" in question) {
     return question as RobotGameProps;
   }
-  
+
   throw `Failed importing '${id}' as a RobotGame question`;
 }
 

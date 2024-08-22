@@ -80,9 +80,11 @@ class Interpreter {
       new Stdio(out),
     ];
     const tmp = new PreopenDirectory("/tmp", []);
-    const root = new PreopenDirectory("/", [["main.rs", new File(encode(code))]]);
+    const root = new PreopenDirectory("/", [
+      ["main.rs", new File(encode(code))],
+    ]);
     const fds: Fd[] = [stdin, stdout, stderr, tmp, this.sysroot, root];
-    
+
     const wasi = new WASI(this.args, this.env, fds, { debug: false });
 
     // Instantiate Miri
@@ -106,7 +108,7 @@ class Interpreter {
       },
       wasi_snapshot_preview1: strace(wasi.wasiImport, ["fd_prestat_get"]),
     });
-    
+
     // Execute Miri
     try {
       console.time("miri execution");
@@ -117,7 +119,7 @@ class Interpreter {
     } catch (e: any) {
       return { error: stdout.text() || e.message };
     }
-    
+
     return stdout.text();
   }
 }

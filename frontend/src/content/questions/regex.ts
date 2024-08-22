@@ -1,4 +1,14 @@
-import { char as _any, anyOf, digit, exactly, maybe, oneOrMore, whitespace, word, wordChar } from "magic-regexp";
+import {
+  char as _any,
+  anyOf,
+  digit,
+  exactly,
+  maybe,
+  oneOrMore,
+  whitespace,
+  word,
+  wordChar,
+} from "magic-regexp";
 
 /** Matches start of string. */
 export const start = exactly().at.lineStart();
@@ -10,7 +20,7 @@ export const end = exactly().at.lineEnd();
 export const any = _any;
 
 /** Matches a line. */
-export const line = any.times.any()
+export const line = any.times.any();
 
 /** Matches `true` or `false`. */
 export const bool = exactly("true").or("false");
@@ -19,34 +29,38 @@ export const bool = exactly("true").or("false");
 export const integer = exactly(maybe("-"), oneOrMore(digit));
 
 /** Matches a number (with optional decimal point). */
-export const number = exactly(maybe("-"), oneOrMore(digit), maybe(".", oneOrMore(digit)));
+export const number = exactly(
+  maybe("-"),
+  oneOrMore(digit),
+  maybe(".", oneOrMore(digit)),
+);
 
-/** Accepts a string delimited with `'` and exactly one character. 
+/** Accepts a string delimited with `'` and exactly one character.
  * @example 'X'
  * */
 export const char = exactly("'", any, "'");
 
 /** Accepts a string delimited with `'` and zero or more characters.
- * 
+ *
  * @example 'Hello'
  * @example ''
  */
 export const wrongCharZ = exactly("'", maybe(word), "'");
 
 /** Accepts a string delimited with `"` and zero or more characters.
- * 
+ *
  * @example "Hello"
  */
 export const stringZ = exactly('"', maybe(word), '"');
 
 /** Accepts a string delimited with `'` and one or more characters.
- * 
+ *
  * @example 'Hello'
  */
 export const wrongChar = exactly("'", word, "'");
 
 /** Accepts a string delimited with `"` and one or more characters.
- * 
+ *
  * @example "Hello"
  */
 export const string = exactly('"', word, '"');
@@ -62,4 +76,4 @@ export const semicolon = exactly(_, ";", _);
 
 export const ident = oneOrMore(anyOf(wordChar, "_"));
 
-export const fn = ident.and("()")
+export const fn = ident.and("()");

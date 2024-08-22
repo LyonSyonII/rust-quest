@@ -11,8 +11,9 @@ Instead, with this letter comes the spell "summon_robot()", which will summon a 
 
 Please, read the instructions before using it.
 Good luck!
-`;
+`.trim();
 
-export default {
-  validator: () => quest.trim() + "SUCCESS"
-} as CodeQuestion;
+export const question: CodeQuestion = {
+  code: "read_quest(1)",
+  validator: () => `${quest}SUCCESS`,
+};

@@ -22,9 +22,7 @@ const {
   solveWithMinimumSteps,
 } = await importRobotQuestion(id);
 
-const code = (propsCode !== undefined
-    ? propsCode
-    : questionCode || "");
+const code = propsCode !== undefined ? propsCode : questionCode || "";
 
 const slimes = (
   await Astro.glob<Record<string, ImageMetadata>>(

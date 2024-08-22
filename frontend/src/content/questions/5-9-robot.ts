@@ -1,34 +1,22 @@
-import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGameTypes";
+import {
+  Functions,
+  type RobotGameProps,
+} from "@components/RobotGame/RobotGameTypes";
 import { createRegExp, exactly, maybe, word } from "magic-regexp";
-import { codeMessQuestion, replace } from "./CodeQuestion";
+import { type Validator, codeMessQuestion, replace } from "./CodeQuestion";
 import { _, end, line, semicolon, start } from "./regex";
 
-export default {
-  solveWithMinimumSteps: true,
-  functions: Functions.LOOK_HORIZONTAL,
-  rows: 3,
-  cols: 3,
-  boards: [
-    {
-      start: 7,
-      enemies: [3],
-      steps: 2
-    },
-    {
-      start: 7,
-      enemies: [1],
-      steps: 2
-    },
-    {
-      start: 7,
-      enemies: [5],
-      steps: 2
-    },
-  ],
-  validator
-} as RobotGameProps;
+const code = `
+up();
+if ? {
+  
+} else if ? {
+  
+} else {
+  
+}`;
 
-function validator(value: string): string | undefined {
+const validator: Validator = (value) => {
   const condition = exactly("?").or(word, "()", maybe(";"));
   const regex = createRegExp(
     start, _,
@@ -51,4 +39,30 @@ function validator(value: string): string | undefined {
     || first.includes(";") && `[first condition] ${wrong}`
     || second.includes(";") && `[second condition] ${wrong}`
     || undefined
-}
+};
+
+export const question: RobotGameProps = {
+  code,
+  solveWithMinimumSteps: true,
+  functions: Functions.LOOK_HORIZONTAL,
+  rows: 3,
+  cols: 3,
+  boards: [
+    {
+      start: 7,
+      enemies: [3],
+      steps: 2,
+    },
+    {
+      start: 7,
+      enemies: [1],
+      steps: 2,
+    },
+    {
+      start: 7,
+      enemies: [5],
+      steps: 2,
+    },
+  ],
+  validator,
+};

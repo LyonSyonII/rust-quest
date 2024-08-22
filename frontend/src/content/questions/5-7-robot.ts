@@ -1,6 +1,10 @@
-import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGameTypes";
+import {
+  Functions,
+  type RobotGameProps,
+} from "@components/RobotGame/RobotGameTypes";
 
-export default {
+export const question: RobotGameProps = {
+  code: "",
   solveWithMinimumSteps: true,
   functions: Functions.LOOK_HORIZONTAL,
   rows: 3,
@@ -9,12 +13,12 @@ export default {
     {
       start: 7,
       enemies: [1],
-      steps: 2
+      steps: 2,
     },
     {
       start: 7,
       enemies: [0],
-      steps: 3
+      steps: 3,
     },
   ],
-} as RobotGameProps;
+};

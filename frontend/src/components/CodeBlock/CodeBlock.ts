@@ -24,9 +24,12 @@ import {
 } from "@codemirror/view";
 import { githubDark } from "src/codemirror-themes/github-dark";
 import { githubLight } from "src/codemirror-themes/github-light";
+import {
+  type CodeQuestion,
+  importQuestion,
+} from "src/content/questions/CodeQuestion";
 import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
-import { importQuestion, type CodeQuestion } from "src/content/questions/CodeQuestion";
 import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
 
@@ -43,7 +46,7 @@ export class CodeBlock extends HTMLElement {
   ) => string | undefined = () => undefined;
   onsuccess: (stdout: string, value: string) => void = () => {};
   errorMsg: string;
-  
+
   editor: EditorView;
   readonly: Compartment;
   theme: Compartment;
@@ -132,7 +135,7 @@ export class CodeBlock extends HTMLElement {
     });
     // Can't disable outline in any other way
     this.editor.dom.style.outline = "none";
-    
+
     importQuestion(this.id).then(async (q) => {
       this.setProps(q);
       this.setValue((await persistence.get(this.id)) || this.code);
@@ -188,7 +191,7 @@ export class CodeBlock extends HTMLElement {
       ),
     });
   }
-  
+
   public isRunning(): boolean {
     return this.runButton.disabled;
   }
@@ -259,14 +262,14 @@ export class CodeBlock extends HTMLElement {
           ? regex.test(snippet.replaceAll(/\s/g, ""))
           : regex.test(snippet),
     )?.trim();
-    
+
     return v;
   }
 
   /** Evaluates `snippet` and returns the response. */
   public async evaluateSnippet(snippet: string): Promise<EvalResponse> {
     // minimize code by removing all extra spaces and newlines
-    const setup = this.setup.replaceAll("__VALUE__", snippet)//.replaceAll(/\s+/g, " ");
+    const setup = this.setup.replaceAll("__VALUE__", snippet); //.replaceAll(/\s+/g, " ");
     const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
     return evaluate(code, this.errorMsg);
   }

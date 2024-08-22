@@ -1,8 +1,11 @@
 import type { CodeBlock, ResetEvent } from "@components/CodeBlock/CodeBlock";
 import type { EvalResponse } from "@components/CodeBlock/evaluate";
+import {
+  type CodeQuestion,
+  importRobotQuestion,
+} from "src/content/questions/CodeQuestion";
 import { confetti } from "src/utils/confetti";
 import { $ } from "src/utils/querySelector";
-import { importRobotQuestion, type CodeQuestion } from "src/content/questions/CodeQuestion";
 import { parenthesisCheck } from "../../content/questions/0-robot";
 import { type Board, Functions } from "./RobotGameTypes";
 
@@ -23,28 +26,24 @@ export class RobotGame extends HTMLElement {
     this.startingHtmlBoards = [...this.querySelectorAll("table")].map(
       (t) => t.cloneNode(true) as HTMLTableElement,
     );
-    
-    importRobotQuestion(this.id).then(
-      (props) => {
-        this.functions = props.functions || this.functions;
-        this.winText = props.winText || this.winText;
-        this.loseText = props.loseText || this.loseText;
-        this.solveWithMinimumSteps =
-          props.solveWithMinimumSteps || this.solveWithMinimumSteps;
 
-        this.boards = [...this.querySelectorAll("table")].map(
-          (htmlTable, i) => ({
-            htmlTable,
-            robot: $("#robot", htmlTable),
-            tableChanged: false,
-            numEnemies: props.boards[i]?.enemies.length || 0,
-            rows: props.boards[i]?.rows || 3,
-            cols: props.boards[i]?.cols || 3,
-            ...props.boards[i],
-          }),
-        );
-      },
-    );
+    importRobotQuestion(this.id).then((props) => {
+      this.functions = props.functions || this.functions;
+      this.winText = props.winText || this.winText;
+      this.loseText = props.loseText || this.loseText;
+      this.solveWithMinimumSteps =
+        props.solveWithMinimumSteps || this.solveWithMinimumSteps;
+
+      this.boards = [...this.querySelectorAll("table")].map((htmlTable, i) => ({
+        htmlTable,
+        robot: $("#robot", htmlTable),
+        tableChanged: false,
+        numEnemies: props.boards[i]?.enemies.length || 0,
+        rows: props.boards[i]?.rows || 3,
+        cols: props.boards[i]?.cols || 3,
+        ...props.boards[i],
+      }));
+    });
   }
 
   connectedCallback() {
@@ -133,7 +132,7 @@ export class RobotGame extends HTMLElement {
     functions: Functions,
   ) {
     const questions = await import("../../content/questions/0-robot");
-    
+
     if (this.id === "5-5-robot") {
       console.log(functions, enemies);
     }
