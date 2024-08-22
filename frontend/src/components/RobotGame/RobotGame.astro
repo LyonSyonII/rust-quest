@@ -114,7 +114,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)];
     vertical-align: middle;
     border: 1px solid var(--sl-color-hairline-light);
   }
-  td > p {
+  td > :global(p) {
     opacity: 0.75;
     font-weight: bold;
     color: var(--sl-color-text);
