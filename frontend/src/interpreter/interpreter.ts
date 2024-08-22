@@ -16,12 +16,6 @@ export async function initInterpreter(
 
   // Build the filesystem needed for Miri to work
   // stdin, stdout and stderr all point to the same buffer
-  const out: Uint8Array[] = [];
-  const stdin = new Stdio(out);
-  const stdout = new Stdio(out);
-  const stderr = new Stdio(out);
-  const tmp = new PreopenDirectory("/tmp", []);
-  const root = new PreopenDirectory("/", [["main.rs", new File([])]]);
   const [miri, sysroot] = await Promise.all([
     WebAssembly.compileStreaming(
       cached_or_fetch("/wasm-rustc/bin/miri.opt.1718474653.wasm").finally(() =>
@@ -30,14 +24,6 @@ export async function initInterpreter(
     ),
     buildSysroot(),
   ]);
-  const fds: [
-    Stdio,
-    Stdio,
-    Stdio,
-    OpenDirectory,
-    OpenDirectory,
-    OpenDirectory,
-  ] = [stdin, stdout, stderr, tmp, sysroot, root];
 
   const env: string[] = [];
   // Disable all Miri checks and force color output for printing to the terminal
@@ -61,52 +47,43 @@ export async function initInterpreter(
     "-Zmiri-panic-on-unsupported",
     (color && "--color=always") || "--color=never",
   ];
-  const wasi = new WASI(args, env, fds, { debug: false });
 
   console.timeEnd("init");
-  return new Interpreter(miri, wasi, fds, stdin, stdout, stderr);
+  return new Interpreter(miri, sysroot, args, env);
 }
 
 class Interpreter {
   readonly miri: WebAssembly.Module;
-  readonly wasi: WASI;
-  readonly fds: [
-    Stdio,
-    Stdio,
-    Stdio,
-    OpenDirectory,
-    OpenDirectory,
-    OpenDirectory,
-  ];
-  readonly stdin: Stdio;
-  readonly stdout: Stdio;
-  readonly stderr: Stdio;
+  readonly sysroot: PreopenDirectory;
+  readonly args: string[];
+  readonly env: string[];
   next_thread_id: number;
 
   constructor(
     miri: WebAssembly.Module,
-    wasi: WASI,
-    fds: [Stdio, Stdio, Stdio, OpenDirectory, OpenDirectory, OpenDirectory],
-    stdin: Stdio,
-    stdout: Stdio,
-    stderr: Stdio,
+    sysroot: PreopenDirectory,
+    args: string[],
+    env: string[],
   ) {
     this.miri = miri;
-    this.wasi = wasi;
-    this.stdin = stdin;
-    this.stdout = stderr;
-    this.stderr = stdout;
-    this.fds = fds;
+    this.sysroot = sysroot;
+    this.args = args;
+    this.env = env;
     this.next_thread_id = 1;
   }
 
   async run(code: string): Promise<EvalResponse> {
-    this.stdin.clear();
-    this.stdout.clear();
-    this.stderr.clear();
-
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
-    this.fds[5].dir.get_file("main.rs")!.data = encode(code);
+    const out: Uint8Array[] = [];
+    const [stdin, stdout, stderr] = [
+      new Stdio(out),
+      new Stdio(out),
+      new Stdio(out),
+    ];
+    const tmp = new PreopenDirectory("/tmp", []);
+    const root = new PreopenDirectory("/", [["main.rs", new File(encode(code))]]);
+    const fds: Fd[] = [stdin, stdout, stderr, tmp, this.sysroot, root];
+    
+    const wasi = new WASI(this.args, this.env, fds, { debug: false });
 
     // Instantiate Miri
     const inst = await WebAssembly.instantiate(this.miri, {
@@ -127,21 +104,21 @@ class Interpreter {
           return thread_id;
         },
       },
-      wasi_snapshot_preview1: strace(this.wasi.wasiImport, ["fd_prestat_get"]),
+      wasi_snapshot_preview1: strace(wasi.wasiImport, ["fd_prestat_get"]),
     });
-
+    
     // Execute Miri
     try {
       console.time("miri execution");
       // @ts-ignore
-      this.wasi.start(inst);
+      wasi.start(inst);
       console.timeEnd("miri execution");
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } catch (e: any) {
-      return { error: this.stdout.text() || e.message };
+      return { error: stdout.text() || e.message };
     }
-
-    return this.stdout.text();
+    
+    return stdout.text();
   }
 }
 

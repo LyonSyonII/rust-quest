@@ -20,7 +20,7 @@ export default class WASI {
   env: Array<string> = [];
   fds: Array<Fd> = [];
   inst: { exports: { memory: WebAssembly.Memory } };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   wasiImport: { [key: string]: (...args: Array<any>) => unknown };
 
   /// Start a WASI command
@@ -35,9 +35,8 @@ export default class WASI {
     } catch (e) {
       if (e instanceof WASIProcExit) {
         return e.code;
-      } else {
-        throw e;
       }
+      throw e;
     }
   }
 

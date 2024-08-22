@@ -4,7 +4,7 @@ type WorkerMessage = {
   data:
     | { downloaded: string }
     | { loaded: boolean }
-    | { result: EvalResponse, code: string }
+    | { result: EvalResponse, uuid: string }
     | { other?: string };
 };
 /**
@@ -90,10 +90,11 @@ export class Interpreter {
     for (const ev of this.onrun) {
       ev();
     }
-    this.worker.postMessage({ code });
+    const uuid = crypto.randomUUID();
+    this.worker.postMessage({ code, uuid });
     return await new Promise((resolve) => {
       const callback = ({ data }: WorkerMessage) => {
-        if ("result" in data && code === data.code) {
+        if ("result" in data && uuid === data.uuid) {
           console.log("received message with data", {data});
           this.worker.removeEventListener("message", callback);
           resolve(data.result);
