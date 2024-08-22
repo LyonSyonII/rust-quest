@@ -188,6 +188,10 @@ export class CodeBlock extends HTMLElement {
       ),
     });
   }
+  
+  public isRunning(): boolean {
+    return this.runButton.disabled;
+  }
 
   public setRunning(running: boolean) {
     if (running) {
@@ -221,6 +225,9 @@ export class CodeBlock extends HTMLElement {
   }
 
   async handleRun() {
+    if (this.isRunning()) {
+      return;
+    }
     // If event is cancelled, don't run
     if (this.dispatchEvent(new RunEvent(this)) === false) {
       return;
