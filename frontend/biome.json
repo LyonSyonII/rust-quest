@@ -8,7 +8,7 @@
       "./public",
       "./src/content/docs",
       "./src/interpreter/wasi",
-      "./src/validation/",
+      "./src/content/questions",
       "./dist",
       "./build",
       "./coverage",
