@@ -3,7 +3,7 @@ import compress from "astro-compress";
 import compressor from "astro-compressor";
 import purgecss from "astro-purgecss";
 import robotsTxt from "astro-robots-txt";
-import { defineConfig } from "astro/config";
+import { defineConfig, sharpImageService } from "astro/config";
 import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
 import { visualizer } from "rollup-plugin-visualizer";
 
@@ -63,6 +63,9 @@ export default defineConfig({
     purgecss(),
     compressor(),
   ],
+  image: {
+    service: sharpImageService(),
+  },
   vite: {
     plugins: [visualizer(), MagicRegExpTransformPlugin.vite()],
   },

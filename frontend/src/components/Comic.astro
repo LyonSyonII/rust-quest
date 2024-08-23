@@ -9,12 +9,11 @@ interface Props {
 }
 
 const { src, alt, eager } = Astro.props;
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/comics/*');
-if (!images[src]) throw new Error(`"${src}" does not exist in glob: "src/assets/comics/*"`);
+const image: Promise<{default: ImageMetadata}> = import(`../assets/comics/${src}.svg`);
 
 ---
 
-<Image src={images[src]()} {alt} loading={eager ? "eager" : "lazy"} />
+<Image src={image} {alt} loading={eager ? "eager" : "lazy"} />
 
 <style>
   :root[data-theme="dark"] img {
