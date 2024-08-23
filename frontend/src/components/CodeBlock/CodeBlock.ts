@@ -56,8 +56,8 @@ export class CodeBlock extends HTMLElement {
     super();
 
     this.output = $("output", this);
-    this.runButton = $(".run", this);
-    this.resetButton = $(".reset", this);
+    this.runButton = $("#run", this);
+    this.resetButton = $("#reset", this);
     this.runButton.addEventListener("click", () => this.handleRun());
     this.resetButton.addEventListener("click", () => {
       this.setValue(this.code);
@@ -146,7 +146,7 @@ export class CodeBlock extends HTMLElement {
     });
 
     if (import.meta.env.DEV) {
-      const reset = $(".DEV-RESET", this);
+      const reset = $("#DEV-RESET", this);
       reset.addEventListener("click", async () => {
         const remove = (await import("../Checkpoint/checkpoint")).remove;
         await remove(this.id);
