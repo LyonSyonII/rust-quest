@@ -46,6 +46,7 @@ export async function initInterpreter(
     "-Zmiri-disable-isolation",
     "-Zmiri-panic-on-unsupported",
     (color && "--color=always") || "--color=never",
+  
   ];
 
   console.timeEnd("init");
@@ -154,9 +155,10 @@ class Stdio extends Fd {
   }
 }
 
-async function load_external_file(path: string) {
+async function load_external_file(path: string, alternate_path: string) {
   return new File(
     await cached_or_fetch(path)
+      .catch(() => cached_or_fetch(alternate_path))
       .then((b) => b.blob())
       .then((b) => b.arrayBuffer()),
   );
@@ -236,6 +238,7 @@ async function buildSysroot(): Promise<PreopenDirectory> {
                           file,
                           await load_external_file(
                             `/wasm-rustc/lib/rustlib/x86_64-unknown-linux-gnu/lib/${file}`,
+                            `https://github.com/LyonSyonII/rubri/releases/download/1.78-dev/${file}.gz`
                           ).finally(() => postMessage({ downloaded: file })),
                         );
                       });
