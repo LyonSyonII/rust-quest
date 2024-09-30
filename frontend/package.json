@@ -28,9 +28,9 @@
     "purgecss": "^6.0.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.7.0",
-    "@astrojs/starlight": "^0.24.5",
-    "astro": "^4.11.5",
+    "@astrojs/check": "^0.9.3",
+    "@astrojs/starlight": "^0.28.2",
+    "astro": "^4.15.9",
     "astro-compress": "^2.2.28",
     "astro-robots-txt": "^1.0.0",
     "prettier": "^3.3.2",
