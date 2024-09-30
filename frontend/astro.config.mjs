@@ -20,7 +20,6 @@ export default defineConfig({
       },
       social: {
         github: "https://github.com/lyonsyonii/rust-quest",
-        // TODO: Add Ko-Fi or Patreon
       },
       sidebar: [
         {
