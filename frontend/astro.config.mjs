@@ -39,12 +39,15 @@ export default defineConfig({
         en: {
           label: "English",
         },
+        // TODO: Locales disabled until proofreading
+        /*
         es: {
           label: "Español",
         },
         ca: {
           label: "Català",
         },
+        */
       },
     }),
     // TODO: Does not work at the moment
