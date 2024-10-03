@@ -11,7 +11,7 @@ export interface Options {
  **/
 export class WASIProcExit extends Error {
   constructor(public readonly code: number) {
-    super("exit with exit code " + code);
+    super(`exit with exit code ${code}`);
   }
 }
 
@@ -173,7 +173,7 @@ export default class WASI {
             BigInt(new Date().getTime()) * 1_000_000n,
             true,
           );
-        } else if (id == wasi.CLOCKID_MONOTONIC) {
+        } else if (id === wasi.CLOCKID_MONOTONIC) {
           let monotonic_time: bigint;
           try {
             monotonic_time = BigInt(Math.round(performance.now() * 1000000));
