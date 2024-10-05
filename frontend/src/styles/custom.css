@@ -19,7 +19,7 @@
 /* Light mode colors. */
 :root[data-theme="light"] {
   --sl-color-accent-low: #ffc8be;
-  --sl-color-accent: #d93a00;
+  --sl-color-accent: #f45d22;
   --sl-color-accent-high: #640300;
   --sl-color-white: #1d1715;
   --sl-color-gray-1: #302321;
@@ -30,8 +30,15 @@
   --sl-color-gray-6: #f3ecea;
   --sl-color-gray-7: #f9f5f5;
   --sl-color-black: #ffffff;
-
+  
   --color-paper: #fff7e8;
+}
+
+@media screen and (prefers-contrast: more) {
+  /* Light mode colors. */
+  :root[data-theme="light"] {
+    --sl-color-accent: #d93a00;
+  }
 }
 
 @media only screen and (min-width: 768px) {
