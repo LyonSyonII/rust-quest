@@ -1,7 +1,6 @@
 import starlight from "@astrojs/starlight";
 import compress from "astro-compress";
 import compressor from "astro-compressor";
-import purgecss from "astro-purgecss";
 import robotsTxt from "astro-robots-txt";
 import { defineConfig, sharpImageService } from "astro/config";
 import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
@@ -50,19 +49,8 @@ export default defineConfig({
         */
       },
     }),
-    // TODO: Does not work at the moment
-    // https://github.com/alextim/astro-lib/tree/main/packages/astro-webmanifest
-    /* webmanifest({
-  name: "Rust Quest",
-  icon: "src/assets/ferris.svg",
-  short_name: "Rust Quest",
-  description: "Learn programming in a new way!",
-  start_url: "/",
-  display: "standalone"
-  }), */
-    compress(),
     robotsTxt(),
-    purgecss(),
+    compress(),
     compressor(),
   ],
   image: {
