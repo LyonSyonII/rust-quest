@@ -1,6 +1,6 @@
 import { confetti } from "src/utils/confetti";
 import { $ } from "src/utils/querySelector";
-import { exportData, importData } from "src/utils/saveData";
+import { exportDataToFile, importDataFromFile } from "src/utils/saveData";
 import { add, removeAll, subscribe } from "../Checkpoint/checkpoint";
 
 export class Progress extends HTMLElement {
@@ -31,8 +31,8 @@ export class Progress extends HTMLElement {
       true,
     );
 
-    $("button#import", this).addEventListener("click", () => importData());
-    $("button#export", this).addEventListener("click", () => exportData());
+    $("button#import", this).addEventListener("click", () => importDataFromFile());
+    $("button#export", this).addEventListener("click", () => exportDataToFile());
     
     const feedback = $("dialog", this);
     $("button#feedback", this).addEventListener("click", () => feedback.showModal());
