@@ -1,7 +1,7 @@
 ---
 import type { Langs } from "@i18n/_langs";
 import CodeBlock from "./CodeBlock/CodeBlock.astro";
-import QuestionCard from "./QuestionCard.astro";
+import Card from "./Card.astro";
 
 export type Props = {
   id?: string;
@@ -17,6 +17,6 @@ export type Props = {
 const { question, code, ...other } = Astro.props;
 ---
 
-<QuestionCard question={question}>
+<Card title={question}>
   <CodeBlock {...other} code={code?.trim()} />
-</QuestionCard>
+</Card>

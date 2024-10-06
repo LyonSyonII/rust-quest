@@ -4,7 +4,7 @@ description: Do you really know how to be assertive?
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
-import QuestionCard from "@components/QuestionCard.astro";
+import Card from "@components/Card.astro";
 import Portrait from "@components/Portrait/PortraitCard.astro";
 import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
@@ -68,7 +68,7 @@ Look, here they are!
 
 She gestures toward the counter.
 
-At first, it seems like an ordinary counter, but as you look closer, you notice the familiar displays of the Magic Boxes™ integrated into its surface.
+At first it seems like an ordinary counter, but as you look closer, you notice the familiar displays of the Magic Boxes™ integrated into its surface.
 
 <Fish>
 I use these to keep the fish cold so it doesn't spoil.  
@@ -83,7 +83,7 @@ You answer affirmatively and procede to investigate the issue.
 
 First of all, you look at the instructions left from the previous programmer:
 
-<QuestionCard background="var(--color-paper)" border={false} rounded>
+<Card background="var(--color-paper)" border={false} rounded>
 #### Temperature Regulating Magic Boxes™
 This program helps regulate the boxes' temperature to the desired range by adjusting the target depending on the boxes' current temperature.  
 The boxes will try to match this temperature until it changes.
@@ -99,7 +99,7 @@ This ensures the actual temperature is always between the minimum and the maximu
 | `MAX_TEMP` | Constant that describes the **maximum temperature** the fish can be at |
 | `target`   | Variable that represents the boxes' **target temperature**             |
 | `temp`     | Variable that represents the boxes' **current temperature**            |
-</QuestionCard>
+</Card>
 
 <CodeQuestion
   question="See what's wrong and fix the program!"
@@ -126,10 +126,10 @@ This ensures the actual temperature is always between the minimum and the maximu
   It should follow this table:
 | Name    | Price |
 | :------ | :---- |
-| Salmon  | 25.0  |
-| Seabass | 28.5  |
-| Tuna    | 28.0  |
-| Trout   | 10.0  |
+| salmon  | 25.0  |
+| seabass | 28.5  |
+| tuna    | 28.0  |
+| trout   | 10.0  |
   </Fish>
 
   <CodeQuestion
@@ -137,3 +137,5 @@ This ensures the actual temperature is always between the minimum and the maximu
     id="6-2"
   />
 </Checkpoint>
+
+<Progress id="6" total={2} />

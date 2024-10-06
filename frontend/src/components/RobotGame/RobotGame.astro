@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import Robot from "@assets/robot.svg";
 import CodeBlock from "@components/CodeBlock/CodeBlock.astro";
-import QuestionCard from "@components/QuestionCard.astro";
+import Card from "@components/Card.astro";
 import { importRobotQuestion } from "src/content/questions/CodeQuestion";
 
 type Props = {
@@ -32,7 +32,7 @@ const slimes = (
 const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)];
 ---
 
-<QuestionCard question={question} gap="0">
+<Card title={question} gap="0">
   <x-robot-game id={id}>
     <div id="boards">
       {
@@ -74,7 +74,7 @@ const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)];
     }
     <CodeBlock id={id} code={code} />
   </x-robot-game>
-</QuestionCard>
+</Card>
 
 <style define:vars={{ cellSize }}>
   #boards {
