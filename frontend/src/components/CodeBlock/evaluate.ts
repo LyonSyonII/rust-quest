@@ -1,22 +1,26 @@
+import { Interpreter } from "src/interpreter";
+
 export type EvalResponse = string | { error: string };
 
-function err(error: string): EvalResponse {
-  return { error };
-}
+const interpreter = new Interpreter();
+interpreter.onAssetDownloaded((a) => console.log(`Downloaded "${a}"`));
+interpreter.onLoaded(() => console.log("Interpreter loaded!"));
 
 export async function evaluate(
   code: string,
   error: string,
 ): Promise<EvalResponse> {
+  if (interpreter.isLoaded()) {
+    return interpreter.runAsync(code);
+  }
   return Promise.race([
-    // server(code, error),
     godbolt(code, error).catch(() => playground(code, error)),
     new Promise<EvalResponse>((resolve, _) =>
       setTimeout(
         () => resolve(err("Execution timed out, please try again.")),
         5000,
       ),
-    )
+    ),
   ]).catch(() => err("There was an error during execution, please try again."));
 }
 
@@ -72,7 +76,7 @@ async function godbolt(code: string, error: string): Promise<EvalResponse> {
 
   const execution = response.indexOf("# Exec");
   const stdout_idx = response.indexOf("# Standard out:", execution);
-  
+
   if (stdout_idx !== -1) {
     return response.substring(stdout_idx + " Standard out:\n".length + 1);
   }
@@ -84,7 +88,7 @@ async function godbolt(code: string, error: string): Promise<EvalResponse> {
       error || response.substring(stderr_idx + "Standard error:\n".length + 1),
     );
   }
-  
+
   return "";
 }
 
@@ -109,12 +113,12 @@ async function playground(code: string, error: string): Promise<EvalResponse> {
       console.log({ params, response });
       return response;
     })
-    .then((response) => {
-      if (response.error === null) {
-        return response.result;
-      } else {
-        return err(error || response.error);
-      }
-    })
+    .then((response) =>
+      response.error === null ? response.result : err(error || response.error),
+    )
     .catch((error) => err(error || error.message));
+}
+
+function err(error: string): EvalResponse {
+  return { error };
 }

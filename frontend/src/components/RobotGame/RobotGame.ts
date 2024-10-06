@@ -1,8 +1,13 @@
-import { confetti } from "src/utils/confetti";
 import type { CodeBlock, ResetEvent } from "@components/CodeBlock/CodeBlock";
 import type { EvalResponse } from "@components/CodeBlock/evaluate";
-import { parenthesisCheck } from "../../validation/0-robot";
-import { Functions, type Board, type RobotGameProps } from "./RobotGameTypes";
+import {
+  type CodeQuestion,
+  importRobotQuestion,
+} from "src/content/questions/CodeQuestion";
+import { confetti } from "src/utils/confetti";
+import { $ } from "src/utils/querySelector";
+import { parenthesisCheck } from "../../content/questions/0-robot";
+import { type Board, Functions } from "./RobotGameTypes";
 
 export class RobotGame extends HTMLElement {
   readonly codeblock: CodeBlock;
@@ -10,39 +15,35 @@ export class RobotGame extends HTMLElement {
 
   boards: Board[] = [];
   functions: Functions = Functions.BASIC;
-  solveWithMinimumSteps: boolean = false;
-  winText: string = "You win!";
-  loseText: string = "There are some Slimes left, try again!";
+  solveWithMinimumSteps = false;
+  winText = "You win!";
+  loseText = "There are some Slimes left, try again!";
 
   constructor() {
     super();
 
-    this.codeblock = this.querySelector<CodeBlock>("x-code-block")!;
+    this.codeblock = $("x-code-block", this);
     this.startingHtmlBoards = [...this.querySelectorAll("table")].map(
       (t) => t.cloneNode(true) as HTMLTableElement,
     );
 
-    import(`../../validation/${this.id}.ts`).then(
-      ({ default: props }: { default: RobotGameProps }) => {
-        this.functions = props.functions || this.functions;
-        this.winText = props.winText || this.winText;
-        this.loseText = props.loseText || this.loseText;
-        this.solveWithMinimumSteps =
-          props.solveWithMinimumSteps || this.solveWithMinimumSteps;
+    importRobotQuestion(this.id).then((props) => {
+      this.functions = props.functions || this.functions;
+      this.winText = props.winText || this.winText;
+      this.loseText = props.loseText || this.loseText;
+      this.solveWithMinimumSteps =
+        props.solveWithMinimumSteps || this.solveWithMinimumSteps;
 
-        this.boards = [...this.querySelectorAll("table")].map(
-          (htmlTable, i) => ({
-            htmlTable,
-            robot: htmlTable.querySelector("#robot")!,
-            tableChanged: false,
-            numEnemies: props.boards[i]?.enemies.length || 0,
-            rows: props.boards[i]?.rows || 3,
-            cols: props.boards[i]?.cols || 3,
-            ...props.boards[i]!,
-          }),
-        );
-      },
-    );
+      this.boards = [...this.querySelectorAll("table")].map((htmlTable, i) => ({
+        htmlTable,
+        robot: $("#robot", htmlTable),
+        tableChanged: false,
+        numEnemies: props.boards[i]?.enemies.length || 0,
+        rows: props.boards[i]?.rows || 3,
+        cols: props.boards[i]?.cols || 3,
+        ...props.boards[i],
+      }));
+    });
   }
 
   connectedCallback() {
@@ -66,36 +67,28 @@ export class RobotGame extends HTMLElement {
         this.codeblock.setRunning(false);
         return Promise.reject();
       }
-      
+
       const responses: [Promise<EvalResponse>, Board][] = await Promise.all(
         this.boards.map(async (board) => {
           const { rows, cols, start, enemies } = board;
-          await this.setupCodeBlock(
-            rows,
-            cols,
-            start,
-            enemies,
-            this.functions,
-          );
-          
+          await this.setupCodeBlock(rows, cols, start, enemies, this.functions);
+
           const response = this.codeblock.evaluateSnippet(value);
           return [response, board];
         }),
       );
-      
+
       const simulationError = async (err?: { error: string }) => {
         this.codeblock.setOutput(
-          err?.error || "There was an error during the simulation, please try again.",
+          err?.error ||
+            "There was an error during the simulation, please try again.",
         );
         await new Promise((r) => setTimeout(r, 1000));
         this.codeblock.setRunning(false);
         this.resetBoards();
       };
 
-      if (
-        responses === undefined ||
-        responses.length !== this.boards.length
-      ) {
+      if (responses === undefined || responses.length !== this.boards.length) {
         return simulationError();
       }
 
@@ -120,7 +113,7 @@ export class RobotGame extends HTMLElement {
         }
       }
 
-      this.codeblock.setOutput(this.winText + "SUCCESS");
+      this.codeblock.setOutput(`${this.winText}SUCCESS`);
       confetti({ count: 20 });
       this.codeblock.setRunning(false);
     });
@@ -138,9 +131,9 @@ export class RobotGame extends HTMLElement {
     enemies: number[],
     functions: Functions,
   ) {
-    const questions = await import("../../validation/0-robot");
+    const questions = await import("../../content/questions/0-robot");
 
-    let question;
+    let question: CodeQuestion;
     switch (functions) {
       case Functions.BASIC:
         question = questions.basicMovement;
@@ -157,7 +150,7 @@ export class RobotGame extends HTMLElement {
 
   async resetBoards() {
     for (let i = 0; i < this.boards.length; i += 1) {
-      const board = this.boards[i]!;
+      const board = this.boards[i];
 
       if (!board.tableChanged) {
         break;
@@ -166,9 +159,9 @@ export class RobotGame extends HTMLElement {
       board.tableChanged = false;
       board.htmlTable.style.opacity = "0";
       await new Promise((r) => setTimeout(r, 200));
-      this.startingHtmlBoards[i]!.style.opacity = "0";
+      this.startingHtmlBoards[i].style.opacity = "0";
 
-      const newTable = this.startingHtmlBoards[i]!.cloneNode(
+      const newTable = this.startingHtmlBoards[i].cloneNode(
         true,
       ) as HTMLTableElement;
       board.htmlTable.replaceWith(newTable);
@@ -176,7 +169,7 @@ export class RobotGame extends HTMLElement {
 
       await new Promise((r) => setTimeout(r, 20));
       board.htmlTable.style.opacity = "1";
-      board.robot = board.htmlTable.querySelector("#robot")!;
+      board.robot = $("#robot", board.htmlTable);
       await new Promise((r) => setTimeout(r, 200));
     }
   }
@@ -265,13 +258,14 @@ export class RobotGame extends HTMLElement {
     cells: NodeListOf<HTMLTableCellElement>,
     killedEnemies: number,
   ): { currentPos: number; killedEnemies: number } {
-    const currentCell = cells[currentPos]!;
-    const newCell = cells[newPos]!;
+    const currentCell = cells[currentPos];
+    const newCell = cells[newPos];
 
-    const child = newCell.firstElementChild!;
-    if (child.id === "slime") {
-      killedEnemies += 1;
+    const child = newCell.firstElementChild;
+    if (child === null) {
+      throw "child null error";
     }
+    const killed: 0 | 1 = child.id === "slime" ? 1 : 0;
 
     child.replaceWith(robot);
 
@@ -279,6 +273,6 @@ export class RobotGame extends HTMLElement {
     newP.textContent = currentPos.toString();
     currentCell.appendChild(newP);
 
-    return { currentPos: newPos, killedEnemies };
+    return { currentPos: newPos, killedEnemies: killedEnemies + killed };
   }
 }

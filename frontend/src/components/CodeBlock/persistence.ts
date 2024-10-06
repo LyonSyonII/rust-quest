@@ -15,8 +15,10 @@ export async function stringifyStore(): Promise<string> {
 }
 
 /** Parses a specified JSON, sets the store to the parsed values and returns it. */
-export async function parseStore(json: string): Promise<[IDBValidKey, string][]> {
-  const entries = JSON.parse(json) as [ IDBValidKey, string ][];
-  await idb.setMany(entries);
+export async function parseStore(
+  json: string,
+): Promise<[IDBValidKey, string][]> {
+  const entries = JSON.parse(json) as [IDBValidKey, string][];
+  await idb.setMany(entries, store);
   return entries;
 }
