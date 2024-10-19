@@ -10,51 +10,49 @@ import { visualizer } from "rollup-plugin-visualizer";
 export default defineConfig({
   site: "https://rust-quest.com",
   /* base: "/rust-quest", */
-  integrations: [
-    starlight({
-      title: "Rust Quest",
-      tableOfContents: false,
-      logo: {
-        src: "./src/assets/ferris.svg",
+  integrations: [starlight({
+    title: "Rust Quest",
+    tableOfContents: false,
+    logo: {
+      src: "./src/assets/ferris.svg",
+    },
+    social: {
+      github: "https://github.com/lyonsyonii/rust-quest",
+    },
+    sidebar: [
+      {
+        label: "First Steps",
+        translations: {
+          es: "Primeros Pasos",
+          ca: "Primeres Passes",
+        },
+        autogenerate: {
+          directory: "first-steps",
+        },
       },
-      social: {
-        github: "https://github.com/lyonsyonii/rust-quest",
+    ],
+    customCss: ["./src/styles/custom.css"],
+    defaultLocale: "en",
+    locales: {
+      en: {
+        label: "English",
       },
-      sidebar: [
-        {
-          label: "First Steps",
-          translations: {
-            es: "Primeros Pasos",
-            ca: "Primeres Passes",
-          },
-          autogenerate: {
-            directory: "first-steps",
-          },
-        },
-      ],
-      customCss: ["./src/styles/custom.css"],
-      defaultLocale: "en",
-      locales: {
-        en: {
-          label: "English",
-        },
-        // TODO: Locales disabled until proofreading
-        /*
-        es: {
-          label: "Español",
-        },
-        ca: {
-          label: "Català",
-        },
-        */
+      // TODO: Locales disabled until proofreading
+      /*
+      es: {
+        label: "Español",
       },
-    }),
-    robotsTxt(),
-    compress(),
-    compressor(),
-  ],
+      ca: {
+        label: "Català",
+      },
+      */
+    },
+  }), robotsTxt(), compress(), compressor()],
   image: {
     service: sharpImageService(),
+  },
+  build: {
+    inlineStylesheets: 'auto'
   },
   vite: {
     plugins: [visualizer(), MagicRegExpTransformPlugin.vite()],

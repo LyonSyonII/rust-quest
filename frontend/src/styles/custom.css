@@ -1,3 +1,42 @@
+
+/* Disabled due to distorting caused by Checkpoint, unknown reason */
+/*
+@view-transition { 
+  navigation: auto
+}
+
+.main-pane {
+  view-transition-name: main-pane;
+}
+
+:root::view-transition-old(main-pane),
+:root::view-transition-new(main-pane) {
+  position: absolute;
+  inset-block-start: 0;
+  inline-size: 100%;
+  block-size: auto;
+  
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
+  animation-delay: inherit;
+}
+
+@keyframes -ua-mix-blend-mode-plus-lighter {
+  from {
+    mix-blend-mode: plus-lighter;
+  }
+  to {
+    mix-blend-mode: plus-lighter;
+  }
+}
+
+@keyframes -ua-view-transition-fade-in {
+  from {
+    opacity: 0;
+  }
+} */
+
+
 /* Dark mode colors. */
 :root {
   --sl-color-accent-low: #460b05;

@@ -3,7 +3,9 @@ import { Interpreter } from "src/interpreter";
 export type EvalResponse = string | { error: string };
 
 const interpreter = new Interpreter();
-interpreter.onAssetDownloaded((a) => console.log(`Downloaded "${a}"`));
+interpreter.onAssetDownloaded((a) => { 
+  console.log(`Downloaded "${a}"`);
+});
 interpreter.onLoaded(() => console.log("Interpreter loaded!"));
 
 export async function evaluate(

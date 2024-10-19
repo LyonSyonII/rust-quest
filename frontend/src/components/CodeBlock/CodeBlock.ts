@@ -93,19 +93,9 @@ export class CodeBlock extends HTMLElement {
         indentWithTab,
       ]),
     ];
-
     const runKeymap = keymap.of([
       {
         key: "Mod-Enter",
-        run: () => {
-          this.handleRun();
-          return true;
-        },
-        stopPropagation: true,
-        preventDefault: true,
-      },
-      {
-        key: "Shift-Enter",
         run: () => {
           this.handleRun();
           return true;
@@ -121,15 +111,16 @@ export class CodeBlock extends HTMLElement {
       state: EditorState.create({
         doc: this.code,
         extensions: [
-          basicSetup,
           rust(),
+          basicSetup,
           runKeymap,
           placeholder(
             this.getAttribute("placeholder") || "PLACEHOLDER NOT DEFINED",
           ),
           this.theme.of(theme === "light" ? githubLight : githubDark),
-          EditorView.editable.of(editable),
           this.readonly.of(EditorState.readOnly.of(!editable)),
+          EditorView.editable.of(editable),
+          EditorView.contentAttributes.of({"aria-label": "Code Block"}),
         ],
       }),
     });

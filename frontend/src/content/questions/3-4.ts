@@ -10,7 +10,7 @@ apples = apples - 2;
 const setup = `
 __VALUE__
 if apples == 16 {
-  println!("Once you say the magical words 'let mut' the barrier surrounding the box disappears, and you're able to take the apples.\\nGood job!");
+  println!("Once you say the magical words 'let mut', the barrier surrounding the box disappears, and you're able to take the apples.\\nGood job!");
   println!("SUCCESS");
 } else {
   println!("There should be 16 apples in the box, but you have {apples}, did you replace some values?");
