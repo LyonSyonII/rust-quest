@@ -1,5 +1,5 @@
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
-import { type Extension } from "@codemirror/state";
+import type { Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { tags as t } from "@lezer/highlight";
 
@@ -101,7 +101,7 @@ export const githubLightTheme = EditorView.theme(
   { dark: config.dark },
 );
 
-export const githubLightHighlightStyle: any = HighlightStyle.define([
+export const githubLightHighlightStyle = HighlightStyle.define([
   { tag: t.keyword, color: config.keyword },
   {
     tag: [t.name, t.deleted, t.character, t.macroName],

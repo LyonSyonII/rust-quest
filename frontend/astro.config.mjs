@@ -1,68 +1,59 @@
 import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
-import { visualizer } from "rollup-plugin-visualizer";
 import compress from "astro-compress";
-import robotsTxt from "astro-robots-txt";
 import compressor from "astro-compressor";
+import robotsTxt from "astro-robots-txt";
+import { defineConfig, sharpImageService } from "astro/config";
 import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
-import purgecss from "astro-purgecss";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://rust-quest.com",
   /* base: "/rust-quest", */
-  integrations: [
-    starlight({
-      title: "Rust Quest",
-      tableOfContents: false,
-      logo: {
-        src: "./src/assets/ferris.svg",
-      },
-      social: {
-        github: "https://github.com/lyonsyonii/rust-quest",
-        // TODO: Add Ko-Fi or Patreon
-      },
-      sidebar: [
-        {
-          label: "First Steps",
-          translations: {
-            es: "Primeros Pasos",
-            ca: "Primeres Passes",
-          },
-          autogenerate: {
-            directory: "first-steps",
-          },
+  integrations: [starlight({
+    title: "Rust Quest",
+    tableOfContents: false,
+    logo: {
+      src: "./src/assets/ferris.svg",
+    },
+    social: {
+      github: "https://github.com/lyonsyonii/rust-quest",
+    },
+    sidebar: [
+      {
+        label: "First Steps",
+        translations: {
+          es: "Primeros Pasos",
+          ca: "Primeres Passes",
         },
-      ],
-      customCss: ["./src/styles/custom.css"],
-      defaultLocale: "en",
-      locales: {
-        en: {
-          label: "English",
-        },
-        es: {
-          label: "Español",
-        },
-        ca: {
-          label: "Català",
+        autogenerate: {
+          directory: "first-steps",
         },
       },
-    }),
-    // TODO: Does not work at the moment
-    // https://github.com/alextim/astro-lib/tree/main/packages/astro-webmanifest
-    /* webmanifest({
-  name: "Rust Quest",
-  icon: "src/assets/ferris.svg",
-  short_name: "Rust Quest",
-  description: "Learn programming in a new way!",
-  start_url: "/",
-  display: "standalone"
-  }), */
-    compress(),
-    robotsTxt(),
-    purgecss(),
-    compressor(),
-  ],
+    ],
+    customCss: ["./src/styles/custom.css"],
+    defaultLocale: "en",
+    locales: {
+      en: {
+        label: "English",
+      },
+      // TODO: Locales disabled until proofreading
+      /*
+      es: {
+        label: "Español",
+      },
+      ca: {
+        label: "Català",
+      },
+      */
+    },
+  }), robotsTxt(), compress(), compressor()],
+  image: {
+    service: sharpImageService(),
+  },
+  build: {
+    inlineStylesheets: 'auto'
+  },
   vite: {
     plugins: [visualizer(), MagicRegExpTransformPlugin.vite()],
   },

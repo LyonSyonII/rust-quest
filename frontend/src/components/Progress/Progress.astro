@@ -1,0 +1,72 @@
+---
+import Checkpoint from "../Checkpoint/Checkpoint.astro";
+import Donate from "../Donate.astro";
+import Feedback from "../Feedback/Feedback.astro";
+
+type Props = {
+  id: string;
+  total: number;
+  confetti: boolean;
+};
+
+const { id, total, confetti = true } = Astro.props;
+---
+<Checkpoint id=`${id}-completed`>
+  <Donate />
+</Checkpoint>
+
+<x-progress data-confetti={`${confetti}`}>
+  <label for={id}>0 / {total}</label>
+  <progress {id} value={0} max={total}></progress>
+  
+  <div>
+    <button id="import">Import Save Data</button>
+    <button id="export">Export Save Data</button>
+  </div>
+  
+  <button id="feedback">Give Feedback</button>
+  <Feedback id={id} />
+  
+  {
+    import.meta.env.DEV && (
+      <button id="reset">
+        <b>RESET</b>
+      </button>
+    )
+  }
+</x-progress>
+
+<style>
+  x-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: -1rem;
+  }
+  progress {
+    margin: 0 !important;
+  }
+  button {
+    background-color: var(--sl-color-accent-low);
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+
+    border: 1px;
+    border-radius: 0.25em;
+
+    transition: opacity 0.2s;
+  }
+  button:hover {
+    opacity: 0.8;
+  }
+  #reset {
+    background-color: red;
+  }
+</style>
+
+<script>
+  import { Progress } from "./progress";
+  customElements.define("x-progress", Progress);
+</script>
