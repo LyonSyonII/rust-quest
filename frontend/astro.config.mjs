@@ -10,35 +10,36 @@ import { visualizer } from "rollup-plugin-visualizer";
 export default defineConfig({
   site: "https://rust-quest.com",
   /* base: "/rust-quest", */
-  integrations: [starlight({
-    title: "Rust Quest",
-    tableOfContents: false,
-    logo: {
-      src: "./src/assets/ferris.svg",
-    },
-    social: {
-      github: "https://github.com/lyonsyonii/rust-quest",
-    },
-    sidebar: [
-      {
-        label: "First Steps",
-        translations: {
-          es: "Primeros Pasos",
-          ca: "Primeres Passes",
-        },
-        autogenerate: {
-          directory: "first-steps",
-        },
+  integrations: [
+    starlight({
+      title: "Rust Quest",
+      tableOfContents: false,
+      logo: {
+        src: "./src/assets/ferris.svg",
       },
-    ],
-    customCss: ["./src/styles/custom.css"],
-    defaultLocale: "en",
-    locales: {
-      en: {
-        label: "English",
+      social: {
+        github: "https://github.com/lyonsyonii/rust-quest",
       },
-      // TODO: Locales disabled until proofreading
-      /*
+      sidebar: [
+        {
+          label: "First Steps",
+          translations: {
+            es: "Primeros Pasos",
+            ca: "Primeres Passes",
+          },
+          autogenerate: {
+            directory: "first-steps",
+          },
+        },
+      ],
+      customCss: ["./src/styles/custom.css"],
+      defaultLocale: "en",
+      locales: {
+        en: {
+          label: "English",
+        },
+        // TODO: Locales disabled until proofreading
+        /*
       es: {
         label: "Español",
       },
@@ -46,13 +47,17 @@ export default defineConfig({
         label: "Català",
       },
       */
-    },
-  }), robotsTxt(), compress(), compressor()],
+      },
+    }),
+    robotsTxt(),
+    compress(),
+    compressor(),
+  ],
   image: {
     service: sharpImageService(),
   },
   build: {
-    inlineStylesheets: 'auto'
+    inlineStylesheets: "auto",
   },
   vite: {
     plugins: [visualizer(), MagicRegExpTransformPlugin.vite()],

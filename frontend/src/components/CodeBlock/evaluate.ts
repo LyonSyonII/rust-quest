@@ -1,18 +1,38 @@
+import { ConfirmToast, Toast } from "@components/Alert/alert";
 import { Interpreter } from "src/interpreter";
 
 export type EvalResponse = string | { error: string };
 
-const interpreter = new Interpreter();
-interpreter.onAssetDownloaded((a) => { 
-  console.log(`Downloaded "${a}"`);
-});
-interpreter.onLoaded(() => console.log("Interpreter loaded!"));
+let interpreter: Interpreter | undefined = undefined;
+
+(async () => {
+  const toast = async () =>
+    ConfirmToast({
+      title: "Download Rust Interpreter",
+      html: "Do you want to download the Rust interpreter in the background? (40MB)<br><br>Code Blocks will run much faster and be unaffected by your internet connection.",
+      confirmButtonText: "Yes!",
+      denyButtonText: "Nope",
+    }).then((t) => t.isConfirmed);
+
+  const hasSaidOk = localStorage.getItem("download-interpreter");
+  if (hasSaidOk || (await toast())) {
+    // localStorage.setItem("download-interpreter", "true");
+    interpreter = new Interpreter();
+    interpreter.onAssetDownloaded((a) => {
+      console.log(`Downloaded "${a}"`);
+    });
+    interpreter.onLoaded(() => { 
+      console.log("Interpreter loaded!");
+      !hasSaidOk && Toast({title: "Interpreter downloaded successfully!", timer: 3000});
+    });
+  }
+})();
 
 export async function evaluate(
   code: string,
   error: string,
 ): Promise<EvalResponse> {
-  if (interpreter.isLoaded()) {
+  if (interpreter?.isLoaded()) {
     return interpreter.runAsync(code);
   }
   return Promise.race([

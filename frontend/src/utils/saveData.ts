@@ -16,15 +16,11 @@ type SaveData = {
 export async function importData(data: Uint8Array) {
   const json = decompressFromUint8Array(data);
   const save: SaveData = JSON.parse(json);
-  
-  Promise.all([
-    setCheckpoints(save.checkpoints),
-    setUserCodes(save.userCodes),
-  ]);
+
+  Promise.all([setCheckpoints(save.checkpoints), setUserCodes(save.userCodes)]);
 
   location.reload();
 }
-
 
 export async function exportData(): Promise<Uint8Array> {
   const [checkpoints, userCodes] = await Promise.all([
@@ -39,17 +35,17 @@ export async function exportData(): Promise<Uint8Array> {
 export async function importDataFromFile() {
   const input = document.createElement("input");
   input.type = "file";
-  
+
   input.addEventListener("change", async function () {
     if (!this.files) return;
-    
+
     const file = this.files[0];
     const data = new Uint8Array(await file.arrayBuffer());
     importData(data);
-    
+
     input.remove();
   });
-  
+
   input.click();
 }
 

@@ -120,7 +120,7 @@ export class CodeBlock extends HTMLElement {
           this.theme.of(theme === "light" ? githubLight : githubDark),
           this.readonly.of(EditorState.readOnly.of(!editable)),
           EditorView.editable.of(editable),
-          EditorView.contentAttributes.of({"aria-label": "Code Block"}),
+          EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
         ],
       }),
     });

@@ -3,7 +3,6 @@ import {
   Directory,
   Fd,
   File,
-  type OpenDirectory,
   PreopenDirectory,
   WASI,
   strace,
@@ -49,6 +48,7 @@ export async function initInterpreter(
   ];
 
   console.timeEnd("init");
+  
   return new Interpreter(miri, sysroot, args, env);
 }
 
