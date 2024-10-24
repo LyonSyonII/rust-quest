@@ -5,37 +5,21 @@ interface Props {
 const { id } = Astro.props;
 ---
 
-<x-checkpoint id={id} style="display: none">
-  <slot />
+<x-checkpoint id={id} aria-disabled>
+    <slot />
 </x-checkpoint>
 
 <style>
-  @keyframes scale {
-    0% {
-      transform: scale(0);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  @keyframes dissolve {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
   x-checkpoint {
-    animation: scale 0.4s ease-in-out;
+    display: block;
   }
-
-  @media (prefers-reduced-motion) {
-    x-checkpoint {
-      animation: dissolve 0.4s ease-in-out;
-    }
+  x-checkpoint[aria-disabled] {
+    filter: blur(5px);
+    pointer-events: none;
+    user-select: none;
+  }
+  x-checkpoint {
+    transition: filter 0.25s ease-out;
   }
 </style>
 
@@ -54,8 +38,7 @@ const { id } = Astro.props;
         if (!updated.has(id)) {
           return;
         }
-
-        this.style.display = "block";
+        this.ariaDisabled = null;
       }, true);
     }
   }

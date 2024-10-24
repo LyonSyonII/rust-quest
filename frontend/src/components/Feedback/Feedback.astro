@@ -21,7 +21,7 @@ const { id } = Astro.props;
       name="review"
       autocapitalize="on"
       autocorrect="off"
-      autofocus></textarea>
+      autofocus />
     <div id="buttons">
       <button id="cancel">Cancel</button>
       <button id="submit">Submit</button>
@@ -35,22 +35,24 @@ const { id } = Astro.props;
     margin-left: auto;
     margin-right: auto;
     margin-top: 15% !important;
-
+    
     width: 50%;
     height: 50%;
+    
+    border: none;
+    border-radius: var(--border-radius);
   }
 
   form {
     --sl-card-border: var(--sl-color-purple);
     --sl-card-bg: var(--sl-color-purple-low);
     display: flex;
-    border: 1px solid var(--sl-color-gray-5);
     background-color: var(--sl-color-black);
     flex-direction: column;
     align-items: center;
     padding: var(--card-padding);
     gap: var(--card-padding);
-
+    
     height: 100%;
   }
   div {

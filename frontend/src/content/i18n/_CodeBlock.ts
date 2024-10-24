@@ -1,4 +1,4 @@
-import { type Langs } from "./_langs";
+import type { Langs } from "./_langs";
 type Translations = {
   placeholder: string;
   compiling: string;

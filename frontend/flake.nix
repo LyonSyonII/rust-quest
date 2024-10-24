@@ -10,6 +10,7 @@
         buildInputs = [
           nodejs_22
           nodePackages.pnpm
+          nil
         ];
       };
     };
