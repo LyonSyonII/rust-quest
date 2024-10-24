@@ -16,7 +16,7 @@ let interpreter: Interpreter | undefined = undefined;
 
   const hasSaidOk = localStorage.getItem("download-interpreter");
   if (hasSaidOk || (await toast())) {
-    // localStorage.setItem("download-interpreter", "true");
+    localStorage.setItem("download-interpreter", "true");
     interpreter = new Interpreter();
     interpreter.onAssetDownloaded((a) => {
       console.log(`Downloaded "${a}"`);
