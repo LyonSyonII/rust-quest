@@ -9,10 +9,8 @@ export const rustRandomNum = `{
 
 export const replace = "Replace ? with your answer.";
 export const codeMess = `Seems like you've messed up the code, click the "Reset" button to return it back to its original state.`;
-export const codeMessQuestion = `${codeMess}
-Remember to only modify the ? symbol.`;
-export const codeMessBlanks = `${codeMess}
-Remember to only modify the blank spaces.`;
+export const codeMessQuestion = `${codeMess}\nRemember to only modify the ? symbol.`;
+export const codeMessBlanks = `${codeMess}\nRemember to only modify the blank spaces.`;
 export const codeMessLines = (lines: number[]) => {
   let msg = codeMess;
   if (lines.length === 0) return msg;
@@ -40,14 +38,10 @@ export function getAnswer(s: string, value: string): string {
   return value.substring(f, value.indexOf(";", f)).trim();
 }
 
-/** Dynamically imports a question from  */
+/** Dynamically imports a question from `id` */
 export async function importQuestion(id: string): Promise<CodeQuestion> {
-  const module: { question: CodeQuestion } | { default: CodeQuestion } =
-    await import(`../questions/${id}.ts`);
-  if ("question" in module) {
-    return module.question;
-  }
-  return module.default;
+  const module = await import(`../questions/${id}.ts`);
+  return ("question" in module) ? module.question : module.default;
 }
 
 export async function importRobotQuestion(id: string): Promise<RobotGameProps> {

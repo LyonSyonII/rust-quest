@@ -10,7 +10,8 @@ export class FeedbackElement extends HTMLElement {
     cancel.addEventListener("click", () => dialog.close());
     const submit = $("#submit", form);
     submit.innerHTML = "Submit";
-
+    
+    // TODO: Fix feedbacker
     form.onsubmit = async () => {
       // e.preventDefault();
       const data = {

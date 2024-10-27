@@ -11,14 +11,22 @@ import { compressToUint8Array, decompressFromUint8Array } from "lz-string";
 type SaveData = {
   checkpoints: string;
   userCodes: string;
+  localStorage: string;
 };
 
 export async function importData(data: Uint8Array) {
   const json = decompressFromUint8Array(data);
   const save: SaveData = JSON.parse(json);
+  const local: Storage = JSON.parse(save.localStorage);
+  console.log({local});
 
-  Promise.all([setCheckpoints(save.checkpoints), setUserCodes(save.userCodes)]);
-
+  Promise.allSettled([
+    setCheckpoints(save.checkpoints), 
+    setUserCodes(save.userCodes),
+  ]);
+  for (const [key, value] of Object.entries(local)) {
+    localStorage.setItem(key, value);
+  }
   location.reload();
 }
 
@@ -27,7 +35,7 @@ export async function exportData(): Promise<Uint8Array> {
     getCheckpoints(),
     getUserCodes(),
   ]);
-  const save: SaveData = { checkpoints, userCodes };
+  const save: SaveData = { checkpoints, userCodes, localStorage: JSON.stringify(localStorage) };
   const json = JSON.stringify(save);
   return compressToUint8Array(json);
 }
@@ -42,7 +50,7 @@ export async function importDataFromFile() {
     const file = this.files[0];
     const data = new Uint8Array(await file.arrayBuffer());
     importData(data);
-
+    
     input.remove();
   });
 

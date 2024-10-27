@@ -1,60 +1,23 @@
-/* Disabled due to distorting caused by Checkpoint, unknown reason */
-/*
-@view-transition { 
-  navigation: auto
-}
-
-.main-pane {
-  view-transition-name: main-pane;
-}
-
-:root::view-transition-old(main-pane),
-:root::view-transition-new(main-pane) {
-  position: absolute;
-  inset-block-start: 0;
-  inline-size: 100%;
-  block-size: auto;
-  
-  animation-duration: inherit;
-  animation-fill-mode: inherit;
-  animation-delay: inherit;
-}
-
-@keyframes -ua-mix-blend-mode-plus-lighter {
-  from {
-    mix-blend-mode: plus-lighter;
-  }
-  to {
-    mix-blend-mode: plus-lighter;
-  }
-}
-
-@keyframes -ua-view-transition-fade-in {
-  from {
-    opacity: 0;
-  }
-} */
-
-
 /* Dark mode colors. */
 :root {
   --sl-color-accent-low: #460b05;
   --sl-color-accent: #c60e00;
   --sl-color-accent-high: #f57b00;
-  --sl-color-white: #ffffff;
-  --sl-color-gray-1: #f3ecea;
-  --sl-color-gray-2: #c8c0be;
-  --sl-color-gray-3: #978784;
-  --sl-color-gray-4: #635451;
-  --sl-color-gray-5: #423432;
-  --sl-color-gray-6: #302321;
-  --sl-color-black: #1d1715;
+	--sl-color-white: #ffffff;
+	--sl-color-gray-1: #f3ecea;
+	--sl-color-gray-2: #cfc6c4;
+	--sl-color-gray-3: #b0a09d;
+	--sl-color-gray-4: #635451;
+	--sl-color-gray-5: #423432;
+	--sl-color-gray-6: #302321;
+	--sl-color-black: #1d1715;
   --sl-color-text: #ebe3e2;
   
   --color-paper: #302321;
   --card-padding: 0.5rem;
   --border-radius: 0.25rem;
 }
+
 /* Light mode colors. */
 :root[data-theme="light"] {
   --sl-color-accent-low: #ffc8be;

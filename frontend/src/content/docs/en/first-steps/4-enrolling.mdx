@@ -10,7 +10,7 @@ import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Progress from "@components/Progress/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
-import { Content as WIP } from "@components/WIP.mdx";
+import WIP from "@components/WIP.astro";
 
 export function Guild(props) {
     return <Portrait 
@@ -19,13 +19,12 @@ export function Guild(props) {
     />
 }
 
-:::danger[Page in testing phase]
-This page should be finished, but there might be some bugs or things that are hard to understand.  
-Proceed with caution!
-:::
+<WIP testing />
 
 :::caution[Data collection?]
-**DATA WILL NOT BE COLLECTED** in any way, it's just for the exercise.  
+Everything is stored locally, **DATA WILL NOT BE COLLECTED**.  
+
+When using the Cloud Save feature your code snippets will be preserved, so *some* information may be stored.  
 If you're worried about it, use dummy values that don't match your real data.
 :::
 

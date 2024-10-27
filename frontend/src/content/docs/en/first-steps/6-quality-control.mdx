@@ -14,7 +14,7 @@ import Progress from "@components/Progress/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
 import Hint from "@components/Hint.astro";
 import Comic from "@components/Comic.astro";
-import { Content as WIP } from "@components/WIP.mdx";
+import WIP from "@components/WIP.astro";
 
 export function Guild(props) {
   return <Portrait 
@@ -29,9 +29,7 @@ export function Fish(props) {
   />
 }
 
-:::danger[Work in progress]
-**This chapter is not yet finished, stay tuned for more!**
-:::
+<WIP />
 
 After the intense mission from yesterday, you're feeling a bit worn out, so you decide to take it easy and opt for something less demanding.
 
