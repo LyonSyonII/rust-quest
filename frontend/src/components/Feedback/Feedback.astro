@@ -5,28 +5,10 @@ export type Props = {
 const { id } = Astro.props;
 ---
 
-<!-- https://codepen.io/vsync/pen/AmwKXE -->
 <x-feedback>
 <dialog>
-  <form class="not-content" id={id} action="" method="dialog">
-    <label for="score-wrapper">How would you rate this chapter?</label>
-    <div id="score-wrapper">
-      <label for="score">😰</label>
-      <input id="score" type="range" min="1" max="5" value="3" />
-      <label for="score">🤩</label>
-    </div>
-    <label for="review">Do you have some feedback?</label>
-    <textarea
-      id="review"
-      name="review"
-      autocapitalize="on"
-      autocorrect="off"
-      autofocus />
-    <div id="buttons">
-      <button id="cancel">Cancel</button>
-      <button id="submit">Submit</button>
-    </div>
-  </form>
+  <button>Close</button>
+  <iframe loading="lazy" src=`https://docs.google.com/forms/d/e/1FAIpQLSc1W_N2meVxOIxBdcSuaMSSQfZHPH1oVG0KSenueKpVfxxqZQ/viewform?usp=pp_url&entry.1422100212=${id}&embedded=true`>Loading…</iframe>
 </dialog>
 </x-feedback>
 
@@ -34,52 +16,27 @@ const { id } = Astro.props;
   dialog {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 15% !important;
-    
-    width: 50%;
-    height: 50%;
+    margin-top: 1.225% !important;
+
+    width: 97.5%;
+    height: 95%;
     
     border: none;
     border-radius: var(--border-radius);
   }
 
-  form {
-    --sl-card-border: var(--sl-color-purple);
-    --sl-card-bg: var(--sl-color-purple-low);
-    display: flex;
-    background-color: var(--sl-color-black);
-    flex-direction: column;
-    align-items: center;
-    padding: var(--card-padding);
-    gap: var(--card-padding);
-    
-    height: 100%;
-  }
-  div {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  div > input {
-    width: 80%;
-  }
-  div > label {
-    font-size: 1.5rem;
-  }
-  label[for="review"] {
-    text-align: center;
-    margin-top: 0.25rem;
-  }
-  textarea {
-    resize: none;
+  iframe {
     width: 100%;
-    height: 100%;
+    height: 100% !important;
+    border: none;
+    margin: 0 !important;
   }
-  #buttons {
-    display: flex;
-    gap: 1rem;
-  }
+
   button {
+    position: absolute;
+    left: 20;
+    top: 20;
+    
     background-color: var(--sl-color-accent-low);
     border-radius: 0.25rem;
     padding: 0.25rem 0.5rem;
@@ -92,9 +49,6 @@ const { id } = Astro.props;
   }
   button:hover {
     opacity: 0.8;
-  }
-  #cancel {
-    background-color: var(--sl-color-primary);
   }
 </style>
 

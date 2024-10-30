@@ -79,8 +79,6 @@ export async function importDataFromFile() {
 }
 
 export async function exportDataToFile() {
-  return exportDataToServer();
-
   const compressed = await exportData();
   const blob = new Blob([compressed]);
   const link = document.createElement("a");
