@@ -1,20 +1,23 @@
 ---
 title: Quality control
 description: Do you really know how to be assertive?
+draft: true
+sidebar:
+  hidden: true
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
-import QuestionCard from "@components/QuestionCard.astro";
+import Card from "@components/Card.astro";
 import Portrait from "@components/Portrait/PortraitCard.astro";
 import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
-import Progress from "@components/Progress.astro";
+import Progress from "@components/Progress/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
 import Hint from "@components/Hint.astro";
 import Comic from "@components/Comic.astro";
-import { Content as WIP } from "@components/WIP.mdx";
+import WIP from "@components/WIP.astro";
 
 export function Guild(props) {
   return <Portrait 
@@ -29,32 +32,111 @@ export function Fish(props) {
   />
 }
 
-:::danger
-This chapter is not yet finished, stay tuned for more!
-:::
+<WIP />
 
-Being pretty exhausted from yesterday's mission, you decide to take it easy and get a less demanding one.
+After the intense mission from yesterday, you're feeling a bit worn out, so you decide to take it easy and opt for something less demanding.
 
-<Guild>
-Oh, you want an easier mission?  
-Let me see...  
-
-Here, I think this is a good one!  
-It's a petition to add quality control directives to some Magic Boxes™.  
+<Guild eager>
+Ah, looking for a lighter task, are we? Let me see...
 </Guild>
 
-Well then, let's see what this is about.
+The receptionist shuffles through a stack of papers.
+
+<Guild eager>
+Here, this one should be a breeze.  
+It's a request to add some quality control directives to a few Magic Boxes™.  
+</Guild>
+
+Alright, let's see what this is about.
 
 ---
 
-After a bit of walking, you get to the address you were provided.  
-It's a small but well-mantained shop, with a big fish silhouette engraved in the door.
+A short walk later, you arrive at the address given to you.  
+It's a cozy little shop, and the first thing you notice is a large, striking silhouette of a fish engraved on the door.
 
-Before you have time to knock, the door opens and reveals a smiling girl.
+Just as you raise your hand to knock, the door swings open, revealing a cheerful girl with a big smile.
 
-<Fish>
-Welcome adventurer!  
-I've been waiting, those boxes won't get ready on their own!
+<Fish eager>
+Welcome adventurer, I've been waiting for you!  
+Those magic boxes aren't going to get working themselves!
 </Fish>
 
-Leaving no time for you to reply, she takes your hand and pulls you inside the shop.  
+Before you can even respond, she grabs your hand and eagerly pulls you into the shop.
+
+<Fish>
+Look, here they are!
+</Fish>
+
+She gestures toward the counter.
+
+At first it seems like an ordinary counter, but as you look closer, you notice the familiar displays of the Magic Boxes™ integrated into its surface.
+
+<Fish>
+I use these to keep the fish cold so it doesn't spoil.  
+
+They were working just fine until a few days ago, but now the temperature's going haywire, 
+seems like the programming's broken somehow.
+
+Could you take a look and see what's wrong?
+</Fish>
+
+You answer affirmatively and procede to investigate the issue.  
+
+First of all, you look at the instructions left from the previous programmer:
+
+<Card background="var(--color-paper)" border={false} rounded>
+#### Temperature Regulating Magic Boxes™
+This program helps regulate the boxes' temperature to the desired range by adjusting the target depending on the boxes' current temperature.  
+The boxes will try to match this temperature until it changes.
+
+If the temperature is too low, the target will be raised, and if too high lowered.  
+This ensures the actual temperature is always between the minimum and the maximum.
+
+##### 1. Available values
+
+| Value      | Description                                                            |
+| ---------- | ---------------------------------------------------------------------- |
+| `MIN_TEMP` | Constant that describes the **minimum temperature** the fish can be at |
+| `MAX_TEMP` | Constant that describes the **maximum temperature** the fish can be at |
+| `target`   | Variable that represents the boxes' **target temperature**             |
+| `temp`     | Variable that represents the boxes' **current temperature**            |
+</Card>
+
+<CodeQuestion
+  question="See what's wrong and fix the program!"
+  id="6-1"
+/>
+
+<Checkpoint id="6-1">
+  <Fish>
+  Thank you, the fish won't spoil anymore!
+
+  I know this was supposed to be all but... Could you help me set up some more directives?  
+  I'd really apreciate having it done by today instead of waiting for another programmer to show up.
+  </Fish>
+
+  The task was easy, and you don't have a lot to do for today.  
+  Why not, let's help her!
+  
+  <Fish>
+  Great 😁!
+  
+  See, the fisherman brings me different kinds of fish everyday, and hand-writing new labels is a bit wasteful.  
+  Could you program the boxes to recognize each species and set the price accordingly?  
+  
+  It should follow this table:
+| Name    | Price |
+| :------ | :---- |
+| salmon  | 25.0  |
+| seabass | 28.5  |
+| tuna    | 28.0  |
+| trout   | 10.0  |
+  </Fish>
+
+  <CodeQuestion
+    question="Help her with the labels!"
+    id="6-2"
+  />
+</Checkpoint>
+
+<Progress id="6" total={2} />

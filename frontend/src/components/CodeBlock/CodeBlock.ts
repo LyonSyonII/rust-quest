@@ -1,33 +1,36 @@
-import { EditorState, Compartment } from "@codemirror/state";
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import {
-  EditorView,
-  keymap,
-  placeholder,
-  highlightActiveLine,
-  rectangularSelection,
-  highlightActiveLineGutter,
-  lineNumbers,
-} from "@codemirror/view";
-import {
-  indentOnInput,
-  bracketMatching,
-  /*     foldGutter, */
-  foldKeymap,
-} from "@codemirror/language";
-import {
-  indentWithTab,
   defaultKeymap,
   history,
   historyKeymap,
+  indentWithTab,
 } from "@codemirror/commands";
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
-import { highlightSelectionMatches } from "@codemirror/search";
 import { rust } from "@codemirror/lang-rust";
-import { githubLight } from "src/codemirror-themes/github-light";
+import {
+  bracketMatching,
+  foldKeymap,
+  indentOnInput,
+} from "@codemirror/language";
+import { highlightSelectionMatches } from "@codemirror/search";
+import { Compartment, EditorState } from "@codemirror/state";
+import {
+  EditorView,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+  keymap,
+  lineNumbers,
+  placeholder,
+  rectangularSelection,
+} from "@codemirror/view";
 import { githubDark } from "src/codemirror-themes/github-dark";
+import { githubLight } from "src/codemirror-themes/github-light";
+import {
+  type CodeQuestion,
+  importQuestion,
+} from "src/content/questions/CodeQuestion";
 import { onThemeChange } from "src/utils/onThemeChange";
-import type { CodeQuestion } from "src/validation/CodeQuestion";
-import type { EvalResponse } from "./evaluate";
+import { $ } from "src/utils/querySelector";
+import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
 
 export class CodeBlock extends HTMLElement {
@@ -35,8 +38,8 @@ export class CodeBlock extends HTMLElement {
   runButton: HTMLButtonElement;
   resetButton: HTMLButtonElement;
 
-  code: string = "";
-  setup: string = "__VALUE__";
+  code = "";
+  setup = "__VALUE__";
   validator: (
     value: string,
     test: (regex: RegExp) => boolean,
@@ -52,22 +55,17 @@ export class CodeBlock extends HTMLElement {
   constructor() {
     super();
 
-    this.output = this.querySelector("output")!;
-    this.runButton = this.querySelector(".run")!;
-    this.resetButton = this.querySelector(".reset")!;
+    this.output = $("output", this);
+    this.runButton = $("#run", this);
+    this.resetButton = $("#reset", this);
     this.runButton.addEventListener("click", () => this.handleRun());
     this.resetButton.addEventListener("click", () => {
       this.setValue(this.code);
       this.dispatchEvent(new ResetEvent(this));
     });
     this.setup = this.getAttribute("setup") || this.setup;
-    this.errorMsg = this.getAttribute("errorMsg")!;
+    this.errorMsg = this.getAttribute("errorMsg") || "ERROR NOT DEFINED";
 
-    import(`../../validation/${this.id}.ts`).then(async (q) => {
-      this.setProps(q.default as CodeQuestion);
-      this.setValue((await persistence.get(this.id)) || this.code);
-    });
-    
     this.readonly = new Compartment();
     this.theme = new Compartment();
     this.themeObserver = onThemeChange((theme) => {
@@ -75,7 +73,7 @@ export class CodeBlock extends HTMLElement {
     });
     const lineNums =
       this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
-          
+
     const basicSetup = [
       lineNums,
       highlightActiveLineGutter(),
@@ -89,25 +87,15 @@ export class CodeBlock extends HTMLElement {
       highlightSelectionMatches(),
       keymap.of([
         ...closeBracketsKeymap,
-        ...defaultKeymap.filter(k => k.key !== "Mod-Enter"),
+        ...defaultKeymap.filter((k) => k.key !== "Mod-Enter"),
         ...historyKeymap,
         ...foldKeymap,
         indentWithTab,
       ]),
     ];
-
     const runKeymap = keymap.of([
       {
         key: "Mod-Enter",
-        run: () => {
-          this.handleRun();
-          return true;
-        },
-        stopPropagation: true,
-        preventDefault: true,
-      },
-      {
-        key: "Shift-Enter",
         run: () => {
           this.handleRun();
           return true;
@@ -123,25 +111,33 @@ export class CodeBlock extends HTMLElement {
       state: EditorState.create({
         doc: this.code,
         extensions: [
-          basicSetup,
           rust(),
+          basicSetup,
           runKeymap,
-          placeholder(this.getAttribute("placeholder")!),
+          placeholder(
+            this.getAttribute("placeholder") || "PLACEHOLDER NOT DEFINED",
+          ),
           this.theme.of(theme === "light" ? githubLight : githubDark),
-          EditorView.editable.of(editable),
           this.readonly.of(EditorState.readOnly.of(!editable)),
-          EditorView.updateListener.of(view => view.docChanged && this.persistCode())
+          EditorView.editable.of(editable),
+          EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
         ],
       }),
     });
     // Can't disable outline in any other way
     this.editor.dom.style.outline = "none";
-    this.querySelector("pre")?.replaceWith(this.editor.dom);
-    // To avoid line gutter collapsing
-    setTimeout(() => this.editor.requestMeasure(), 300);
+
+    importQuestion(this.id).then(async (q) => {
+      this.setProps(q);
+      this.setValue((await persistence.get(this.id)) || this.code);
+      // replace placeholder with the real editor
+      this.querySelector("pre")?.replaceWith(this.editor.dom);
+      // avoid line gutter collapsing
+      this.editor.requestMeasure();
+    });
 
     if (import.meta.env.DEV) {
-      const reset = this.querySelector<HTMLButtonElement>(".DEV-RESET")!;
+      const reset = $("#DEV-RESET", this);
       reset.addEventListener("click", async () => {
         const remove = (await import("../Checkpoint/checkpoint")).remove;
         await remove(this.id);
@@ -187,6 +183,10 @@ export class CodeBlock extends HTMLElement {
     });
   }
 
+  public isRunning(): boolean {
+    return this.runButton.disabled;
+  }
+
   public setRunning(running: boolean) {
     if (running) {
       this.setReadonly(true);
@@ -199,8 +199,9 @@ export class CodeBlock extends HTMLElement {
 
   public async setSuccess() {
     (await import("../Checkpoint/checkpoint")).add(this.id);
+    this.persistCode();
   }
-  
+
   public async setOutput(output: string) {
     const out = output.replace("SUCCESS", "");
     if (this.id && output.length !== out.length) {
@@ -208,16 +209,19 @@ export class CodeBlock extends HTMLElement {
       this.onsuccess(out.trim(), this.getValue());
     }
 
-    this.output.querySelector("p")!.innerText = out.trim();
+    this.output.innerText = out.trim();
     this.output.style.display = "block";
   }
 
   public hideOutput() {
-    this.output.querySelector("p")!.innerText = "";
+    this.output.innerText = "";
     this.output.style.display = "none";
   }
 
   async handleRun() {
+    if (this.isRunning()) {
+      return;
+    }
     // If event is cancelled, don't run
     if (this.dispatchEvent(new RunEvent(this)) === false) {
       return;
@@ -237,16 +241,14 @@ export class CodeBlock extends HTMLElement {
     }
 
     const response = await this.evaluateSnippet(value);
-    this.setResponse(
-      typeof response === "string" ? response : response.error,
-    );
+    this.setResponse(typeof response === "string" ? response : response.error);
   }
-  
+
   /** Returns `undefined` if the validation was successful or a `string` with the error. */
   public async validateSnippet(snippet: string): Promise<string | undefined> {
     const v = this.validator(
       snippet,
-      (regex: RegExp, ignoreWhitespace: boolean = false) =>
+      (regex: RegExp, ignoreWhitespace = false) =>
         ignoreWhitespace
           ? regex.test(snippet.replaceAll(/\s/g, ""))
           : regex.test(snippet),
@@ -257,14 +259,12 @@ export class CodeBlock extends HTMLElement {
 
   /** Evaluates `snippet` and returns the response. */
   public async evaluateSnippet(snippet: string): Promise<EvalResponse> {
-    const setup = this.setup.replaceAll("__VALUE__", snippet);
+    // minimize code by removing all extra spaces and newlines
+    const setup = this.setup.replaceAll("__VALUE__", snippet); //.replaceAll(/\s+/g, " ");
     const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
-
-    return await import("./evaluate").then(({ evaluate }) =>
-      evaluate(code, this.errorMsg),
-    );
+    return evaluate(code, this.errorMsg);
   }
-  
+
   setResponse(response: string): boolean {
     // Only show output if there is something and event isn't cancelled
     if (this.dispatchEvent(new ResponseEvent(this, response)) && response) {
@@ -273,16 +273,15 @@ export class CodeBlock extends HTMLElement {
     } else {
       this.hideOutput();
     }
-    
+
     return true;
   }
-  
+
   persistCode(value?: string) {
     value = value || this.getValue();
     value && persistence.set(this.id, value);
   }
 }
-
 
 export interface CustomEventMap {
   run: RunEvent;
@@ -305,7 +304,7 @@ export class RunEvent extends Event {
 export class ResponseEvent extends Event {
   readonly codeBlock: CodeBlock;
   readonly response: string;
-  
+
   constructor(cb: CodeBlock, response: string) {
     super("response", {
       bubbles: true,
@@ -318,7 +317,7 @@ export class ResponseEvent extends Event {
 
 export class ResetEvent extends Event {
   readonly codeBlock: CodeBlock;
-  
+
   constructor(cb: CodeBlock) {
     super("reset", {
       bubbles: true,

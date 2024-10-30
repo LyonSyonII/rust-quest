@@ -6,7 +6,7 @@ description: The hero registers into the Adventurer's Guild.
 import CodeQuestion from "@components/CodeQuestion.astro";
 import Portrait from "@components/Portrait/PortraitCard.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
-import Progress from "@components/Progress.astro";
+import Progress from "@components/Progress/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
 import Donate from "@components/Donate.astro";
 import Comic from "@components/Comic.astro";
@@ -19,23 +19,23 @@ export const wrongAnswer = "Wrong answer, try again!"
 
 export function Guild(props) {
   return <Portrait 
-    src="guild-girl" 
+    src="guild-girl"
     {...props} 
   />
 }
 
-<Comic src="/comics/guild.svg" />
+<Comic src="guild-opt" alt="guild" eager />
 
-<Guild>
+<Guild eager>
 Good morning, welcome to Newlia, where new heroes are born!
 
-Are you here to register as an adventurer? And you want to choose the "Programmer" class?  
+Are you here to register as an adventurer? And you want to choose the "Programmer" class?
 Great choice! Programmers are a versatile class, give them enough time and they can do anything!
 
-This class requires a small test, to make sure you have the minimum problem-solving skills.  
+This class requires a small test, we're going to prove you have the minimum problem-solving skills required.  
 It'll take just a moment.
 
-Please, fill in the blanks in the following statements, replacing **`?`** with the correct answer.
+Please, **fill in the blanks** in the following statements, **replacing `?`** with the correct answer.
 </Guild>
 
 :::note[Don't worry]
@@ -44,7 +44,6 @@ If you mess up the code, click the "Reset" button to return it to its original s
 
 <CodeQuestion
   question="What's five plus five?"
-  code="5 + 5 == ?"
   id="2-1"
   showLineNumbers={false}
 />
@@ -56,7 +55,6 @@ If you mess up the code, click the "Reset" button to return it to its original s
   
   <CodeQuestion
     question="What's negative one minus one?"
-    code="-1 - 1 == ?"
     id="2-2"
     showLineNumbers={false}
   />
@@ -69,7 +67,6 @@ If you mess up the code, click the "Reset" button to return it to its original s
   
   <CodeQuestion
     question="What's the number that multiplied by two equals sixteen divided by four?"
-    code="16 / 4 == 2 * ?"
     id="2-3"
     showLineNumbers={false}
   />
@@ -84,36 +81,32 @@ If you mess up the code, click the "Reset" button to return it to its original s
   </Guild>
   
   <CodeQuestion
-    question="Write any number greater than 200."
-    code="200 < ?"
     id="2-4"
+    question="Write any number greater than 200."
     showLineNumbers={false}
   /> 
 </Checkpoint>
 
 <Checkpoint id="2-4">
   <CodeQuestion
-    question="Okay... Now a number smaller than 200."
-    code="200 > ?"
     id="2-5"
+    question="Okay... Now a number smaller than 200."
     showLineNumbers={false}
   />
 </Checkpoint>
 
 <Checkpoint id="2-5">
   <CodeQuestion
-    question="Now one that's smaller or equal than 0."
-    code="0 >= ?"
     id="2-6"
+    question="Now one that's smaller or equal than 0."
     showLineNumbers={false}
   />
 </Checkpoint>
 
 <Checkpoint id="2-6">
   <CodeQuestion
-    question="And finally one that's greater or equal than 0."
-    code="0 <= ?"
     id="2-7"
+    question="And finally one that's greater or equal than 0."
     showLineNumbers={false}
   />
 </Checkpoint>
@@ -121,50 +114,53 @@ If you mess up the code, click the "Reset" button to return it to its original s
 <Checkpoint id="2-7">
   :::tip[Exercise]
   See what we're doing here?  
-  Try rewriting the code of the exercises above, exactly how the question is formulated.
+  **Try rewriting the code of the exercises** above, **exactly how the question is formulated**.
   
-  For instance, for the first question, instead of saying `200 is smaller than ?`, say `? is greater than 200`.  
+  For instance, for the first question, **instead of saying `200 is smaller than ?`, say `? is greater than 200`**.  
   Remember to fill in the `?` in your final submission.
   
   <CodeQuestion
-    question="Write any number greater than 200."
     id="2-4"
+    question="Write any number greater than 200."
+    code=""
     showLineNumbers={false}
   /> 
 
   <CodeQuestion
-    question="Okay... Now a number smaller than 200."
     id="2-5"
+    question="Okay... Now a number smaller than 200."
+    code=""
     showLineNumbers={false}
   />
   
   <CodeQuestion
-    question="Now one that's smaller or equal than 0."
     id="2-6"
+    question="Now one that's smaller or equal than 0."
+    code=""
     showLineNumbers={false}
   />
   
   <CodeQuestion
-    question="And finally one that's greater or equal than 0."
     id="2-7"
+    question="And finally one that's greater or equal than 0."
+    code=""
     showLineNumbers={false}
   />
   :::
   
   <Guild>
   Excellent!  
-  Now please sign here, and you'll be ready to take your first quest.
+  Now please **sign here, and you'll be ready to take your first quest**.
   
-  (This name will be saved in your browser's local storage for future use)
+  *(This name will be saved in your browser's local storage for future use)*
   </Guild>
 
 </Checkpoint>
 
 <Checkpoint id="2-7">
   <CodeQuestion
-    question=""
     id="2-8"
-    code={'let name = "$NAME";'}
+    question=""
     showLineNumbers={false}
   />
 </Checkpoint>

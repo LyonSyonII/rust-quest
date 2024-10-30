@@ -8,9 +8,9 @@ import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
-import Progress from "@components/Progress.astro";
+import Progress from "@components/Progress/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
-import { Content as WIP } from "@components/WIP.mdx";
+import WIP from "@components/WIP.astro";
 
 export function Guild(props) {
     return <Portrait 
@@ -19,27 +19,18 @@ export function Guild(props) {
     />
 }
 
-export const replace = "Replace ? with your answer.";
-export const getAnswer = `
-const getAnswer = (s) => {
-    const f = value.indexOf(s) + s.length;
-    return value.substring(f, value.indexOf(";", f)).trim();
-}
-`;
-
-:::danger[Page in testing phase]
-This page should be finished, but there might be some bugs or things that are hard to understand.  
-Proceed with caution!
-:::
+<WIP testing />
 
 :::caution[Data collection?]
-**DATA WILL NOT BE COLLECTED** in any way, it's just for the exercise.  
+Everything is stored locally, **DATA WILL NOT BE COLLECTED**.  
+
+When using the Cloud Save feature your code snippets will be preserved, so *some* information may be stored.  
 If you're worried about it, use dummy values that don't match your real data.
 :::
 
 You wake up, eat a nutritious breakfast, and head to the guild to get your next mission.
 
-<Guild>
+<Guild eager>
 Morning! Did you sleep well?
 
 I'm sorry, but now that you've completed your first quest, you need to officially register, which means... More paperwork!
@@ -48,13 +39,9 @@ Please fill in the remaining information in the blanks provided:
 </Guild>
 
 <CodeQuestion 
-id="4-1"
-question="Fill in your name and age:"
-code={`
-let name = "$NAME";
-let surname = ?;
-let mut age = ?;
-`}/>
+  id="4-1"
+  question="Fill in your name and age:"
+/>
 :::note[Why is age mutable?]
 Well, you are getting older, right?  
 
@@ -68,13 +55,8 @@ Thought that was it? We're just getting started!
 </Guild>
 
 <CodeQuestion 
-id="4-2"
-question="Enter your height (meters), weight (kilograms) and current money:"
-code={`
-let mut height = ?;
-let mut weight = ?;
-let mut money = 12.50;
-`}
+  id="4-2"
+  question="Enter your height (meters), weight (kilograms) and current money:"
 />
 </Checkpoint>
 
@@ -95,13 +77,8 @@ We've had some problems with traps before, you know, the "step on a pressure pla
 *Ahem*, shall we continue?
 </Guild>
 <CodeQuestion 
-id="4-3"
-question="Enter your initials and your favourite cardinal point (N / S / E / W):"
-code={`
-let initial1 = '$NAME';
-let initial2 = ?;
-let mut cardinal = ?;
-`}
+  id="4-3"
+  question="Enter your initials and your favourite cardinal point (N / S / E / W):"
 />
 </Checkpoint>
 
@@ -121,14 +98,8 @@ Well... I can't really argue with that.
 Unfortunately, there's only one form left, let's get to it!
 </Guild>
 <CodeQuestion 
-id="4-4"
-question="Answer with true or false to the following questions:"
-code={`
-let is_human = true;
-let mut registered = false;
-let mut dead = ?;
-let mut wears_glasses = ?;
-`}
+  id="4-4"
+  question="Answer with true or false to the following questions:"
 />
 </Checkpoint>
 

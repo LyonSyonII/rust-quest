@@ -4,20 +4,20 @@ description: The mandatory first mission of any adventurer!
 ---
 
 import CodeQuestion from "@components/CodeQuestion.astro";
-import QuestionCard from "@components/QuestionCard.astro";
+import Card from "@components/Card.astro";
 import Portrait from "@components/Portrait/PortraitCard.astro";
 import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
-import Progress from "@components/Progress.astro";
+import Progress from "@components/Progress/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
 import RobotGame from "@components/RobotGame/RobotGame.astro";
 import Hint from "@components/Hint.astro";
 import Comic from "@components/Comic.astro";
-import { Content as WIP } from "@components/WIP.mdx";
+import WIP from "@components/WIP.astro";
 
-<WIP />
+<WIP testing />
 
 After long days of paperwork and chores, you've finally received your first real quest!  
 You can't contain your excitement and quickly open the letter:
@@ -33,7 +33,7 @@ You can't contain your excitement and quickly open the letter:
 Okay... Time to read those instructions.  
 Let's see.
 
-<QuestionCard background="var(--color-paper)" border={false} rounded>
+<Card background="var(--color-paper)" border={false} rounded>
 #### Summoned Robot Instructions
 Congratulations on acquiring our Monster-Killing Robot!  
 This manual provides essential instructions to ensure optimal performance and safety.
@@ -62,7 +62,7 @@ To ensure a 100% success rate, multiple simulations will run before executing yo
 
 If you have any issue, don't hesitate to reach out to our customer support for further assistance.
 We wish you a happy monster extermination!
-</QuestionCard>
+</Card>
 
 
 Oops—while you were reading, one of these gelatinous things came up to you.
@@ -117,9 +117,9 @@ Try solving the first simulation and see what happens.
 
 This time, the monster tries to dodge like before, but the machine predicts the movement and blows it up with a very cool rocket fist.
 
-<Comic src="/comics/robotpunch.svg" alt="robot punching slime" />
+<Comic src="robotpunch-opt" alt="robot punching slime" />
 
-<QuestionCard background="var(--color-paper)" border={false} rounded>
+<Card background="var(--color-paper)" border={false} rounded>
 #### New functions unlocked
 Two new functions have been unlocked:
 
@@ -134,7 +134,7 @@ For example, `is_slime_left()` can be called as `isl()`.
 
 *This is only for this book, don't try doing it in real code!*
 :::
-</QuestionCard>
+</Card>
 
 Great, new instructions!  
 But why would these unlock now?  
@@ -152,16 +152,8 @@ To do it, you need to use the newly unlocked functions to check if there's a sli
 Try replacing the `?` with one of them and see what happens!
 </Hint>
 <RobotGame
-id="5-5-robot"
-question="Let's use the new functions!"
-code={`
-if ? {
-  left();
-}
-if ? {
-  right();
-}
-`}
+  id="5-5-robot"
+  question="Let's use the new functions!"
 />
 </Checkpoint>
 
@@ -198,19 +190,8 @@ if is_slime_right() {
 </Hint>
 
 <RobotGame 
-id="5-6-robot"
-question="Murder those monsters!"
-code={`
-$\\n
-if ? {
-  
-  
-}
-if ? {
-  
-  
-}
-`}
+  id="5-6-robot"
+  question="Murder those monsters!"
 />
 </Checkpoint>
 
@@ -236,8 +217,8 @@ A good way to know when to use conditionals is to solve the problem aloud:
 *if the slime is on the left of the robot, go there, if not...*
 </Hint>
 <RobotGame
-id="5-7-robot"
-question="Different minimum steps?"
+  id="5-7-robot"
+  question="Different minimum steps?"
 />
 </Checkpoint>
 
@@ -254,16 +235,8 @@ Think of `else` as a default path if none of the above worked.
 What will happen if the slime isn't at the left of the robot when the `if is_slime_left()` condition is reached?
 </Hint>
 <RobotGame
-id="5-8-robot"
-question="Solve this, or else..."
-code={`
-up();
-if is_slime_left() {
-  
-} else {
-  
-}
-`}
+  id="5-8-robot"
+  question="Solve this, or else..."
 />
 </Checkpoint>
 
@@ -289,18 +262,8 @@ It's especially useful because it only runs if the previous `if` or `else if` di
 </Hint>
 
 <RobotGame
-id="5-9-robot"
-question="The final challenge!"
-code={`
-up();
-if ? {
-  
-} else if ? {
-  
-} else {
-  
-}
-`}
+  id="5-9-robot"
+  question="The final challenge!"
 />
 </Checkpoint>
 

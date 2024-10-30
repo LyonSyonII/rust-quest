@@ -1,9 +1,7 @@
 import * as checkpoints from "../components/Checkpoint/checkpoint";
 import * as usercodes from "../components/CodeBlock/persistence";
 
-export function login() {
-
-}
+export function login() {}
 
 export async function saveData() {
   const data = {
@@ -12,13 +10,13 @@ export async function saveData() {
   };
   fetch("...", {
     method: "POST",
-    body: JSON.stringify(data)
-  })
+    body: JSON.stringify(data),
+  });
 }
 
 export async function loadData() {
   const response = await fetch("...", {
-    method: "GET"
+    method: "GET",
   });
   const parsed = JSON.parse(await response.json());
   await checkpoints.parseStore(parsed.checkpoints);
