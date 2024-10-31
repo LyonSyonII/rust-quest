@@ -1,4 +1,4 @@
-import { ConfirmToast, Toast } from "@components/Alert/alert";
+import { ConfirmToast, Toast } from "src/utils/alert";
 import { Interpreter } from "src/interpreter";
 
 export type EvalResponse = string | { error: string };

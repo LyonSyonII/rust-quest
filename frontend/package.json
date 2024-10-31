@@ -13,7 +13,7 @@
     "analyze": "source-map-explorer 'dist/_astro/*.js'"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.18.1",
+    "@codemirror/autocomplete": "^6.18.2",
     "@codemirror/commands": "^6.7.1",
     "@codemirror/lang-rust": "^6.0.1",
     "@codemirror/language": "^6.10.3",
@@ -32,9 +32,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "@astrojs/starlight": "^0.28.3",
+    "@astrojs/starlight": "^0.28.4",
     "@biomejs/biome": "1.8.3",
-    "astro": "^4.16.7",
+    "astro": "^4.16.8",
     "astro-compress": "^2.3.5",
     "astro-compressor": "^0.4.1",
     "astro-purgecss": "^4.6.1",
