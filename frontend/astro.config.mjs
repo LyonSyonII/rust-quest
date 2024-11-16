@@ -2,6 +2,7 @@ import starlight from "@astrojs/starlight";
 import compress from "astro-compress";
 import compressor from "astro-compressor";
 import robotsTxt from "astro-robots-txt";
+import purgecss from "astro-purgecss";
 import { defineConfig, sharpImageService } from "astro/config";
 import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -50,6 +51,7 @@ export default defineConfig({
       },
     }),
     robotsTxt(),
+    purgecss(),
     compress(),
     compressor(),
   ],
@@ -57,7 +59,7 @@ export default defineConfig({
     service: sharpImageService(),
   },
   build: {
-    inlineStylesheets: "auto",
+    inlineStylesheets: "never",
   },
   vite: {
     plugins: [visualizer(), MagicRegExpTransformPlugin.vite()],

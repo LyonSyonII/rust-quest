@@ -9,10 +9,8 @@ export function strace<T extends object>(
         return f;
       }
       return (...args: undefined[]) => {
-        // console.log(prop, "(", ...args, ")");
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // biome-ignore lint/complexity/noBannedTypes: <explanation>
         const result = Reflect.apply(f as Function, receiver, args);
-        // console.log(" =", result);
         return result;
       };
     },

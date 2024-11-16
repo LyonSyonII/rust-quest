@@ -258,7 +258,3 @@ async function buildSysroot(): Promise<PreopenDirectory> {
 function encode(text: string): Uint8Array {
   return new TextEncoder().encode(text);
 }
-
-function file(name: string, text: string): [string, File] {
-  return [name, new File(encode(text))];
-}

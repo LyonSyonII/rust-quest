@@ -1,29 +1,6 @@
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
-import {
-  defaultKeymap,
-  history,
-  historyKeymap,
-  indentWithTab,
-} from "@codemirror/commands";
-import { rust } from "@codemirror/lang-rust";
-import {
-  bracketMatching,
-  foldKeymap,
-  indentOnInput,
-} from "@codemirror/language";
-import { highlightSelectionMatches } from "@codemirror/search";
-import { Compartment, EditorState } from "@codemirror/state";
-import {
-  EditorView,
-  highlightActiveLine,
-  highlightActiveLineGutter,
-  keymap,
-  lineNumbers,
-  placeholder,
-  rectangularSelection,
-} from "@codemirror/view";
-import { githubDark } from "src/codemirror-themes/github-dark";
-import { githubLight } from "src/codemirror-themes/github-light";
+import type { Compartment, EditorState, Extension } from "@codemirror/state";
+import type { EditorView } from "@codemirror/view";
+
 import {
   type CodeQuestion,
   importQuestion,
@@ -32,6 +9,7 @@ import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
 import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
+
 
 export class CodeBlock extends HTMLElement {
   output: HTMLOutputElement;
@@ -47,9 +25,10 @@ export class CodeBlock extends HTMLElement {
   onsuccess: (stdout: string, value: string) => void = () => {};
   errorMsg: string;
 
-  editor: EditorView;
-  readonly: Compartment;
-  theme: Compartment;
+  editor!: EditorView;
+  EditorState!: typeof EditorState;
+  readonly!: Compartment;
+  theme!: Compartment;
   themeObserver: MutationObserver;
 
   constructor() {
@@ -65,20 +44,46 @@ export class CodeBlock extends HTMLElement {
     });
     this.setup = this.getAttribute("setup") || this.setup;
     this.errorMsg = this.getAttribute("errorMsg") || "ERROR NOT DEFINED";
-
-    this.readonly = new Compartment();
-    this.theme = new Compartment();
     this.themeObserver = onThemeChange((theme) => {
       this.setTheme(theme);
     });
-    const lineNums =
-      this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
 
+    this.loadCodemirror().then(() => importQuestion(this.id).then(async (q) => {
+      this.setProps(q);
+      this.setValue((await persistence.get(this.id)) || this.code);
+      // replace placeholder with the real editor
+      this.querySelector("pre")?.replaceWith(this.editor.dom);
+      // avoid line gutter collapsing
+      this.editor.requestMeasure();
+    }));
+
+    if (import.meta.env.DEV) {
+      const reset = $("#DEV-RESET", this);
+      reset.addEventListener("click", async () => {
+        const remove = (await import("../Checkpoint/checkpoint")).remove;
+        await remove(this.id);
+        location.reload();
+      });
+    }
+  }
+  
+  async loadCodemirror() {
+    const { closeBrackets, closeBracketsKeymap } = await import("@codemirror/autocomplete");
+    const { defaultKeymap, history, historyKeymap, indentWithTab } = await import("@codemirror/commands");
+    const { rust } = await import("@codemirror/lang-rust");
+    const { bracketMatching, foldKeymap, indentOnInput } = await import("@codemirror/language");
+    const { highlightSelectionMatches } = await import("@codemirror/search");
+    const { Compartment, EditorState: _EditorState } = await import("@codemirror/state");
+    const { EditorView, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers, placeholder, rectangularSelection } = await import("@codemirror/view");
+    
+    this.EditorState = _EditorState;
+
+    const lineNums = this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
     const basicSetup = [
       lineNums,
       highlightActiveLineGutter(),
       history(),
-      EditorState.allowMultipleSelections.of(true),
+      this.EditorState.allowMultipleSelections.of(true),
       indentOnInput(),
       bracketMatching(),
       closeBrackets(),
@@ -93,6 +98,10 @@ export class CodeBlock extends HTMLElement {
         indentWithTab,
       ]),
     ];
+
+    this.readonly = new Compartment();
+    this.theme = new Compartment();
+    
     const runKeymap = keymap.of([
       {
         key: "Mod-Enter",
@@ -105,10 +114,10 @@ export class CodeBlock extends HTMLElement {
       },
     ]);
     const editable = this.getAttribute("editable") === "true";
-    const theme = document.documentElement.dataset.theme || "light";
-
+    const theme: string = document.documentElement.dataset.theme || "light";
+    
     this.editor = new EditorView({
-      state: EditorState.create({
+      state: this.EditorState.create({
         doc: this.code,
         extensions: [
           rust(),
@@ -117,8 +126,8 @@ export class CodeBlock extends HTMLElement {
           placeholder(
             this.getAttribute("placeholder") || "PLACEHOLDER NOT DEFINED",
           ),
-          this.theme.of(theme === "light" ? githubLight : githubDark),
-          this.readonly.of(EditorState.readOnly.of(!editable)),
+          this.theme.of(await this.importTheme(theme)),
+          this.readonly.of(this.EditorState.readOnly.of(!editable)),
           EditorView.editable.of(editable),
           EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
         ],
@@ -126,24 +135,6 @@ export class CodeBlock extends HTMLElement {
     });
     // Can't disable outline in any other way
     this.editor.dom.style.outline = "none";
-
-    importQuestion(this.id).then(async (q) => {
-      this.setProps(q);
-      this.setValue((await persistence.get(this.id)) || this.code);
-      // replace placeholder with the real editor
-      this.querySelector("pre")?.replaceWith(this.editor.dom);
-      // avoid line gutter collapsing
-      this.editor.requestMeasure();
-    });
-
-    if (import.meta.env.DEV) {
-      const reset = $("#DEV-RESET", this);
-      reset.addEventListener("click", async () => {
-        const remove = (await import("../Checkpoint/checkpoint")).remove;
-        await remove(this.id);
-        location.reload();
-      });
-    }
   }
 
   public setProps({ setup, vars = [], validator, onsuccess }: CodeQuestion) {
@@ -171,14 +162,18 @@ export class CodeBlock extends HTMLElement {
 
   public setReadonly(readonly: boolean) {
     this.editor.dispatch({
-      effects: this.readonly.reconfigure(EditorState.readOnly.of(readonly)),
+      effects: this.readonly.reconfigure(this.EditorState.readOnly.of(readonly)),
     });
   }
+  
+  public async importTheme(theme: string): Promise<Extension> {
+    return theme === "light" ? (await import("./codemirror-themes/github-light")).githubLight : (await import("./codemirror-themes/github-dark")).githubDark;
+  }
 
-  public setTheme(theme: "light" | "dark") {
+  public async setTheme(theme: "light" | "dark") {
     this.editor.dispatch({
       effects: this.theme.reconfigure(
-        theme === "light" ? githubLight : githubDark,
+        await this.importTheme(theme),
       ),
     });
   }
