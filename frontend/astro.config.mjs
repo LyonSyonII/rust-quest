@@ -18,6 +18,7 @@ export default defineConfig({
       logo: {
         src: "./src/assets/ferris.svg",
       },
+      favicon: "/favicon.svg",
       social: {
         github: "https://github.com/lyonsyonii/rust-quest",
       },
@@ -49,6 +50,7 @@ export default defineConfig({
       },
       */
       },
+      expressiveCode: false
     }),
     robotsTxt(),
     purgecss(),
