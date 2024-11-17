@@ -18,7 +18,13 @@ const { id } = Astro.props;
     pointer-events: none;
     user-select: none;
   }
+  x-checkpoint[aria-disabled] > :global(img) {
+    filter: blur(5px) opacity(10%);
+  }
   x-checkpoint {
+    transition: filter 0.25s ease-out;
+  }
+  img {
     transition: filter 0.25s ease-out;
   }
 </style>
