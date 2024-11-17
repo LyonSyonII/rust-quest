@@ -1,11 +1,10 @@
 import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
-import { visualizer } from "rollup-plugin-visualizer";
 import compress from "astro-compress";
-import robotsTxt from "astro-robots-txt";
 import compressor from "astro-compressor";
+import robotsTxt from "astro-robots-txt";
+import { defineConfig, sharpImageService } from "astro/config";
 import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
-import purgecss from "astro-purgecss";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,7 +19,6 @@ export default defineConfig({
       },
       social: {
         github: "https://github.com/lyonsyonii/rust-quest",
-        // TODO: Add Ko-Fi or Patreon
       },
       sidebar: [
         {
@@ -40,29 +38,27 @@ export default defineConfig({
         en: {
           label: "English",
         },
-        es: {
-          label: "Español",
-        },
-        ca: {
-          label: "Català",
-        },
+        // TODO: Locales disabled until proofreading
+        /*
+      es: {
+        label: "Español",
+      },
+      ca: {
+        label: "Català",
+      },
+      */
       },
     }),
-    // TODO: Does not work at the moment
-    // https://github.com/alextim/astro-lib/tree/main/packages/astro-webmanifest
-    /* webmanifest({
-  name: "Rust Quest",
-  icon: "src/assets/ferris.svg",
-  short_name: "Rust Quest",
-  description: "Learn programming in a new way!",
-  start_url: "/",
-  display: "standalone"
-  }), */
-    compress(),
     robotsTxt(),
-    purgecss(),
+    compress(),
     compressor(),
   ],
+  image: {
+    service: sharpImageService(),
+  },
+  build: {
+    inlineStylesheets: "auto",
+  },
   vite: {
     plugins: [visualizer(), MagicRegExpTransformPlugin.vite()],
   },

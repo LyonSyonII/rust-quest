@@ -1,7 +1,7 @@
 // Necessary to avoid "HTMLElement is not defined"
 // Caused by Astro by trying to access window.HTMLElement at compile time
- 
-import type { CodeQuestion } from "src/validation/CodeQuestion";
+
+import type { CodeQuestion } from "src/content/questions/CodeQuestion";
 
 export const Functions = {
   BASIC: "BASIC",

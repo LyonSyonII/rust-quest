@@ -9,7 +9,7 @@ import { colors } from "@components/Portrait/portraits";
 import PText from "@components/Portrait/PortraitText.astro";
 import Highlight from "@components/Highlight.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
-import Progress from "@components/Progress.astro";
+import Progress from "@components/Progress/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
 import Hint from "@components/Hint.astro";
 import Comic from "@components/Comic.astro";
@@ -39,18 +39,10 @@ Finally, your first quest!
 What will it be?  
 Kill some monsters? Rescue a lost princess?
 
-Let's find out!
-
-export const quest = 
-`Welcome Adventurer.
-Your first quest is... To assist the local grocery store!
-
-We expect great things of you.
-The Adventurer's Guild`;
+**Let's find out!**
 
 <CodeQuestion
   id="3-1"
-  code="read_quest(0)"
   editable={false}
   showLineNumbers={false}
 />
@@ -59,7 +51,7 @@ The Adventurer's Guild`;
   ...well, let's do it then.
 
   ---
-  <Grocer>
+  <Grocer eager>
   Good morning Adventurer, I'm glad you accepted my request.  
   My age is starting to show, and it's hard to keep up with the work here at the grocery store.  
   
@@ -68,9 +60,9 @@ The Adventurer's Guild`;
   </Grocer>
 
   You follow the owner to the back of the store, where he has crates full of vegetables.  
-  Each crate has a label indicating its contents and a panel with a number.
+  Each crate has a **label indicating its contents** and a **panel with a number**.
 
-  <Comic src="/comics/box-empty.svg" />
+  <Comic src="box-empty-opt" alt="empty box" eager />
   
   <Grocer>
   See all these crates? They are magical boxes!  
@@ -94,15 +86,9 @@ The Adventurer's Guild`;
   </Hint>
   
   <CodeQuestion 
-id = "3-2"
-question = "What's the total number of vegetables in the grocery?"
-code = {`
-let potatoes = 5;
-let carrots = 4;
-let onions = 2;
-
-let total = ? + ? + ?;
-`} />
+    id = "3-2"
+    question = "What's the total number of vegetables in the grocery?"
+  />
 </Checkpoint>
 
 <Checkpoint id="3-2">
@@ -119,28 +105,34 @@ I think I have a kit somewhere... Ah, here it is!
 </Grocer>
 
 The man picks up a folded crate and sets it on the ground.  
-Then, looking at the box, he mumbles: <GT>`let`</GT>.
+Then, looking at the box, he mumbles: <GT>**`let`**</GT>.
 
 Upon hearing the word, the crate begins to glow, floats slowly in the air and unfolds.  
-In the panel appears: "Please, fill in the label with the name of the contents of the box and place the items inside".
+In the panel appears: "Please, **fill in the label** with the **name of the contents** of the box and **place the items inside**".
 
 <Grocer> Sorry, I have to attend to a customer. Can you finish the work? </Grocer>
 
 You're on your own for this one. Let's get to it!
 
 <CodeQuestion 
-id="3-3"
-question="Create a magical box to store 18 apples!"
-code="let ? = ?;"
+  id="3-3"
+  question="Create a magical box to store 18 apples!"
 />
 
 </Checkpoint>
 
 <Checkpoint id="3-3">
 
-<Comic src="/comics/box-apples-18.svg" />
+<Comic src="box-apples-18-opt" alt="apple box" />
+
+:::note[Variables]
+You've just created a variable!  
+
+Variables are used to give a name to certain values.  
+In this case, `apples` means "18 units of a fruit called apple".  
+:::
  
-After configuring the box, you walk to the counter to tell the grocer of your success, but he yells: <GT>Hey, adventurer! Bring me two apples from the box, please</GT>.
+After configuring the box, you walk to the counter to tell the grocer of your success, but he yells: <GT>Hey, adventurer! **Bring me two apples** from the box, please</GT>.
 
 Okay, that shouldn't be difficult, just take two apples and... Huh? Why is your hand being stopped in the air?  
 
@@ -153,12 +145,8 @@ Knowing that you are making the owner wait, you hurry and try to fix it.
 The grocer before said `let` to activate the box, maybe you need to do the same with this `mut` thing?
 { /* TODO: Test if a single ? is enough. If not, put two */ }
 <CodeQuestion
-id="3-4"
-question="Fix the box and take two apples from it!"
-code={`
-? apples = 18;
-apples = apples - 2;
-`}
+  id="3-4"
+  question="Fix the box and take two apples from it!"
 />
 
 :::note[What does the second line mean?]
@@ -180,10 +168,6 @@ Seems like some of the shipment was still outside, can you help me add them to t
 <CodeQuestion
 id="3-5"
 question="Add 64 apples to their crate!"
-code={`
-let mut apples = 16;
-?;
-`}
 />
 </Checkpoint>
 
