@@ -1,11 +1,11 @@
-import { type CodeQuestion, type Validator, codeMessQuestion, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
 
 const code = `
 let potatoes = 5;
 let carrots = 4;
 let onions = 2;
 
-let total = ? + ? + ?;
+let total = ${mo}?${mc} + ${mo}?${mc} + ${mo}?${mc};
 `;
 const setup = `
 __VALUE__

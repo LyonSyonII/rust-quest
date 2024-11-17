@@ -1,7 +1,7 @@
-import { type CodeQuestion, codeMessQuestion, replace } from "./CodeQuestion";
+import { type CodeQuestion, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
 
 export const question: CodeQuestion = {
-  code: "let mut apples = 16;\n?;",
+  code: `let mut apples = 16;\n${mo}?${mc};`,
   setup: `
   __VALUE__
   if apples == 16 + 64 {
