@@ -255,10 +255,12 @@ export class CodeBlock extends HTMLElement {
           };
           const start = reverseIndex(nearestLine.text, mo, newColumn);
           const end = nearestLine.text.indexOf(mo, newColumn);
-          if (end === -1) {
+          if (end === -1 && start >= 0) {
             newColumn = start;
-          } else if (start === -1) {
+          } else if (start === -1 && end >= 0) {
             newColumn = end;
+          } else {
+            return tr;
           }
           return { selection: { anchor: nearestLine.from + newColumn } };
         }
