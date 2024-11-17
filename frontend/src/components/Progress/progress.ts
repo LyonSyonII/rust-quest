@@ -1,8 +1,12 @@
+import { removeAll as removeAllUserCodes } from "@components/CodeBlock/persistence";
 import { confetti } from "src/utils/confetti";
 import { $ } from "src/utils/querySelector";
 import { exportDataToFile, importDataFromFile } from "src/utils/saveData";
-import { add, removeAll as removeAllCheckpoints, subscribe } from "../Checkpoint/checkpoint";
-import { removeAll as removeAllUserCodes } from "@components/CodeBlock/persistence";
+import {
+  add,
+  removeAll as removeAllCheckpoints,
+  subscribe,
+} from "../Checkpoint/checkpoint";
 
 export class Progress extends HTMLElement {
   constructor() {
@@ -13,7 +17,7 @@ export class Progress extends HTMLElement {
     const launchConfetti: boolean = this.dataset.confetti === "true";
     const id: string = progress.id;
     const total: number = progress.max;
-    
+
     subscribe(
       id,
       async (checkpoint) => {
