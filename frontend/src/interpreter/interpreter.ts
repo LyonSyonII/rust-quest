@@ -48,7 +48,7 @@ export async function initInterpreter(
   ];
 
   console.timeEnd("init");
-  
+
   return new Interpreter(miri, sysroot, args, env);
 }
 

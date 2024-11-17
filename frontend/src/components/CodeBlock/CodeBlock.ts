@@ -1,10 +1,10 @@
-import type { EditorState, Compartment, Extension } from "@codemirror/state";
-import { type ViewUpdate, type DecorationSet, type EditorView } from "@codemirror/view";
+import type { Compartment, EditorState, Extension } from "@codemirror/state";
+import type { DecorationSet, EditorView, ViewUpdate } from "@codemirror/view";
 
 import {
   type CodeQuestion,
+  cleanProtectedCode,
   importQuestion,
-  isModifiable,
   mc,
   mo,
   modifiableRanges,
@@ -14,8 +14,6 @@ import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
 import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
-import { createRegExp, exactly, not, word } from "magic-regexp";
-
 
 export class CodeBlock extends HTMLElement {
   output: HTMLOutputElement;
@@ -53,7 +51,7 @@ export class CodeBlock extends HTMLElement {
     this.themeObserver = onThemeChange((theme) => {
       this.setTheme(theme);
     });
-    
+
     importQuestion(this.id).then(async (q) => {
       this.setProps(q);
       await this.loadCodemirror();
@@ -73,19 +71,41 @@ export class CodeBlock extends HTMLElement {
       });
     }
   }
-  
+
   async loadCodemirror() {
-    const { closeBrackets, closeBracketsKeymap } = await import("@codemirror/autocomplete");
-    const { defaultKeymap, history, historyKeymap, indentWithTab } = await import("@codemirror/commands");
+    const { closeBrackets, closeBracketsKeymap } = await import(
+      "@codemirror/autocomplete"
+    );
+    const { defaultKeymap, history, historyKeymap, insertTab } = await import(
+      "@codemirror/commands"
+    );
     const { rust } = await import("@codemirror/lang-rust");
-    const { bracketMatching, foldKeymap, indentOnInput } = await import("@codemirror/language");
+    const { bracketMatching, foldKeymap, indentOnInput } = await import(
+      "@codemirror/language"
+    );
     const { highlightSelectionMatches } = await import("@codemirror/search");
-    const { Compartment, EditorState: _EditorState, RangeSet } = await import("@codemirror/state");
-    const { EditorView, highlightActiveLine, ViewPlugin, Decoration, WidgetType, highlightActiveLineGutter, keymap, lineNumbers, placeholder, rectangularSelection } = await import("@codemirror/view");
-    
+    const {
+      Compartment,
+      EditorState: _EditorState,
+      RangeSet,
+    } = await import("@codemirror/state");
+    const {
+      EditorView,
+      highlightActiveLine,
+      ViewPlugin,
+      Decoration,
+      WidgetType,
+      highlightActiveLineGutter,
+      keymap,
+      lineNumbers,
+      placeholder,
+      rectangularSelection,
+    } = await import("@codemirror/view");
+
     this.EditorState = _EditorState;
 
-    const lineNums = this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
+    const lineNums =
+      this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
     const basicSetup = [
       lineNums,
       highlightActiveLineGutter(),
@@ -102,13 +122,12 @@ export class CodeBlock extends HTMLElement {
         ...defaultKeymap.filter((k) => k.key !== "Mod-Enter"),
         ...historyKeymap,
         ...foldKeymap,
-        indentWithTab,
       ]),
     ];
 
     this.readonly = new Compartment();
     this.theme = new Compartment();
-    
+
     const runKeymap = keymap.of([
       {
         key: "Mod-Enter",
@@ -119,12 +138,15 @@ export class CodeBlock extends HTMLElement {
         stopPropagation: true,
         preventDefault: true,
       },
+      {
+        key: "Tab",
+        run: insertTab,
+        stopPropagation: true,
+        preventDefault: true,
+      },
     ]);
     const editable = this.getAttribute("editable") === "true";
     const theme: string = document.documentElement.dataset.theme || "light";
-    
-    // TODO: Decorate modifiable https://codemirror.net/examples/decoration/#atomic-ranges
-    
 
     const rangeHighlighter = () =>
       ViewPlugin.fromClass(
@@ -136,58 +158,41 @@ export class CodeBlock extends HTMLElement {
             this.updateRanges(view.state);
           }
           update(view: ViewUpdate) {
-            this.updateRanges(view.state)
+            this.updateRanges(view.state);
           }
 
           updateRanges(state: EditorState) {
             const ranges = protectedRanges(state.doc.toString());
-            console.log(ranges);
             this.readonly = Decoration.set(
               ranges.map(([start, end]) =>
                 Decoration.mark({
-                  inclusive: true,
-                  // attributes: { style: "text-decoration: underline;" },
-                }).range(start, end)
-              )
+                  inclusive: false // attributes: { style: "text-decoration: underline;" },
+                }).range(start, end),
+              ),
             );
-/*             class EmptyWidget extends WidgetType {
-              // constructor() { super() }
-            
-              toDOM() {
-                const wrap = document.createElement("span")
-                wrap.setAttribute("aria-hidden", "true")
-                wrap.innerText = "#";
-                return wrap
-              }
-            
-              ignoreEvent() { return true }
-            } */
 
             this.modifiable = Decoration.set(
-              modifiableRanges(ranges).map(([start, end]) => {
-/*                 console.log({start, end})
-                if (start === end) {
-                  return Decoration.replace({
-                    widget: new EmptyWidget()
-                  }).range(start, end+1);
-                } */
-                return Decoration.mark({
-                  inclusive: true,
-                  attributes: { style: "text-decoration: dashed underline;text-underline-offset: 4px" }
-                }).range(start, end+1);
-              }
-              )
+              modifiableRanges(ranges).map(([start, end]) =>
+                Decoration.mark({
+                  inclusive: false,
+                  attributes: {
+                    style:
+                      "text-decoration: dashed underline;text-underline-offset: 4px",
+                  },
+                }).range(start, end + 1),
+              ),
             );
           }
         },
         {
-          decorations: (instance) => RangeSet.join([instance.readonly, instance.modifiable]),
+          decorations: (instance) =>
+            RangeSet.join([instance.readonly, instance.modifiable]),
           provide: (plugin) =>
             EditorView.atomicRanges.of(
               (view: EditorView) =>
-                view.plugin(plugin)?.readonly || Decoration.none
+                view.plugin(plugin)?.readonly || Decoration.none,
             ),
-        }
+        },
       );
     this.editor = new EditorView({
       state: this.EditorState.create({
@@ -204,11 +209,36 @@ export class CodeBlock extends HTMLElement {
           EditorView.editable.of(editable),
           EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
           rangeHighlighter(),
-          // TODO: Remove special characters from selection when copying/pasting
-          this.EditorState.changeFilter.of(tr => {
+          this.EditorState.transactionFilter.of((tr) => {
+            if (tr.docChanged || !tr.selection) return tr;
+
+            const len = tr.startState.doc.length;
+            const idx = tr.newSelection.main.from;
+            const left = tr.startState.sliceDoc(idx, idx + 1);
+            const right = tr.startState.sliceDoc(idx - 1, idx);
+            console.log({ len, idx, left, right });
+
+            if (right === mc && idx === len)
+              return { selection: { anchor: len - 1 } };
+            if (left === mo && idx === 0) return [];
+            return tr;
+          }),
+          this.EditorState.changeFilter.of((tr) => {
             if (!tr.selection) return true;
-            return protectedRanges(tr.startState.doc.toString()).flat();
-          })
+
+            const doc = tr.startState.doc.toString();
+            const ranges = protectedRanges(doc).flat(2);
+            if (ranges.length === 0) return true;
+
+            // first and last parts are always protected
+            if (
+              tr.startState.selection.main.from === 0 ||
+              tr.startState.selection.main.from === doc.length
+            ) {
+              return false;
+            }
+            return ranges;
+          }),
         ],
       }),
     });
@@ -241,19 +271,21 @@ export class CodeBlock extends HTMLElement {
 
   public setReadonly(readonly: boolean) {
     this.editor.dispatch({
-      effects: this.readonly.reconfigure(this.EditorState.readOnly.of(readonly)),
+      effects: this.readonly.reconfigure(
+        this.EditorState.readOnly.of(readonly),
+      ),
     });
   }
-  
+
   public async importTheme(theme: string): Promise<Extension> {
-    return theme === "light" ? (await import("./codemirror-themes/github-light")).githubLight : (await import("./codemirror-themes/github-dark")).githubDark;
+    return theme === "light"
+      ? (await import("./codemirror-themes/github-light")).githubLight
+      : (await import("./codemirror-themes/github-dark")).githubDark;
   }
 
   public async setTheme(theme: "light" | "dark") {
     this.editor.dispatch({
-      effects: this.theme.reconfigure(
-        await this.importTheme(theme),
-      ),
+      effects: this.theme.reconfigure(await this.importTheme(theme)),
     });
   }
 
@@ -320,6 +352,7 @@ export class CodeBlock extends HTMLElement {
 
   /** Returns `undefined` if the validation was successful or a `string` with the error. */
   public async validateSnippet(snippet: string): Promise<string | undefined> {
+    snippet = cleanProtectedCode(snippet);
     const v = this.validator(
       snippet,
       (regex: RegExp, ignoreWhitespace = false) =>

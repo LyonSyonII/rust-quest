@@ -1,8 +1,8 @@
 import starlight from "@astrojs/starlight";
 import compress from "astro-compress";
 import compressor from "astro-compressor";
-import robotsTxt from "astro-robots-txt";
 import purgecss from "astro-purgecss";
+import robotsTxt from "astro-robots-txt";
 import { defineConfig, sharpImageService } from "astro/config";
 import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -50,7 +50,7 @@ export default defineConfig({
       },
       */
       },
-      expressiveCode: false
+      expressiveCode: false,
     }),
     robotsTxt(),
     purgecss(),

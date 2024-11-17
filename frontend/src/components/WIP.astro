@@ -2,15 +2,14 @@
 import { Aside } from "@astrojs/starlight/components";
 
 type Props = {
-  testing: boolean
+  testing: boolean;
 };
 const { testing = false } = Astro.props;
 
-
 const title = testing ? "Page In Testing Phase" : "Work In Progress";
-const message = testing ? 
-  "This page should be finished, but there might be some bugs or things that are hard to understand.<br>Proceed with caution!" :
-  "<b>This chapter is not yet finished, stay tuned for more!</b>";
+const message = testing
+  ? "This page should be finished, but there might be some bugs or things that are hard to understand.<br>Proceed with caution!"
+  : "<b>This chapter is not yet finished, stay tuned for more!</b>";
 ---
 
 <Aside type="danger" title={title} set:html={message} />

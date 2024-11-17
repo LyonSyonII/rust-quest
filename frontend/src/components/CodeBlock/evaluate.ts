@@ -1,6 +1,6 @@
-import { ConfirmToast, Toast } from "src/utils/alert";
-import { Interpreter } from "src/interpreter";
 import { cleanProtectedCode } from "src/content/questions/CodeQuestion";
+import { Interpreter } from "src/interpreter";
+import { ConfirmToast, Toast } from "src/utils/alert";
 
 export type EvalResponse = string | { error: string };
 
@@ -22,9 +22,10 @@ let interpreter: Interpreter | undefined = undefined;
     interpreter.onAssetDownloaded((a) => {
       console.log(`Downloaded "${a}"`);
     });
-    interpreter.onLoaded(() => { 
+    interpreter.onLoaded(() => {
       console.log("Interpreter loaded!");
-      !hasSaidOk && Toast({title: "Interpreter downloaded successfully!", timer: 3000});
+      !hasSaidOk &&
+        Toast({ title: "Interpreter downloaded successfully!", timer: 3000 });
     });
   }
 })();

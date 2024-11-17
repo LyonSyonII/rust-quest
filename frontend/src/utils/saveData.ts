@@ -15,10 +15,7 @@ type SaveData = {
   localStorage: string;
 };
 
-export async function importDataFromServer() {
-
-}
-
+export async function importDataFromServer() {}
 
 export async function exportDataToServer() {
   const user_prompt = await Swal.fire<string>({
@@ -31,22 +28,28 @@ export async function exportDataToServer() {
     preConfirm: async (name: string) => {
       if (name.length === 0) {
         return Swal.showValidationMessage("The name cannot be empty.");
-      } if (name.match(/\s/g)) {
-        return Swal.showValidationMessage("The name cannot contain spaces.");
-      } if (name.match(/[;\/\\]/g)) {
-        return Swal.showValidationMessage("The name cannot contain any of: <code>;/\\</code>");
       }
-    }
+      if (name.match(/\s/g)) {
+        return Swal.showValidationMessage("The name cannot contain spaces.");
+      }
+      if (name.match(/[;\/\\]/g)) {
+        return Swal.showValidationMessage(
+          "The name cannot contain any of: <code>;/\\</code>",
+        );
+      }
+    },
   });
   if (user_prompt.isDismissed || !user_prompt.value) {
     return;
   }
-  
+
   const fire_error = (text: string) =>
-    Swal.fire({ title: "Error saving", icon: "error", text }).then(() => undefined);
+    Swal.fire({ title: "Error saving", icon: "error", text }).then(
+      () => undefined,
+    );
 
   const params = new URLSearchParams({ name: user_prompt.value });
-  const request = await fetch(`http://localhost:9571?${params}`, { 
+  const request = await fetch(`http://localhost:9571?${params}`, {
     method: "POST",
     mode: "cors",
     body: await exportData(),
@@ -57,24 +60,24 @@ export async function exportDataToServer() {
   if (request.ok) {
     Swal.fire({ title: "Saved progress successfully!", icon: "success" });
   } else {
-    fire_error(request?.statusText)
+    fire_error(request?.statusText);
   }
 }
 
 export async function importDataFromFile() {
   const input = document.createElement("input");
   input.type = "file";
-  
+
   input.addEventListener("change", async function () {
     if (!this.files) return;
-    
+
     const file = this.files[0];
     const data = new Uint8Array(await file.arrayBuffer());
     importData(data);
-    
+
     input.remove();
   });
-  
+
   input.click();
 }
 
@@ -93,7 +96,7 @@ export async function importData(data: Uint8Array) {
   const local: Storage = JSON.parse(save.localStorage);
 
   Promise.allSettled([
-    setCheckpoints(save.checkpoints), 
+    setCheckpoints(save.checkpoints),
     setUserCodes(save.userCodes),
   ]);
   for (const [key, value] of Object.entries(local)) {
@@ -107,7 +110,11 @@ export async function exportData(): Promise<Uint8Array> {
     getCheckpoints(),
     getUserCodes(),
   ]);
-  const save: SaveData = { checkpoints, userCodes, localStorage: JSON.stringify(localStorage) };
+  const save: SaveData = {
+    checkpoints,
+    userCodes,
+    localStorage: JSON.stringify(localStorage),
+  };
   const json = JSON.stringify(save);
   return compressToUint8Array(json);
 }
