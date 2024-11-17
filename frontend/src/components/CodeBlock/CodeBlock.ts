@@ -169,7 +169,7 @@ export class CodeBlock extends HTMLElement {
                 }).range(start, end),
               ),
             );
-
+            
             this.modifiable = Decoration.set(
               modifiableRanges(ranges).map(([start, end]) =>
                 Decoration.mark({
@@ -237,6 +237,30 @@ export class CodeBlock extends HTMLElement {
             const idx = tr.newSelection.main.from;
             const left = tr.startState.sliceDoc(idx, idx + 1);
             const right = tr.startState.sliceDoc(idx - 1, idx);
+            const line = tr.startState.doc.lineAt(tr.startState.selection.main.head);
+            const newLine = tr.startState.doc.lineAt(tr.newSelection.main.head);
+            
+            if (line.number !== newLine.number && Math.abs(line.number - newLine.number) > 1) {
+              const nearest = newLine.number > line.number ? line.number+1 : line.number-1;
+              const nearestLine = tr.startState.doc.line(nearest);
+              const column = tr.selection.main.head - line.from;
+              let newColumn = Math.min(nearestLine.text.length, column);
+              const reverseIndex = (string: string, search: string, position: number) => {
+                const chars = [...string.substring(0, position)].reverse();
+                for (const [i, c] of chars.entries()) {
+                  if (c === search) return chars.length - i;
+                }
+                return -1;
+              };
+              const start = reverseIndex(nearestLine.text, mo, newColumn);
+              const end = nearestLine.text.indexOf(mo, newColumn);
+              if (end === -1) {
+                newColumn = start;
+              } else if (start === -1) {
+                newColumn = end;
+              }
+              return { selection: { anchor: nearestLine.from + newColumn } }
+            }
 
             if (right === mc && idx === len)
               return { selection: { anchor: len - 1 } };

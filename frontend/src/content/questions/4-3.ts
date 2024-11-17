@@ -3,7 +3,7 @@ import { type CodeQuestion, type Validator, codeMessQuestion, mc, mo, replace } 
 import { _, char, end, semicolon, start, stringZ, wrongCharZ } from "./regex";
 
 const code = `
-let initial1 = '${mo}$NAME${mc}';
+let initial1 = ${mo}'$NAME'${mc};
 let initial2 = ${mo}?${mc};
 let mut cardinal = ${mo}?${mc};
 `;
