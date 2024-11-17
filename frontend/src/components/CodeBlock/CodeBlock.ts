@@ -21,6 +21,7 @@ export class CodeBlock extends HTMLElement {
   resetButton: HTMLButtonElement;
 
   code = "";
+  rangeProtected = false;
   setup = "__VALUE__";
   validator: (
     value: string,
@@ -54,6 +55,7 @@ export class CodeBlock extends HTMLElement {
 
     importQuestion(this.id).then(async (q) => {
       this.setProps(q);
+    
       await this.loadCodemirror();
       this.setValue((await persistence.get(this.id)) || this.code);
       // replace placeholder with the real editor
@@ -193,6 +195,79 @@ export class CodeBlock extends HTMLElement {
             ),
         },
       );
+    const domHandlers = () => EditorView.domEventHandlers({
+      copy(event, view) {
+        const clip = event.clipboardData;
+        if (!clip) return;
+
+        const selection = view.state.selection.main;
+        const data = view.state.sliceDoc(selection.from, selection.to);
+        const replaced = cleanProtectedCode(data);
+        clip.setData("text/plain", replaced);
+        return true;
+      },
+      cut(event, view) {
+        const ranges = protectedRanges(view.state.doc.toString());
+        for (const {from, to} of view.state.selection.ranges) {
+          for (const [start, end] of ranges) {
+            if (from >= start && from < end) return true;
+            if (to > start && to <= end) return true;
+          }
+        }
+        return false;
+      }
+    });
+    const navigationExtension = () => this.EditorState.transactionFilter.of((tr) => {
+      if (tr.docChanged || !tr.selection) return tr;
+
+      const len = tr.startState.doc.length;
+      const idx = tr.newSelection.main.from;
+      const left = tr.startState.sliceDoc(idx, idx + 1);
+      const right = tr.startState.sliceDoc(idx - 1, idx);
+      const line = tr.startState.doc.lineAt(tr.startState.selection.main.head);
+      const newLine = tr.startState.doc.lineAt(tr.newSelection.main.head);
+      
+      if (line.number !== newLine.number && Math.abs(line.number - newLine.number) > 1) {
+        const nearest = newLine.number > line.number ? line.number+1 : line.number-1;
+        const nearestLine = tr.startState.doc.line(nearest);
+        const column = tr.selection.main.head - line.from;
+        let newColumn = Math.min(nearestLine.text.length, column);
+        const reverseIndex = (string: string, search: string, position: number) => {
+          const chars = [...string.substring(0, position)].reverse();
+          for (const [i, c] of chars.entries()) {
+            if (c === search) return chars.length - i;
+          }
+          return -1;
+        };
+        const start = reverseIndex(nearestLine.text, mo, newColumn);
+        const end = nearestLine.text.indexOf(mo, newColumn);
+        if (end === -1) {
+          newColumn = start;
+        } else if (start === -1) {
+          newColumn = end;
+        }
+        return { selection: { anchor: nearestLine.from + newColumn } }
+      }
+
+      if (right === mc && idx === len)
+        return { selection: { anchor: len - 1 } };
+      if (left === mo && idx === 0) return [];
+      return tr;
+    });
+    const protectedRangesExtension = () => this.EditorState.changeFilter.of((tr) => {
+      if (!tr.selection) return true;
+      
+      const doc = tr.startState.doc.toString();
+      const ranges = protectedRanges(doc).flat(2);
+      if (ranges.length === 0) return true;
+      // first and last parts are always protected
+      const { from, to } = tr.startState.selection.main;
+      if (from === to && (from === 0 || from === doc.length)) {
+        return false;
+      }
+      return ranges;
+    });
+
     this.editor = new EditorView({
       state: this.EditorState.create({
         doc: this.code,
@@ -208,78 +283,9 @@ export class CodeBlock extends HTMLElement {
           EditorView.editable.of(editable),
           EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
           rangeHighlighter(),
-          EditorView.domEventHandlers({
-            copy(event, view) {
-              const clip = event.clipboardData;
-              if (!clip) return;
-
-              const selection = view.state.selection.main;
-              const data = view.state.sliceDoc(selection.from, selection.to);
-              const replaced = cleanProtectedCode(data);
-              clip.setData("text/plain", replaced);
-              return true;
-            },
-            cut(event, view) {
-              const ranges = protectedRanges(view.state.doc.toString());
-              for (const {from, to} of view.state.selection.ranges) {
-                for (const [start, end] of ranges) {
-                  if (from >= start && from < end) return true;
-                  if (to > start && to <= end) return true;
-                }
-              }
-              return false;
-            }
-          }),
-          this.EditorState.transactionFilter.of((tr) => {
-            if (tr.docChanged || !tr.selection) return tr;
-
-            const len = tr.startState.doc.length;
-            const idx = tr.newSelection.main.from;
-            const left = tr.startState.sliceDoc(idx, idx + 1);
-            const right = tr.startState.sliceDoc(idx - 1, idx);
-            const line = tr.startState.doc.lineAt(tr.startState.selection.main.head);
-            const newLine = tr.startState.doc.lineAt(tr.newSelection.main.head);
-            
-            if (line.number !== newLine.number && Math.abs(line.number - newLine.number) > 1) {
-              const nearest = newLine.number > line.number ? line.number+1 : line.number-1;
-              const nearestLine = tr.startState.doc.line(nearest);
-              const column = tr.selection.main.head - line.from;
-              let newColumn = Math.min(nearestLine.text.length, column);
-              const reverseIndex = (string: string, search: string, position: number) => {
-                const chars = [...string.substring(0, position)].reverse();
-                for (const [i, c] of chars.entries()) {
-                  if (c === search) return chars.length - i;
-                }
-                return -1;
-              };
-              const start = reverseIndex(nearestLine.text, mo, newColumn);
-              const end = nearestLine.text.indexOf(mo, newColumn);
-              if (end === -1) {
-                newColumn = start;
-              } else if (start === -1) {
-                newColumn = end;
-              }
-              return { selection: { anchor: nearestLine.from + newColumn } }
-            }
-
-            if (right === mc && idx === len)
-              return { selection: { anchor: len - 1 } };
-            if (left === mo && idx === 0) return [];
-            return tr;
-          }),
-          this.EditorState.changeFilter.of((tr) => {
-            if (!tr.selection) return true;
-
-            const doc = tr.startState.doc.toString();
-            const ranges = protectedRanges(doc).flat(2);
-            if (ranges.length === 0) return true;
-            // first and last parts are always protected
-            const { from, to } = tr.startState.selection.main;
-            if (from === to && (from === 0 || from === doc.length)) {
-              return false;
-            }
-            return ranges;
-          }),
+          this.rangeProtected && domHandlers() || [],
+          this.rangeProtected && navigationExtension() || [],
+          this.rangeProtected && protectedRangesExtension() || [],
         ],
       }),
     });
@@ -295,6 +301,7 @@ export class CodeBlock extends HTMLElement {
         r,
       );
     this.code = replaceVars(this.getAttribute("code") || this.code);
+    this.rangeProtected = this.code.includes(mo);
     this.setup = replaceVars(setup || this.setup);
     this.validator = validator || this.validator;
     this.onsuccess = onsuccess || this.onsuccess;
