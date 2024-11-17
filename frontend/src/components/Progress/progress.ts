@@ -1,7 +1,8 @@
 import { confetti } from "src/utils/confetti";
 import { $ } from "src/utils/querySelector";
 import { exportDataToFile, importDataFromFile } from "src/utils/saveData";
-import { add, removeAll, subscribe } from "../Checkpoint/checkpoint";
+import { add, removeAll as removeAllCheckpoints, subscribe } from "../Checkpoint/checkpoint";
+import { removeAll as removeAllUserCodes } from "@components/CodeBlock/persistence";
 
 export class Progress extends HTMLElement {
   constructor() {
@@ -12,7 +13,7 @@ export class Progress extends HTMLElement {
     const launchConfetti: boolean = this.dataset.confetti === "true";
     const id: string = progress.id;
     const total: number = progress.max;
-
+    
     subscribe(
       id,
       async (checkpoint) => {
@@ -45,7 +46,8 @@ export class Progress extends HTMLElement {
 
     if (import.meta.env.DEV) {
       $("button#reset", this).addEventListener("click", async () => {
-        await removeAll(id);
+        await removeAllCheckpoints(id);
+        await removeAllUserCodes(id);
         location.reload();
       });
     }

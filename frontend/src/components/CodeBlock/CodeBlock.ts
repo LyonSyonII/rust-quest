@@ -65,8 +65,8 @@ export class CodeBlock extends HTMLElement {
     if (import.meta.env.DEV) {
       const reset = $("#DEV-RESET", this);
       reset.addEventListener("click", async () => {
-        const remove = (await import("../Checkpoint/checkpoint")).remove;
-        await remove(this.id);
+        await (await import("../Checkpoint/checkpoint")).remove(this.id);
+        await (await import("./persistence")).remove(this.id);
         location.reload();
       });
     }

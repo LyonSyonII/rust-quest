@@ -10,6 +10,19 @@ export async function set(key: string, value: string) {
   return idb.set(key, value, store);
 }
 
+export async function remove(key: string) {
+  return idb.del(key, store);
+}
+
+export async function removeAll(id: string) {
+  const keys = await idb.keys<string>(store);
+  for (const key of keys) {
+    if (key.slice(0, key.indexOf("-")) === id) {
+      await idb.del(key, store);
+    }
+  }
+}
+
 export async function stringifyStore(): Promise<string> {
   return JSON.stringify(await idb.entries(store));
 }
