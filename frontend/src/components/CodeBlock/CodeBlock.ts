@@ -94,7 +94,6 @@ export class CodeBlock extends HTMLElement {
       highlightActiveLine,
       ViewPlugin,
       Decoration,
-      WidgetType,
       highlightActiveLineGutter,
       keymap,
       lineNumbers,
@@ -209,6 +208,28 @@ export class CodeBlock extends HTMLElement {
           EditorView.editable.of(editable),
           EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
           rangeHighlighter(),
+          EditorView.domEventHandlers({
+            copy(event, view) {
+              const clip = event.clipboardData;
+              if (!clip) return;
+
+              const selection = view.state.selection.main;
+              const data = view.state.sliceDoc(selection.from, selection.to);
+              const replaced = cleanProtectedCode(data);
+              clip.setData("text/plain", replaced);
+              return true;
+            },
+            cut(event, view) {
+              const ranges = protectedRanges(view.state.doc.toString());
+              for (const {from, to} of view.state.selection.ranges) {
+                for (const [start, end] of ranges) {
+                  if (from >= start && from < end) return true;
+                  if (to > start && to <= end) return true;
+                }
+              }
+              return false;
+            }
+          }),
           this.EditorState.transactionFilter.of((tr) => {
             if (tr.docChanged || !tr.selection) return tr;
 
@@ -216,7 +237,6 @@ export class CodeBlock extends HTMLElement {
             const idx = tr.newSelection.main.from;
             const left = tr.startState.sliceDoc(idx, idx + 1);
             const right = tr.startState.sliceDoc(idx - 1, idx);
-            console.log({ len, idx, left, right });
 
             if (right === mc && idx === len)
               return { selection: { anchor: len - 1 } };
@@ -229,12 +249,9 @@ export class CodeBlock extends HTMLElement {
             const doc = tr.startState.doc.toString();
             const ranges = protectedRanges(doc).flat(2);
             if (ranges.length === 0) return true;
-
             // first and last parts are always protected
-            if (
-              tr.startState.selection.main.from === 0 ||
-              tr.startState.selection.main.from === doc.length
-            ) {
+            const { from, to } = tr.startState.selection.main;
+            if (from === to && (from === 0 || from === doc.length)) {
               return false;
             }
             return ranges;
@@ -367,7 +384,7 @@ export class CodeBlock extends HTMLElement {
   /** Evaluates `snippet` and returns the response. */
   public async evaluateSnippet(snippet: string): Promise<EvalResponse> {
     // minimize code by removing all extra spaces and newlines
-    const setup = this.setup.replaceAll("__VALUE__", snippet); //.replaceAll(/\s+/g, " ");
+    const setup = this.setup.replaceAll("__VALUE__", snippet);
     const code = `#![allow(warnings)] fn main() { \n${setup}\n }`;
     return evaluate(code, this.errorMsg);
   }

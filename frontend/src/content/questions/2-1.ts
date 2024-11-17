@@ -1,4 +1,4 @@
-import { type CodeQuestion, cleanProtectedCode, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
+import { type CodeQuestion, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
 
 type SimpleQuestion = {
   code: string;
