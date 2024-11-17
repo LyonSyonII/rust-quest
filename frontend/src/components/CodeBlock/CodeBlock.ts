@@ -1,9 +1,11 @@
-import type { Compartment, EditorState, Extension } from "@codemirror/state";
+import type { EditorState, Compartment, Extension } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
 
 import {
   type CodeQuestion,
   importQuestion,
+  isModifiable,
+  modifiableRanges,
 } from "src/content/questions/CodeQuestion";
 import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
@@ -130,6 +132,31 @@ export class CodeBlock extends HTMLElement {
           this.readonly.of(this.EditorState.readOnly.of(!editable)),
           EditorView.editable.of(editable),
           EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
+          this.EditorState.transactionFilter.of(tr => {
+            console.log(tr.selection);
+            if (!tr.docChanged || tr.selection === undefined) {
+              return tr;
+            }
+            
+            const value = this.getValue();
+            let modifiable = true;
+
+            tr.changes.desc.iterChangedRanges((from, to) => {
+              console.log({from, to});
+              for (const [start, end] of modifiableRanges(value)) {
+                if (from < start || to > end) {
+                  modifiable = false;
+                  return;
+                }
+              }
+              
+            }, true)
+
+            if (!modifiable) return [];
+            
+            console.log("Modifiable!");
+            return tr;
+          })
         ],
       }),
     });

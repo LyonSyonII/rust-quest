@@ -1,5 +1,6 @@
 import { ConfirmToast, Toast } from "src/utils/alert";
 import { Interpreter } from "src/interpreter";
+import { cleanProtectedCode } from "src/content/questions/CodeQuestion";
 
 export type EvalResponse = string | { error: string };
 
@@ -32,6 +33,7 @@ export async function evaluate(
   code: string,
   error: string,
 ): Promise<EvalResponse> {
+  code = cleanProtectedCode(code);
   if (interpreter?.isLoaded()) {
     return interpreter.runAsync(code);
   }

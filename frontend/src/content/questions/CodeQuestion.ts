@@ -49,8 +49,70 @@ export async function importRobotQuestion(id: string): Promise<RobotGameProps> {
   if ("boards" in question) {
     return question as RobotGameProps;
   }
-
   throw `Failed importing '${id}' as a RobotGame question`;
+}
+
+/** Modifiable opening marker. */
+export const mo = "\u034F";
+// export const mo = "→";
+/** Modifiable closing marker. */
+export const mc = "\u034F";
+// export const mc = "←";
+
+export function modifiableRanges(code: string): [number, number][] {
+  const chars = [...code];
+  const ranges: [number, number][] = [];
+  let start = -1;
+  for (const [i, c] of chars.entries()) {
+    console.log({c: c.charCodeAt(0).toString(16)});
+    if (c !== mo && c !== mc) continue;
+    
+    if (start === -1) {
+      start = i;
+    } else {
+      ranges.push([start+1, i]);
+      start = -1;
+    }
+  }
+  console.log(ranges);
+
+  return ranges;
+}
+
+export function isModifiable(code: string, pos: number): boolean {
+  const chars = [...code];
+
+  let i = pos-1;
+  console.log("left");
+  while (i >= 0) {
+    console.log(chars[i]);
+    // if closes before opening, not modifiable
+    if (chars[i] === mc) return false;
+    // if opens, modifiable
+    if (chars[i] === mo) break;
+    i -= 1;
+  }
+  // if reached start, not modifiable
+  if (i === -1) return false;
+  
+  i = pos;
+  console.log("right");
+  while (i < chars.length) {
+    console.log(chars[i]);
+    // if opens before closing, not modifiable
+    if (chars[i] === mo) return false;
+    // if closes, modifiable
+    if (chars[i] === mc) break;
+    i += 1;
+  }
+  // if reached end, not modifiable
+  if (i === chars.length) return false;
+
+  return true;
+}
+
+export function cleanProtectedCode(code: string): string {
+  return code.replaceAll(/‎|‎/g, "");
 }
 
 export type Validator = (
