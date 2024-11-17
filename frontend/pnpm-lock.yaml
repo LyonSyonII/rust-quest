@@ -38,6 +38,9 @@ importers:
       appwrite:
         specifier: ^16.0.2
         version: 16.0.2
+      codemirror-readonly-ranges:
+        specifier: 0.1.0-alpha.2
+        version: 0.1.0-alpha.2(@codemirror/state@6.4.1)(@codemirror/view@6.34.3)
       confettis:
         specifier: ^0.3.7
         version: 0.3.7
@@ -1092,6 +1095,12 @@ packages:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
 
+  codemirror-readonly-ranges@0.1.0-alpha.2:
+    resolution: {integrity: sha512-PjT/gDAn9cm7wN/YigxgBMsxYbO52bvPQLbN8dXG9seHNANNE9KELteFaS00/+1UR4fAnCq7Ueh+KmRTlPgFTw==}
+    peerDependencies:
+      '@codemirror/state': '>= 0.19.9'
+      '@codemirror/view': '>= 0.19.48'
+
   collapse-white-space@2.1.0:
     resolution: {integrity: sha512-loKTxY1zCOuG4j9f6EPnuyyYkf58RnhhWTvRoZEokgB+WbdXehfjFviyOVYkqzEWz1Q5kRiZdBYS5SwxbQYwzw==}
 
@@ -2123,6 +2132,9 @@ packages:
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  range-analyzer@0.1.1-alpha.2:
+    resolution: {integrity: sha512-Ad9J4t3zljH/DHNSDthAFyQdd5DniHTaqES/oTwAFB7prV7E4u01et6WYCpqbJSmUDC05XlMMR2ycO84Hi1IvA==}
 
   readdirp@4.0.2:
     resolution: {integrity: sha512-yDMz9g+VaZkqBYS/ozoBJwaBhTbZo3UNYQHNRw1D3UFQB8oHB4uS/tAODO+ZLjGWmUbKnIlOWO+aaIiAxrUWHA==}
@@ -3883,6 +3895,12 @@ snapshots:
 
   clsx@2.1.1: {}
 
+  codemirror-readonly-ranges@0.1.0-alpha.2(@codemirror/state@6.4.1)(@codemirror/view@6.34.3):
+    dependencies:
+      '@codemirror/state': 6.4.1
+      '@codemirror/view': 6.34.3
+      range-analyzer: 0.1.1-alpha.2
+
   collapse-white-space@2.1.0: {}
 
   color-convert@2.0.1:
@@ -5308,6 +5326,8 @@ snapshots:
       postcss-selector-parser: 6.1.2
 
   queue-microtask@1.2.3: {}
+
+  range-analyzer@0.1.1-alpha.2: {}
 
   readdirp@4.0.2: {}
 

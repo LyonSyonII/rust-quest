@@ -52,30 +52,45 @@ export async function importRobotQuestion(id: string): Promise<RobotGameProps> {
   throw `Failed importing '${id}' as a RobotGame question`;
 }
 
+
 /** Modifiable opening marker. */
-export const mo = "\u034F";
 // export const mo = "→";
 /** Modifiable closing marker. */
-export const mc = "\u034F";
 // export const mc = "←";
+/** Modifiable opening marker. */
+export const mo = "\u200B";
+/** Modifiable closing marker. */
+export const mc = "\u200B";
 
-export function modifiableRanges(code: string): [number, number][] {
+export function protectedRanges(code: string): [number, number][] {
   const chars = [...code];
   const ranges: [number, number][] = [];
-  let start = -1;
+  
+  let inProtected = false;
+  let start = 0;
   for (const [i, c] of chars.entries()) {
-    console.log({c: c.charCodeAt(0).toString(16)});
-    if (c !== mo && c !== mc) continue;
-    
-    if (start === -1) {
+    if (c !== mo) continue;
+
+    if (inProtected) {
+      inProtected = false;
       start = i;
     } else {
-      ranges.push([start+1, i]);
-      start = -1;
+      inProtected = true;
+      ranges.push([start, i+1]);
     }
   }
-  console.log(ranges);
+  if (ranges.length === 0) return [];
+  ranges.push([start, chars.length]);
 
+  return ranges;
+}
+export function modifiableRanges(protectedRanges: [number, number][]): [number, number][] {
+  const ranges: [number, number][] = [];
+  let prev = 0;
+  for (const [start, end] of protectedRanges) {
+    if (start > prev) ranges.push([prev, start-1]);
+    prev = end;
+  }
   return ranges;
 }
 

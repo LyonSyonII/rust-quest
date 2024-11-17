@@ -1,16 +1,20 @@
 import type { EditorState, Compartment, Extension } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
+import { type ViewUpdate, type DecorationSet, type EditorView } from "@codemirror/view";
 
 import {
   type CodeQuestion,
   importQuestion,
   isModifiable,
+  mc,
+  mo,
   modifiableRanges,
+  protectedRanges,
 } from "src/content/questions/CodeQuestion";
 import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
 import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
+import { createRegExp, exactly, not, word } from "magic-regexp";
 
 
 export class CodeBlock extends HTMLElement {
@@ -49,15 +53,16 @@ export class CodeBlock extends HTMLElement {
     this.themeObserver = onThemeChange((theme) => {
       this.setTheme(theme);
     });
-
-    this.loadCodemirror().then(() => importQuestion(this.id).then(async (q) => {
+    
+    importQuestion(this.id).then(async (q) => {
       this.setProps(q);
+      await this.loadCodemirror();
       this.setValue((await persistence.get(this.id)) || this.code);
       // replace placeholder with the real editor
       this.querySelector("pre")?.replaceWith(this.editor.dom);
       // avoid line gutter collapsing
       this.editor.requestMeasure();
-    }));
+    });
 
     if (import.meta.env.DEV) {
       const reset = $("#DEV-RESET", this);
@@ -75,8 +80,8 @@ export class CodeBlock extends HTMLElement {
     const { rust } = await import("@codemirror/lang-rust");
     const { bracketMatching, foldKeymap, indentOnInput } = await import("@codemirror/language");
     const { highlightSelectionMatches } = await import("@codemirror/search");
-    const { Compartment, EditorState: _EditorState } = await import("@codemirror/state");
-    const { EditorView, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers, placeholder, rectangularSelection } = await import("@codemirror/view");
+    const { Compartment, EditorState: _EditorState, RangeSet } = await import("@codemirror/state");
+    const { EditorView, highlightActiveLine, ViewPlugin, Decoration, WidgetType, highlightActiveLineGutter, keymap, lineNumbers, placeholder, rectangularSelection } = await import("@codemirror/view");
     
     this.EditorState = _EditorState;
 
@@ -118,6 +123,72 @@ export class CodeBlock extends HTMLElement {
     const editable = this.getAttribute("editable") === "true";
     const theme: string = document.documentElement.dataset.theme || "light";
     
+    // TODO: Decorate modifiable https://codemirror.net/examples/decoration/#atomic-ranges
+    
+
+    const rangeHighlighter = () =>
+      ViewPlugin.fromClass(
+        class {
+          readonly!: DecorationSet;
+          modifiable!: DecorationSet;
+
+          constructor(view: EditorView) {
+            this.updateRanges(view.state);
+          }
+          update(view: ViewUpdate) {
+            this.updateRanges(view.state)
+          }
+
+          updateRanges(state: EditorState) {
+            const ranges = protectedRanges(state.doc.toString());
+            console.log(ranges);
+            this.readonly = Decoration.set(
+              ranges.map(([start, end]) =>
+                Decoration.mark({
+                  inclusive: true,
+                  // attributes: { style: "text-decoration: underline;" },
+                }).range(start, end)
+              )
+            );
+/*             class EmptyWidget extends WidgetType {
+              // constructor() { super() }
+            
+              toDOM() {
+                const wrap = document.createElement("span")
+                wrap.setAttribute("aria-hidden", "true")
+                wrap.innerText = "#";
+                return wrap
+              }
+            
+              ignoreEvent() { return true }
+            } */
+
+            this.modifiable = Decoration.set(
+              modifiableRanges(ranges).map(([start, end]) => {
+/*                 console.log({start, end})
+                if (start === end) {
+                  return Decoration.replace({
+                    widget: new EmptyWidget()
+                  }).range(start, end+1);
+                } */
+                return Decoration.mark({
+                  inclusive: true,
+                  attributes: { style: "text-decoration: dashed underline;text-underline-offset: 4px" }
+                }).range(start, end+1);
+              }
+              )
+            );
+          }
+        },
+        {
+          decorations: (instance) => RangeSet.join([instance.readonly, instance.modifiable]),
+          provide: (plugin) =>
+            EditorView.atomicRanges.of(
+              (view: EditorView) =>
+                view.plugin(plugin)?.readonly || Decoration.none
+            ),
+        }
+      );
     this.editor = new EditorView({
       state: this.EditorState.create({
         doc: this.code,
@@ -132,30 +203,11 @@ export class CodeBlock extends HTMLElement {
           this.readonly.of(this.EditorState.readOnly.of(!editable)),
           EditorView.editable.of(editable),
           EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
-          this.EditorState.transactionFilter.of(tr => {
-            console.log(tr.selection);
-            if (!tr.docChanged || tr.selection === undefined) {
-              return tr;
-            }
-            
-            const value = this.getValue();
-            let modifiable = true;
-
-            tr.changes.desc.iterChangedRanges((from, to) => {
-              console.log({from, to});
-              for (const [start, end] of modifiableRanges(value)) {
-                if (from < start || to > end) {
-                  modifiable = false;
-                  return;
-                }
-              }
-              
-            }, true)
-
-            if (!modifiable) return [];
-            
-            console.log("Modifiable!");
-            return tr;
+          rangeHighlighter(),
+          // TODO: Remove special characters from selection when copying/pasting
+          this.EditorState.changeFilter.of(tr => {
+            if (!tr.selection) return true;
+            return protectedRanges(tr.startState.doc.toString()).flat();
           })
         ],
       }),
