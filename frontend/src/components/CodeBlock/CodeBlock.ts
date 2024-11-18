@@ -1,12 +1,11 @@
 import type {
-  Compartment,
   EditorState,
+  Compartment,
   Extension,
   RangeSet,
 } from "@codemirror/state";
 import type {
   Decoration,
-  DecorationSet,
   EditorView,
   ViewPlugin,
   ViewUpdate,
@@ -26,6 +25,7 @@ import { $ } from "src/utils/querySelector";
 import { reverseIndex } from "src/utils/strings";
 import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
+import { log } from "src/utils/popup";
 
 export class CodeBlock extends HTMLElement {
   output: HTMLOutputElement;
@@ -161,6 +161,14 @@ export class CodeBlock extends HTMLElement {
     const editable = this.getAttribute("editable") === "true";
     const theme: string = document.documentElement.dataset.theme || "light";
 
+    const protectedRangesExtensions = this.rangeProtected && [
+      editExtension(this.EditorState),
+      domHandlers(EditorView),
+      navigationExtension(this.EditorState),
+      rangeHighlighter(ViewPlugin, EditorView, RangeSet, Decoration),
+      protectedRangesExtension(this.EditorState)
+    ] || [];
+
     this.editor = new EditorView({
       state: this.EditorState.create({
         doc: this.code,
@@ -175,13 +183,7 @@ export class CodeBlock extends HTMLElement {
           this.readonly.of(this.EditorState.readOnly.of(!editable)),
           EditorView.editable.of(editable),
           EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
-          (this.rangeProtected &&
-            rangeHighlighter(ViewPlugin, EditorView, RangeSet, Decoration)) ||
-            [],
-          (this.rangeProtected && domHandlers(EditorView)) || [],
-          (this.rangeProtected && navigationExtension(this.EditorState)) || [],
-          (this.rangeProtected && protectedRangesExtension(this.EditorState)) ||
-            [],
+          ...protectedRangesExtensions
         ],
       }),
     });
@@ -372,15 +374,16 @@ function rangeHighlighter(
 
       modifiableDec() {
         return this.modifiable.map(([start, end]) =>
-          _Decoration
-            .mark({
-              inclusive: false,
-              attributes: {
-                style:
-                  "text-decoration: dashed underline;text-underline-offset: 4px",
-              },
-            })
-            .range(start, end + 1),
+          {
+            return _Decoration
+              .mark({
+                inclusive: false,
+                attributes: {
+                  style: `text-decoration: ${end-start >= 1 && "dashed" || ""} underline;text-underline-offset: 4px; text-decoration-thickness:2px`,
+                },
+              })
+              .range(start, end + 1);
+          },
         );
       }
     },
@@ -428,40 +431,73 @@ const domHandlers = ({ domEventHandlers }: typeof EditorView) =>
 const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
   transactionFilter.of((tr) => {
     if (tr.docChanged || !tr.selection) return tr;
-
+    
     const doc = tr.startState.doc;
     const selection = tr.startState.selection.main.head;
     const newSelection = tr.newSelection.main.head;
 
     const { number: line, from: lineStart } = doc.lineAt(selection);
-    const { number: newLine } = doc.lineAt(newSelection);
+    const { number: newLine, from: newLineStart, text: newLineText } = doc.lineAt(newSelection);
     if (line !== newLine && Math.abs(line - newLine) > 1) {
+      if (tr.isUserEvent("select.pointer")) {
+        return tr;
+      }
+      
       const nearest = newLine > line ? line + 1 : line - 1;
       const nearestLine = doc.line(nearest);
-      const column = newSelection - lineStart;
+      const column = selection - lineStart;
       let newColumn = Math.min(nearestLine.text.length, column);
-
+      
       const start = reverseIndex(nearestLine.text, mo, newColumn);
-      const end = nearestLine.text.indexOf(mo, newColumn);
-      // TODO: Check more cases, "let surname = "
-
+      const end = nearestLine.text.indexOf(mc, newColumn);
+      
       if (end === -1 && start >= 0) {
         newColumn = start;
       } else if (start === -1 && end >= 0) {
         newColumn = end;
-      } else {
-        return tr;
       }
-      return { selection: { anchor: nearestLine.from + newColumn } };
+      
+      const finalSelection = nearestLine.from + newColumn;
+      // log({selection, newSelection, line, newLine, nearestLine: nearestLine.number, column, start, end, newColumn, finalSelection});
+      return { selection: { anchor: finalSelection, head: finalSelection } };
     }
+    
+    const col = tr.newSelection.main.from - newLineStart;
+    
+    const leftModifiable = reverseIndex(newLineText, mo, col);
+    const rightModifiable = newLineText.indexOf(mc, col);
+    
+    // TODO: Not really, could be between two ranges, but seems enough condition for the editor to solve it by itself
+    if (col > leftModifiable && col < rightModifiable) return tr;
+    
+    const leftDist = col-leftModifiable;
+    const rightDist = rightModifiable-col;
+    let dist = 0;
+    if (leftModifiable > 0) {
+      dist = leftModifiable-col;
+    }
+    if (rightModifiable > 0) {
+      dist = Math.min(Math.abs(dist), rightModifiable-col);
+    }
+    
+    console.log({col, newLine, leftModifiable, rightModifiable, leftDist, rightDist});
+    return { selection: { anchor: newLineStart + col + dist } };
+});
 
-    const len = tr.startState.doc.length;
+const editExtension = ({transactionFilter}: typeof EditorState) =>
+  transactionFilter.of((tr) => {
+    return tr;
     const idx = tr.newSelection.main.from;
     const left = tr.startState.sliceDoc(idx, idx + 1);
-    const right = tr.startState.sliceDoc(idx - 1, idx);
-    if (right === mc && idx === len) return { selection: { anchor: len - 1 } };
-    if (left === mo && idx === 0) return [];
-    return tr;
+    const pos = tr.newSelection.main.head-1;
+    console.log({idx, left, pos});
+    if (left !== mo && left !== mc) {
+      return tr;
+    }
+    return {
+      // ...tr,
+      selection: { head: pos, anchor: pos }
+    };
   });
 
 const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
@@ -477,7 +513,7 @@ const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
       return false;
     }
     return ranges;
-  });
+});
 
 export interface CustomEventMap {
   run: RunEvent;

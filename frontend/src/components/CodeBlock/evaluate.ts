@@ -1,6 +1,6 @@
 import { cleanProtectedCode } from "src/content/questions/CodeQuestion";
 import { Interpreter } from "src/interpreter";
-import { ConfirmToast, Toast } from "src/utils/alert";
+import { ConfirmToast, Toast } from "src/utils/popup";
 
 export type EvalResponse = string | { error: string };
 
