@@ -162,7 +162,6 @@ export class CodeBlock extends HTMLElement {
     const theme: string = document.documentElement.dataset.theme || "light";
 
     const protectedRangesExtensions = this.rangeProtected && [
-      editExtension(this.EditorState),
       domHandlers(EditorView),
       navigationExtension(this.EditorState),
       rangeHighlighter(ViewPlugin, EditorView, RangeSet, Decoration),
@@ -432,46 +431,41 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
   transactionFilter.of((tr) => {
     if (tr.docChanged || !tr.selection) return tr;
     
+    // allow selecting all text
+    if (Math.abs(tr.newSelection.main.from - tr.newSelection.main.to) > 1) {
+      return tr;
+    }
+    
     const doc = tr.startState.doc;
     const selection = tr.startState.selection.main.head;
     const newSelection = tr.newSelection.main.head;
 
     const { number: line, from: lineStart } = doc.lineAt(selection);
-    const { number: newLine, from: newLineStart, text: newLineText } = doc.lineAt(newSelection);
-    if (line !== newLine && Math.abs(line - newLine) > 1) {
-      if (tr.isUserEvent("select.pointer")) {
-        return tr;
-      }
-      
+    let { number: newLine, from: newLineStart, text: newLineText } = doc.lineAt(newSelection);
+
+    // If editor skips a line when going up/down, set it to nearest line
+    if (!tr.isUserEvent("select.pointer") && line !== newLine && Math.abs(line - newLine) > 1) {
       const nearest = newLine > line ? line + 1 : line - 1;
       const nearestLine = doc.line(nearest);
-      const column = selection - lineStart;
-      let newColumn = Math.min(nearestLine.text.length, column);
-      
-      const start = reverseIndex(nearestLine.text, mo, newColumn);
-      const end = nearestLine.text.indexOf(mc, newColumn);
-      
-      if (end === -1 && start >= 0) {
-        newColumn = start;
-      } else if (start === -1 && end >= 0) {
-        newColumn = end;
-      }
-      
-      const finalSelection = nearestLine.from + newColumn;
-      // log({selection, newSelection, line, newLine, nearestLine: nearestLine.number, column, start, end, newColumn, finalSelection});
-      return { selection: { anchor: finalSelection, head: finalSelection } };
+      newLine = nearestLine.number;
+      newLineStart = nearestLine.from;
+      newLineText = nearestLine.text;
     }
     
     const col = tr.newSelection.main.from - newLineStart;
     
+    // never allow to go to column 0
+    // the first character is either a range delimiter or a protected section
+    if (col === 0) return [];
+    
     const leftModifiable = reverseIndex(newLineText, mo, col);
     const rightModifiable = newLineText.indexOf(mc, col);
-    
+
     // TODO: Not really, could be between two ranges, but seems enough condition for the editor to solve it by itself
+    // if in modifiable range, allow editor to continue
     if (col > leftModifiable && col < rightModifiable) return tr;
     
-    const leftDist = col-leftModifiable;
-    const rightDist = rightModifiable-col;
+    // set position to nearest modifiable section
     let dist = 0;
     if (leftModifiable > 0) {
       dist = leftModifiable-col;
@@ -480,25 +474,8 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
       dist = Math.min(Math.abs(dist), rightModifiable-col);
     }
     
-    console.log({col, newLine, leftModifiable, rightModifiable, leftDist, rightDist});
     return { selection: { anchor: newLineStart + col + dist } };
 });
-
-const editExtension = ({transactionFilter}: typeof EditorState) =>
-  transactionFilter.of((tr) => {
-    return tr;
-    const idx = tr.newSelection.main.from;
-    const left = tr.startState.sliceDoc(idx, idx + 1);
-    const pos = tr.newSelection.main.head-1;
-    console.log({idx, left, pos});
-    if (left !== mo && left !== mc) {
-      return tr;
-    }
-    return {
-      // ...tr,
-      selection: { head: pos, anchor: pos }
-    };
-  });
 
 const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
   changeFilter.of((tr) => {
