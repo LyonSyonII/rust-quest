@@ -3,6 +3,7 @@ import type {
   Compartment,
   Extension,
   RangeSet,
+  Text,
 } from "@codemirror/state";
 import type {
   Decoration,
@@ -425,10 +426,23 @@ const domHandlers = ({ domEventHandlers }: typeof EditorView) =>
       }
       return false;
     },
+    click(event, view) {
+      // TODO: Fix error when clicking too much at the left of a modifiable section and warping up
+/*       console.log(`Selected line ${view.state.doc.lineAt(view.state.selection.main.head).number}`);
+      const doc = view.state.doc;
+      const pos = view.state.selection.main.head;
+      const line = doc.lineAt(pos).number;
+      const { leftModifiable, rightModifiable } = getLeftRightModifiable(doc.toString(), pos);
+      const nearestModifiable = getNearestModifiable(doc, pos, leftModifiable, rightModifiable, line);
+      const something = view.lineBlockAtHeight(event.clientY);
+      console.log({something, maybeLine: doc.lineAt(something.to).number});
+      view.dispatch({ selection: { head: nearestModifiable, anchor: nearestModifiable } }); */
+    }
   });
 
 const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
   transactionFilter.of((tr) => {
+
     if (tr.docChanged || !tr.selection) return tr;
     
     // allow selecting all text
@@ -442,39 +456,41 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
 
     const { number: line, from: lineStart } = doc.lineAt(selection);
     let { number: newLine, from: newLineStart, text: newLineText } = doc.lineAt(newSelection);
-
-    // If editor skips a line when going up/down, set it to nearest line
+    let pos = tr.newSelection.main.from;
+    // If editor skips a line when going up/down,
+    // set it to nearest line with a modifiable range
     if (!tr.isUserEvent("select.pointer") && line !== newLine && Math.abs(line - newLine) > 1) {
       const nearest = newLine > line ? line + 1 : line - 1;
       const nearestLine = doc.line(nearest);
-      newLine = nearestLine.number;
-      newLineStart = nearestLine.from;
-      newLineText = nearestLine.text;
+      const lastModifiable = reverseIndex(newLineText, mc);
+      if (lastModifiable > 0) {
+        newLine = nearestLine.number;
+        newLineStart = nearestLine.from;
+        newLineText = nearestLine.text;
+        
+        const col = selection - lineStart;
+        const newCol = Math.min(col, lastModifiable);
+        pos = newLineStart + newCol;
+      }
     }
     
-    const col = tr.newSelection.main.from - newLineStart;
-    
+    const text = doc.toString();
+    const { leftModifiable, rightModifiable } = getLeftRightModifiable(text, pos);
+
     // never allow to go to column 0
     // the first character is either a range delimiter or a protected section
-    if (col === 0) return [];
-    
-    const leftModifiable = reverseIndex(newLineText, mo, col);
-    const rightModifiable = newLineText.indexOf(mc, col);
+    if (pos === 0) return { selection: { head: rightModifiable+1, anchor: rightModifiable+1 } };
 
     // TODO: Not really, could be between two ranges, but seems enough condition for the editor to solve it by itself
     // if in modifiable range, allow editor to continue
-    if (col > leftModifiable && col < rightModifiable) return tr;
+    if (pos > leftModifiable && pos < rightModifiable) return { selection: { head: pos, anchor: pos } };
     
-    // set position to nearest modifiable section
-    let dist = 0;
-    if (leftModifiable > 0) {
-      dist = leftModifiable-col;
-    }
-    if (rightModifiable > 0) {
-      dist = Math.min(Math.abs(dist), rightModifiable-col);
-    }
+    const nearestModifiable = getNearestModifiable(doc, pos, leftModifiable, rightModifiable);
     
-    return { selection: { anchor: newLineStart + col + dist } };
+    console.log({leftModifiable, rightModifiable, pos, nearestModifiable});
+
+    
+    return { selection: { head: nearestModifiable, anchor: nearestModifiable } };
 });
 
 const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
@@ -491,6 +507,30 @@ const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
     }
     return ranges;
 });
+
+function getLeftRightModifiable(text: string, pos: number) {
+  return {
+    leftModifiable: reverseIndex(text, mo, pos),
+    rightModifiable: text.indexOf(mc, pos)
+  };
+}
+
+function getNearestModifiable(doc: Text, pos: number, leftModifiable: number, rightModifiable: number, line?: number): number {
+  const leftLine = leftModifiable > 0 && doc.lineAt(leftModifiable).number || 0;
+  const rightLine = rightModifiable > 0 && doc.lineAt(rightModifiable).number || 0;
+  
+  // console.log({ leftLine, rightLine, line });
+  
+  // set position to nearest modifiable section
+  let dist = Number.POSITIVE_INFINITY;
+  if (leftModifiable > 0) {
+    dist = leftModifiable-pos;
+  }
+  if (rightModifiable > 0 && rightModifiable-pos < Math.abs(dist)) {
+    dist = rightModifiable-pos;
+  }
+  return pos + dist;
+}
 
 export interface CustomEventMap {
   run: RunEvent;
