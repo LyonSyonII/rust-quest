@@ -1,5 +1,16 @@
-import type { Compartment, EditorState, Extension } from "@codemirror/state";
-import type { DecorationSet, EditorView, ViewUpdate } from "@codemirror/view";
+import type {
+  Compartment,
+  EditorState,
+  Extension,
+  RangeSet,
+} from "@codemirror/state";
+import type {
+  Decoration,
+  DecorationSet,
+  EditorView,
+  ViewPlugin,
+  ViewUpdate,
+} from "@codemirror/view";
 
 import {
   type CodeQuestion,
@@ -12,6 +23,7 @@ import {
 } from "src/content/questions/CodeQuestion";
 import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
+import { reverseIndex } from "src/utils/strings";
 import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
 
@@ -55,7 +67,7 @@ export class CodeBlock extends HTMLElement {
 
     importQuestion(this.id).then(async (q) => {
       this.setProps(q);
-      
+
       await this.loadCodemirror();
       this.setValue((await persistence.get(this.id)) || this.code);
       // replace placeholder with the real editor
@@ -149,143 +161,6 @@ export class CodeBlock extends HTMLElement {
     const editable = this.getAttribute("editable") === "true";
     const theme: string = document.documentElement.dataset.theme || "light";
 
-    const rangeHighlighter = () =>
-      ViewPlugin.fromClass(
-        class {
-          readonly!: DecorationSet;
-          modifiable!: DecorationSet;
-
-          constructor(view: EditorView) {
-            this.updateRanges(view.state);
-          }
-          update(view: ViewUpdate) {
-            this.updateRanges(view.state);
-          }
-
-          updateRanges(state: EditorState) {
-            const ranges = protectedRanges(state.doc.toString());
-            this.readonly = Decoration.set(
-              ranges.map(([start, end]) =>
-                Decoration.mark({
-                  inclusive: false, // attributes: { style: "text-decoration: underline;" },
-                }).range(start, end),
-              ),
-            );
-
-            this.modifiable = Decoration.set(
-              modifiableRanges(ranges).map(([start, end]) =>
-                Decoration.mark({
-                  inclusive: false,
-                  attributes: {
-                    style:
-                      "text-decoration: dashed underline;text-underline-offset: 4px",
-                  },
-                }).range(start, end + 1),
-              ),
-            );
-          }
-        },
-        {
-          decorations: (instance) =>
-            RangeSet.join([instance.readonly, instance.modifiable]),
-          provide: (plugin) =>
-            EditorView.atomicRanges.of(
-              (view: EditorView) =>
-                view.plugin(plugin)?.readonly || Decoration.none,
-            ),
-        },
-      );
-
-    const domHandlers = () =>
-      EditorView.domEventHandlers({
-        copy(event, view) {
-          const clip = event.clipboardData;
-          if (!clip) return;
-
-          const selection = view.state.selection.main;
-          const data = view.state.sliceDoc(selection.from, selection.to);
-          const replaced = cleanProtectedCode(data);
-          clip.setData("text/plain", replaced);
-          return true;
-        },
-        cut(event, view) {
-          const ranges = protectedRanges(view.state.doc.toString());
-          for (const { from, to } of view.state.selection.ranges) {
-            for (const [start, end] of ranges) {
-              if (from >= start && from < end) return true;
-              if (to > start && to <= end) return true;
-            }
-          }
-          return false;
-        },
-      });
-
-    const navigationExtension = () =>
-      this.EditorState.transactionFilter.of((tr) => {
-        if (tr.docChanged || !tr.selection) return tr;
-
-        const len = tr.startState.doc.length;
-        const idx = tr.newSelection.main.from;
-        const left = tr.startState.sliceDoc(idx, idx + 1);
-        const right = tr.startState.sliceDoc(idx - 1, idx);
-        const line = tr.startState.doc.lineAt(
-          tr.startState.selection.main.head,
-        );
-        const newLine = tr.startState.doc.lineAt(tr.newSelection.main.head);
-
-        if (
-          line.number !== newLine.number &&
-          Math.abs(line.number - newLine.number) > 1
-        ) {
-          const nearest =
-            newLine.number > line.number ? line.number + 1 : line.number - 1;
-          const nearestLine = tr.startState.doc.line(nearest);
-          const column = tr.selection.main.head - line.from;
-          let newColumn = Math.min(nearestLine.text.length, column);
-          const reverseIndex = (
-            string: string,
-            search: string,
-            position: number,
-          ) => {
-            const chars = [...string.substring(0, position)].reverse();
-            for (const [i, c] of chars.entries()) {
-              if (c === search) return chars.length - i;
-            }
-            return -1;
-          };
-          const start = reverseIndex(nearestLine.text, mo, newColumn);
-          const end = nearestLine.text.indexOf(mo, newColumn);
-          if (end === -1 && start >= 0) {
-            newColumn = start;
-          } else if (start === -1 && end >= 0) {
-            newColumn = end;
-          } else {
-            return tr;
-          }
-          return { selection: { anchor: nearestLine.from + newColumn } };
-        }
-
-        if (right === mc && idx === len)
-          return { selection: { anchor: len - 1 } };
-        if (left === mo && idx === 0) return [];
-        return tr;
-      });
-
-    const protectedRangesExtension = () =>
-      this.EditorState.changeFilter.of((tr) => {
-        if (!tr.selection) return true;
-
-        const doc = tr.startState.doc.toString();
-        const ranges = protectedRanges(doc).flat(2);
-        if (ranges.length === 0) return true;
-        // first and last parts are always protected
-        const { from, to } = tr.startState.selection.main;
-        if (from === to && (from === 0 || from === doc.length)) {
-          return false;
-        }
-        return ranges;
-      });
-
     this.editor = new EditorView({
       state: this.EditorState.create({
         doc: this.code,
@@ -300,10 +175,13 @@ export class CodeBlock extends HTMLElement {
           this.readonly.of(this.EditorState.readOnly.of(!editable)),
           EditorView.editable.of(editable),
           EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
-          rangeHighlighter(),
-          (this.rangeProtected && domHandlers()) || [],
-          (this.rangeProtected && navigationExtension()) || [],
-          (this.rangeProtected && protectedRangesExtension()) || [],
+          (this.rangeProtected &&
+            rangeHighlighter(ViewPlugin, EditorView, RangeSet, Decoration)) ||
+            [],
+          (this.rangeProtected && domHandlers(EditorView)) || [],
+          (this.rangeProtected && navigationExtension(this.EditorState)) || [],
+          (this.rangeProtected && protectedRangesExtension(this.EditorState)) ||
+            [],
         ],
       }),
     });
@@ -455,6 +333,151 @@ export class CodeBlock extends HTMLElement {
     value && persistence.set(this.id, value);
   }
 }
+
+function rangeHighlighter(
+  _ViewPlugin: typeof ViewPlugin,
+  { atomicRanges }: typeof EditorView,
+  _RangeSet: typeof RangeSet,
+  _Decoration: typeof Decoration,
+) {
+  return _ViewPlugin.fromClass(
+    class {
+      private readonly: [start: number, end: number][] = [];
+      private modifiable: [start: number, end: number][] = [];
+
+      constructor(view: EditorView) {
+        this.updateRanges(view.state);
+      }
+      update(view: ViewUpdate) {
+        this.updateRanges(view.state);
+      }
+
+      updateRanges(state: EditorState) {
+        this.readonly = protectedRanges(state.doc.toString());
+        this.modifiable = modifiableRanges(this.readonly);
+      }
+
+      rangesToDec() {
+        return {
+          readonly: this.readonlyDec(),
+          modifiable: this.modifiableDec(),
+        };
+      }
+
+      readonlyDec() {
+        return this.readonly.map(([start, end]) =>
+          _Decoration.mark({}).range(start, end),
+        );
+      }
+
+      modifiableDec() {
+        return this.modifiable.map(([start, end]) =>
+          _Decoration
+            .mark({
+              inclusive: false,
+              attributes: {
+                style:
+                  "text-decoration: dashed underline;text-underline-offset: 4px",
+              },
+            })
+            .range(start, end + 1),
+        );
+      }
+    },
+    {
+      decorations: (instance) => {
+        const { readonly, modifiable } = instance.rangesToDec();
+
+        return _Decoration.set([...readonly, ...modifiable], true);
+      },
+
+      provide: (plugin) => {
+        const of = (view: EditorView) => {
+          return _Decoration.set(view.plugin(plugin)?.readonlyDec() || []);
+        };
+        return atomicRanges.of(of);
+      },
+    },
+  );
+}
+
+const domHandlers = ({ domEventHandlers }: typeof EditorView) =>
+  domEventHandlers({
+    copy(event, view) {
+      const clip = event.clipboardData;
+      if (!clip) return;
+
+      const selection = view.state.selection.main;
+      const data = view.state.sliceDoc(selection.from, selection.to);
+      const replaced = cleanProtectedCode(data);
+      clip.setData("text/plain", replaced);
+      return true;
+    },
+    cut(event, view) {
+      const ranges = protectedRanges(view.state.doc.toString());
+      for (const { from, to } of view.state.selection.ranges) {
+        for (const [start, end] of ranges) {
+          if (from >= start && from < end) return true;
+          if (to > start && to <= end) return true;
+        }
+      }
+      return false;
+    },
+  });
+
+const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
+  transactionFilter.of((tr) => {
+    if (tr.docChanged || !tr.selection) return tr;
+
+    const doc = tr.startState.doc;
+    const selection = tr.startState.selection.main.head;
+    const newSelection = tr.newSelection.main.head;
+
+    const { number: line, from: lineStart } = doc.lineAt(selection);
+    const { number: newLine } = doc.lineAt(newSelection);
+    if (line !== newLine && Math.abs(line - newLine) > 1) {
+      const nearest = newLine > line ? line + 1 : line - 1;
+      const nearestLine = doc.line(nearest);
+      const column = newSelection - lineStart;
+      let newColumn = Math.min(nearestLine.text.length, column);
+
+      const start = reverseIndex(nearestLine.text, mo, newColumn);
+      const end = nearestLine.text.indexOf(mo, newColumn);
+      // TODO: Check more cases, "let surname = "
+
+      if (end === -1 && start >= 0) {
+        newColumn = start;
+      } else if (start === -1 && end >= 0) {
+        newColumn = end;
+      } else {
+        return tr;
+      }
+      return { selection: { anchor: nearestLine.from + newColumn } };
+    }
+
+    const len = tr.startState.doc.length;
+    const idx = tr.newSelection.main.from;
+    const left = tr.startState.sliceDoc(idx, idx + 1);
+    const right = tr.startState.sliceDoc(idx - 1, idx);
+    if (right === mc && idx === len) return { selection: { anchor: len - 1 } };
+    if (left === mo && idx === 0) return [];
+    return tr;
+  });
+
+const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
+  changeFilter.of((tr) => {
+    if (!tr.selection) return true;
+
+    const doc = tr.startState.doc.toString();
+    const ranges = protectedRanges(doc).flat(2);
+    if (ranges.length === 0) return true;
+    // first and last parts are always protected
+    const { from, to } = tr.startState.selection.main;
+    if (from === to && (from === 0 || from === doc.length)) {
+      return false;
+    }
+    return ranges;
+  });
 
 export interface CustomEventMap {
   run: RunEvent;
