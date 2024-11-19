@@ -1,6 +1,6 @@
 import type {
-  EditorState,
   Compartment,
+  EditorState,
   Extension,
   RangeSet,
   Text,
@@ -22,11 +22,11 @@ import {
   protectedRanges,
 } from "src/content/questions/CodeQuestion";
 import { onThemeChange } from "src/utils/onThemeChange";
+import { log } from "src/utils/popup";
 import { $ } from "src/utils/querySelector";
 import { reverseIndex } from "src/utils/strings";
 import { type EvalResponse, evaluate } from "./evaluate";
 import * as persistence from "./persistence";
-import { log } from "src/utils/popup";
 
 export class CodeBlock extends HTMLElement {
   output: HTMLOutputElement;
@@ -162,12 +162,14 @@ export class CodeBlock extends HTMLElement {
     const editable = this.getAttribute("editable") === "true";
     const theme: string = document.documentElement.dataset.theme || "light";
 
-    const protectedRangesExtensions = this.rangeProtected && [
-      domHandlers(EditorView),
-      navigationExtension(this.EditorState),
-      rangeHighlighter(ViewPlugin, EditorView, RangeSet, Decoration),
-      protectedRangesExtension(this.EditorState)
-    ] || [];
+    const protectedRangesExtensions =
+      (this.rangeProtected && [
+        domHandlers(EditorView),
+        navigationExtension(this.EditorState),
+        rangeHighlighter(ViewPlugin, EditorView, RangeSet, Decoration),
+        protectedRangesExtension(this.EditorState),
+      ]) ||
+      [];
 
     this.editor = new EditorView({
       state: this.EditorState.create({
@@ -183,7 +185,7 @@ export class CodeBlock extends HTMLElement {
           this.readonly.of(this.EditorState.readOnly.of(!editable)),
           EditorView.editable.of(editable),
           EditorView.contentAttributes.of({ "aria-label": "Code Block" }),
-          ...protectedRangesExtensions
+          ...protectedRangesExtensions,
         ],
       }),
     });
@@ -373,18 +375,16 @@ function rangeHighlighter(
       }
 
       modifiableDec() {
-        return this.modifiable.map(([start, end]) =>
-          {
-            return _Decoration
-              .mark({
-                inclusive: false,
-                attributes: {
-                  style: `text-decoration: ${end-start >= 1 && "dashed" || ""} underline;text-underline-offset: 4px; text-decoration-thickness:2px`,
-                },
-              })
-              .range(start, end + 1);
-          },
-        );
+        return this.modifiable.map(([start, end]) => {
+          return _Decoration
+            .mark({
+              inclusive: false,
+              attributes: {
+                style: `text-decoration: ${(end - start >= 1 && "dashed") || ""} underline;text-underline-offset: 4px; text-decoration-thickness:2px`,
+              },
+            })
+            .range(start, end + 1);
+        });
       }
     },
     {
@@ -428,7 +428,7 @@ const domHandlers = ({ domEventHandlers }: typeof EditorView) =>
     },
     click(event, view) {
       // TODO: Fix error when clicking too much at the left of a modifiable section and warping up
-/*       console.log(`Selected line ${view.state.doc.lineAt(view.state.selection.main.head).number}`);
+      /*       console.log(`Selected line ${view.state.doc.lineAt(view.state.selection.main.head).number}`);
       const doc = view.state.doc;
       const pos = view.state.selection.main.head;
       const line = doc.lineAt(pos).number;
@@ -437,29 +437,36 @@ const domHandlers = ({ domEventHandlers }: typeof EditorView) =>
       const something = view.lineBlockAtHeight(event.clientY);
       console.log({something, maybeLine: doc.lineAt(something.to).number});
       view.dispatch({ selection: { head: nearestModifiable, anchor: nearestModifiable } }); */
-    }
+    },
   });
 
 const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
   transactionFilter.of((tr) => {
-
     if (tr.docChanged || !tr.selection) return tr;
-    
+
     // allow selecting all text
     if (Math.abs(tr.newSelection.main.from - tr.newSelection.main.to) > 1) {
       return tr;
     }
-    
+
     const doc = tr.startState.doc;
     const selection = tr.startState.selection.main.head;
     const newSelection = tr.newSelection.main.head;
 
     const { number: line, from: lineStart } = doc.lineAt(selection);
-    let { number: newLine, from: newLineStart, text: newLineText } = doc.lineAt(newSelection);
+    let {
+      number: newLine,
+      from: newLineStart,
+      text: newLineText,
+    } = doc.lineAt(newSelection);
     let pos = tr.newSelection.main.from;
     // If editor skips a line when going up/down,
     // set it to nearest line with a modifiable range
-    if (!tr.isUserEvent("select.pointer") && line !== newLine && Math.abs(line - newLine) > 1) {
+    if (
+      !tr.isUserEvent("select.pointer") &&
+      line !== newLine &&
+      Math.abs(line - newLine) > 1
+    ) {
       const nearest = newLine > line ? line + 1 : line - 1;
       const nearestLine = doc.line(nearest);
       const lastModifiable = reverseIndex(newLineText, mc);
@@ -467,27 +474,41 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
         newLine = nearestLine.number;
         newLineStart = nearestLine.from;
         newLineText = nearestLine.text;
-        
+
         const col = selection - lineStart;
         const newCol = Math.min(col, lastModifiable);
         pos = newLineStart + newCol;
       }
     }
-    
+
     const text = doc.toString();
-    const { leftModifiable, rightModifiable } = getLeftRightModifiable(text, pos);
+    const { leftModifiable, rightModifiable } = getLeftRightModifiable(
+      text,
+      pos,
+    );
 
     // never allow to go to column 0
     // the first character is either a range delimiter or a protected section
-    if (pos === 0) return { selection: { head: rightModifiable+1, anchor: rightModifiable+1 } };
+    if (pos === 0)
+      return {
+        selection: { head: rightModifiable + 1, anchor: rightModifiable + 1 },
+      };
 
     // TODO: Not really, could be between two ranges, but seems enough condition for the editor to solve it by itself
     // if in modifiable range, allow editor to continue
-    if (pos > leftModifiable && pos < rightModifiable) return { selection: { head: pos, anchor: pos } };
-    
-    const nearestModifiable = getNearestModifiable(doc, pos, leftModifiable, rightModifiable);
-    return { selection: { head: nearestModifiable, anchor: nearestModifiable } };
-});
+    if (pos > leftModifiable && pos < rightModifiable)
+      return { selection: { head: pos, anchor: pos } };
+
+    const nearestModifiable = getNearestModifiable(
+      doc,
+      pos,
+      leftModifiable,
+      rightModifiable,
+    );
+    return {
+      selection: { head: nearestModifiable, anchor: nearestModifiable },
+    };
+  });
 
 const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
   changeFilter.of((tr) => {
@@ -502,28 +523,36 @@ const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
       return false;
     }
     return ranges;
-});
+  });
 
 function getLeftRightModifiable(text: string, pos: number) {
   return {
     leftModifiable: reverseIndex(text, mo, pos),
-    rightModifiable: text.indexOf(mc, pos)
+    rightModifiable: text.indexOf(mc, pos),
   };
 }
 
-function getNearestModifiable(doc: Text, pos: number, leftModifiable: number, rightModifiable: number, line?: number): number {
-  const leftLine = leftModifiable > 0 && doc.lineAt(leftModifiable).number || 0;
-  const rightLine = rightModifiable > 0 && doc.lineAt(rightModifiable).number || 0;
-  
+function getNearestModifiable(
+  doc: Text,
+  pos: number,
+  leftModifiable: number,
+  rightModifiable: number,
+  line?: number,
+): number {
+  const leftLine =
+    (leftModifiable > 0 && doc.lineAt(leftModifiable).number) || 0;
+  const rightLine =
+    (rightModifiable > 0 && doc.lineAt(rightModifiable).number) || 0;
+
   // console.log({ leftLine, rightLine, line });
-  
+
   // set position to nearest modifiable section
   let dist = Number.POSITIVE_INFINITY;
   if (leftModifiable > 0) {
-    dist = leftModifiable-pos;
+    dist = leftModifiable - pos;
   }
-  if (rightModifiable > 0 && rightModifiable-pos < Math.abs(dist)) {
-    dist = rightModifiable-pos;
+  if (rightModifiable > 0 && rightModifiable - pos < Math.abs(dist)) {
+    dist = rightModifiable - pos;
   }
   return pos + dist;
 }
