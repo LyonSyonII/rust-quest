@@ -6,6 +6,20 @@ export type EvalResponse = string | { error: string };
 
 let interpreter: Interpreter | undefined = undefined;
 
+async function loadEruda() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has("dbg")) return;
+  
+  const { default: eruda } = await import("eruda");
+  eruda.init();
+  eruda.show();
+  const console = eruda.get("console");
+  window.console = console;
+  console.config.set('catchGlobalErr', true);
+  
+  console.log("Loaded Eruda");
+}
+
 (async () => {
   const toast = async () =>
     ConfirmToast({
@@ -14,6 +28,10 @@ let interpreter: Interpreter | undefined = undefined;
       confirmButtonText: "Yes!",
       denyButtonText: "Nope",
     }).then((t) => t.isConfirmed);
+  
+  await loadEruda();
+
+  console.log("Loading Interpreter");
 
   const hasSaidOk = localStorage.getItem("download-interpreter");
   if (hasSaidOk || (await toast())) {
@@ -21,11 +39,12 @@ let interpreter: Interpreter | undefined = undefined;
     interpreter = new Interpreter();
     interpreter.onAssetDownloaded((a) => {
       console.log(`Downloaded "${a}"`);
+      Toast({ text: `Downloaded "${a}"`, timer: 1000 });
     });
     interpreter.onLoaded(() => {
       console.log("Interpreter loaded!");
-      !hasSaidOk &&
-        Toast({ title: "Interpreter downloaded successfully!", timer: 3000 });
+      const state = hasSaidOk ? "loaded" : "downloaded";
+      Toast({ title: `Interpreter ${state} successfully!`, timer: 3000 });
     });
   }
 })();

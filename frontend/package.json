@@ -25,6 +25,7 @@
     "appwrite": "^16.0.2",
     "codemirror-readonly-ranges": "0.1.0-alpha.2",
     "confettis": "^0.3.7",
+    "eruda": "^3.4.1",
     "idb-keyval": "^6.2.1",
     "lz-string": "^1.5.0",
     "magic-regexp": "^0.8.0",
