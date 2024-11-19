@@ -486,10 +486,6 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
     if (pos > leftModifiable && pos < rightModifiable) return { selection: { head: pos, anchor: pos } };
     
     const nearestModifiable = getNearestModifiable(doc, pos, leftModifiable, rightModifiable);
-    
-    console.log({leftModifiable, rightModifiable, pos, nearestModifiable});
-
-    
     return { selection: { head: nearestModifiable, anchor: nearestModifiable } };
 });
 
