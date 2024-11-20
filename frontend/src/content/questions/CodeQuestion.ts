@@ -63,7 +63,7 @@ export const mo = "\u200B";
 /** Modifiable closing marker. */
 export const mc = "\u200B";
 
-export function protectedRanges(code: string): [number, number][] {
+export function getProtectedRanges(code: string): [number, number][] {
   const chars = [...code];
   const ranges: [number, number][] = [];
   
@@ -83,7 +83,7 @@ export function protectedRanges(code: string): [number, number][] {
 
   return ranges;
 }
-export function modifiableRanges(protectedRanges: [number, number][]): [number, number][] {
+export function getModifiableRanges(protectedRanges: [number, number][]): [number, number][] {
   const ranges: [number, number][] = [];
   let prev = 0;
   for (const [start, end] of protectedRanges) {
