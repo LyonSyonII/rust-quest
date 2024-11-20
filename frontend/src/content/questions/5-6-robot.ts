@@ -3,19 +3,19 @@ import {
   type RobotGameProps,
 } from "@components/RobotGame/RobotGameTypes";
 import { char, createRegExp, exactly, maybe, oneOrMore } from "magic-regexp";
-import { type Validator, codeMessQuestion, replace } from "./CodeQuestion";
+import { type Validator, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
 import { _, __, end, fn, line, start } from "./regex";
 
 // "$\\n" needed to preserve first empty line
 const code = `
-$\\n
-if ? {
-  
-  
+${mo}${mc}
+if ${mo}?${mc} {
+  ${mo} ${mc}
+  ${mo} ${mc}
 }
-if ? {
-  
-  
+if ${mo}?${mc} {
+  ${mo} ${mc}
+  ${mo} ${mc}
 }`;
 
 const validator: Validator = (value: string) => {
