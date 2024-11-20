@@ -18,8 +18,10 @@ import {
   importQuestion,
   mc,
   mo,
-  modifiableRanges,
-  protectedRanges,
+  getModifiableRanges,
+  getProtectedRanges,
+  getNearestModifiable,
+  getNearestModifiableInLine,
 } from "src/content/questions/CodeQuestion";
 import { onThemeChange } from "src/utils/onThemeChange";
 import { log } from "src/utils/popup";
@@ -357,8 +359,8 @@ function rangeHighlighter(
       }
 
       updateRanges(state: EditorState) {
-        this.readonly = protectedRanges(state.doc.toString());
-        this.modifiable = modifiableRanges(this.readonly);
+        this.readonly = getProtectedRanges(state.doc.toString());
+        this.modifiable = getModifiableRanges(this.readonly);
       }
 
       rangesToDec() {
@@ -417,7 +419,7 @@ const domHandlers = ({ domEventHandlers }: typeof EditorView) =>
       return true;
     },
     cut(event, view) {
-      const ranges = protectedRanges(view.state.doc.toString());
+      const ranges = getProtectedRanges(view.state.doc.toString());
       for (const { from, to } of view.state.selection.ranges) {
         for (const [start, end] of ranges) {
           if (from >= start && from < end) return true;
@@ -449,65 +451,44 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
       return tr;
     }
 
-    const doc = tr.startState.doc;
-    const selection = tr.startState.selection.main.head;
-    const newSelection = tr.newSelection.main.head;
+    const pos = tr.startState.selection.main.head;
+    const newPos = tr.newSelection.main.head;
 
-    const { number: line, from: lineStart } = doc.lineAt(selection);
-    let {
-      number: newLine,
-      from: newLineStart,
-      text: newLineText,
-    } = doc.lineAt(newSelection);
-    let pos = tr.newSelection.main.from;
-    // If editor skips a line when going up/down,
-    // set it to nearest line with a modifiable range
+    const doc = tr.newDoc;
+    const text = doc.toString();
+    const protectedRanges = getProtectedRanges(text);
+    const modifiableRanges = getModifiableRanges(protectedRanges);
+
+    const line = doc.lineAt(pos);
+    const newLine = doc.lineAt(newPos);
+    const lineDist = line.number - newLine.number;
+
     if (
       !tr.isUserEvent("select.pointer") &&
-      line !== newLine &&
-      Math.abs(line - newLine) > 1
+      Math.abs(line.number - newLine.number) > 1
     ) {
-      const nearest = newLine > line ? line + 1 : line - 1;
-      const nearestLine = doc.line(nearest);
-      const lastModifiable = reverseIndex(newLineText, mc);
-      if (lastModifiable > 0) {
-        newLine = nearestLine.number;
-        newLineStart = nearestLine.from;
-        newLineText = nearestLine.text;
-
-        const col = selection - lineStart;
-        const newCol = Math.min(col, lastModifiable);
-        pos = newLineStart + newCol;
+      // Solve line skip bug
+      let nearestLine = line;
+      if (lineDist > 1) {
+        nearestLine = doc.line(line.number - 1);
+      } else if (lineDist < 0) {
+        nearestLine = doc.line(line.number + 1);
       }
+      const col = pos - line.from;
+      const newPos = Math.min(nearestLine.to, nearestLine.from + col);
+      const nearest = getNearestModifiableInLine(
+        newPos,
+        modifiableRanges,
+        nearestLine,
+      );
+      // if modifiable section found in line
+      if (nearest !== Number.POSITIVE_INFINITY)
+        return { selection: { anchor: nearest, head: nearest } };
     }
-
-    const text = doc.toString();
-    const { leftModifiable, rightModifiable } = getLeftRightModifiable(
-      text,
-      pos,
-    );
-
-    // never allow to go to column 0
-    // the first character is either a range delimiter or a protected section
-    if (pos === 0)
-      return {
-        selection: { head: rightModifiable + 1, anchor: rightModifiable + 1 },
-      };
-
-    // TODO: Not really, could be between two ranges, but seems enough condition for the editor to solve it by itself
-    // if in modifiable range, allow editor to continue
-    if (pos > leftModifiable && pos < rightModifiable)
-      return { selection: { head: pos, anchor: pos } };
-
-    const nearestModifiable = getNearestModifiable(
-      doc,
-      pos,
-      leftModifiable,
-      rightModifiable,
-    );
-    return {
-      selection: { head: nearestModifiable, anchor: nearestModifiable },
-    };
+    
+    const nearest = getNearestModifiable(newPos, modifiableRanges);
+    if (nearest === Number.POSITIVE_INFINITY) return [];
+    return { selection: { anchor: nearest, head: nearest } };
   });
 
 const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
@@ -515,7 +496,7 @@ const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
     if (!tr.selection) return true;
 
     const doc = tr.startState.doc.toString();
-    const ranges = protectedRanges(doc).flat(2);
+    const ranges = getProtectedRanges(doc).flat(2);
     if (ranges.length === 0) return true;
     // first and last parts are always protected
     const { from, to } = tr.startState.selection.main;
@@ -524,38 +505,6 @@ const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>
     }
     return ranges;
   });
-
-function getLeftRightModifiable(text: string, pos: number) {
-  return {
-    leftModifiable: reverseIndex(text, mo, pos),
-    rightModifiable: text.indexOf(mc, pos),
-  };
-}
-
-function getNearestModifiable(
-  doc: Text,
-  pos: number,
-  leftModifiable: number,
-  rightModifiable: number,
-  line?: number,
-): number {
-  const leftLine =
-    (leftModifiable > 0 && doc.lineAt(leftModifiable).number) || 0;
-  const rightLine =
-    (rightModifiable > 0 && doc.lineAt(rightModifiable).number) || 0;
-
-  // console.log({ leftLine, rightLine, line });
-
-  // set position to nearest modifiable section
-  let dist = Number.POSITIVE_INFINITY;
-  if (leftModifiable > 0) {
-    dist = leftModifiable - pos;
-  }
-  if (rightModifiable > 0 && rightModifiable - pos < Math.abs(dist)) {
-    dist = rightModifiable - pos;
-  }
-  return pos + dist;
-}
 
 export interface CustomEventMap {
   run: RunEvent;

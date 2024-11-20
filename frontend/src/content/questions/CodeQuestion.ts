@@ -63,7 +63,7 @@ export const mo = "\u200B";
 /** Modifiable closing marker. */
 export const mc = "\u200B";
 
-export function getProtectedRanges(code: string): [number, number][] {
+export function getProtectedRanges(code: string): [start: number, end: number][] {
   const chars = [...code];
   const ranges: [number, number][] = [];
   
@@ -83,14 +83,53 @@ export function getProtectedRanges(code: string): [number, number][] {
 
   return ranges;
 }
-export function getModifiableRanges(protectedRanges: [number, number][]): [number, number][] {
+export function getModifiableRanges(protectedRanges: [start: number, end: number][]): [start: number, end: number][] {
   const ranges: [number, number][] = [];
-  let prev = 0;
-  for (const [start, end] of protectedRanges) {
-    if (start > prev) ranges.push([prev, start-1]);
+  // first range is always protected
+  let prev = protectedRanges[0][1];
+  for (const [start, end] of protectedRanges.slice(1)) {
+    if (start >= prev) ranges.push([prev, start]);
     prev = end;
   }
   return ranges;
+}
+
+/// Returns the position of the nearest modifiable section.
+export function getNearestModifiable(
+  pos: number,
+  modifiableRanges: [start: number, end: number][],
+  { seekLeft = true, seekRight = true, seekDifferent = false } = {},
+): number {
+  if (!seekLeft && !seekRight) return -1;
+  
+  let dist = Number.POSITIVE_INFINITY;
+  for (const [start, end] of modifiableRanges) {
+    const distL = start - pos;
+    const distR = end - pos;
+    if (pos < start && !seekRight) continue;
+    if (pos > end && !seekLeft) continue;
+    if (pos > start && pos < end) {
+      if (seekDifferent) continue;
+      return pos;
+    }
+    if (Math.abs(distL) < Math.abs(dist)) dist = distL;
+    if (Math.abs(distR) < Math.abs(dist)) dist = distR;
+    console.log({distL, distR, dist});
+  }
+  return pos + dist;
+}
+
+// Returns the position of the nearest modifiable section in the specified line.
+export function getNearestModifiableInLine(pos: number, modifiableRanges: [start: number, end: number][], { from: lineStart, to: lineEnd }: { from: number, to: number }): number {
+  let dist = Number.POSITIVE_INFINITY;
+  for (const [start, end] of modifiableRanges) {
+    const distL = start - pos;
+    const distR = end - pos;
+    if (start < lineStart || end > lineEnd) continue;
+    if (Math.abs(distL) < Math.abs(dist)) dist = distL;
+    if (Math.abs(distR) < Math.abs(dist)) dist = distR;
+  }
+  return pos + dist;
 }
 
 export function cleanProtectedCode(code: string): string {
