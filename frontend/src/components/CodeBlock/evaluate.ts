@@ -32,19 +32,21 @@ async function loadEruda() {
   await loadEruda();
 
   console.log("Loading Interpreter");
+  
+  const hasSaidOk = localStorage.getItem("interpreter-download");
+  const showMessage = !sessionStorage.getItem("interpreter-message-shown");
 
-  const hasSaidOk = localStorage.getItem("download-interpreter");
   if (hasSaidOk || (await toast())) {
-    localStorage.setItem("download-interpreter", "true");
+    localStorage.setItem("interpreter-download", "true");
     interpreter = new Interpreter();
     interpreter.onAssetDownloaded((a) => {
       console.log(`Downloaded "${a}"`);
-      Toast({ text: `Downloaded "${a}"`, timer: 1000 });
+      showMessage && Toast({ text: `Downloaded "${a}"`, timer: 1000 });
     });
     interpreter.onLoaded(() => {
+      sessionStorage.setItem("interpreter-message-shown", "true");
       console.log("Interpreter loaded!");
-      const state = hasSaidOk ? "loaded" : "downloaded";
-      Toast({ title: `Interpreter ${state} successfully!`, timer: 3000 });
+      showMessage && Toast({ title: `Interpreter ${hasSaidOk ? "loaded" : "downloaded"} successfully!`, timer: 3000 });
     });
   }
 })();
