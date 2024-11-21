@@ -1,27 +1,17 @@
-import type {
-  Compartment,
-  EditorState,
-  Extension,
-  RangeSet,
-  Text,
-} from "@codemirror/state";
-import type {
-  Decoration,
-  EditorView,
-  ViewPlugin,
-  ViewUpdate,
-} from "@codemirror/view";
+import type { Compartment, EditorState, Extension, RangeSet, Text } from "@codemirror/state";
+import type { Decoration, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 
 import {
   type CodeQuestion,
   cleanProtectedCode,
+  getModifiableSelection,
+  getModifiableRanges,
+  getNearestModifiable,
+  getNearestModifiableInLine,
+  getProtectedRanges,
   importQuestion,
   mc,
   mo,
-  getModifiableRanges,
-  getProtectedRanges,
-  getNearestModifiable,
-  getNearestModifiableInLine,
 } from "src/content/questions/CodeQuestion";
 import { onThemeChange } from "src/utils/onThemeChange";
 import { log } from "src/utils/popup";
@@ -38,10 +28,8 @@ export class CodeBlock extends HTMLElement {
   code = "";
   rangeProtected = false;
   setup = "__VALUE__";
-  validator: (
-    value: string,
-    test: (regex: RegExp) => boolean,
-  ) => string | undefined = () => undefined;
+  validator: (value: string, test: (regex: RegExp) => boolean) => string | undefined = () =>
+    undefined;
   onsuccess: (stdout: string, value: string) => void = () => {};
   errorMsg: string;
 
@@ -90,22 +78,14 @@ export class CodeBlock extends HTMLElement {
   }
 
   async loadCodemirror() {
-    const { closeBrackets, closeBracketsKeymap } = await import(
-      "@codemirror/autocomplete"
-    );
+    const { closeBrackets, closeBracketsKeymap } = await import("@codemirror/autocomplete");
     const { defaultKeymap, history, historyKeymap, insertTab } = await import(
       "@codemirror/commands"
     );
     const { rust } = await import("@codemirror/lang-rust");
-    const { bracketMatching, foldKeymap, indentOnInput } = await import(
-      "@codemirror/language"
-    );
+    const { bracketMatching, foldKeymap, indentOnInput } = await import("@codemirror/language");
     const { highlightSelectionMatches } = await import("@codemirror/search");
-    const {
-      Compartment,
-      EditorState: _EditorState,
-      RangeSet,
-    } = await import("@codemirror/state");
+    const { Compartment, EditorState: _EditorState, RangeSet } = await import("@codemirror/state");
     const {
       EditorView,
       highlightActiveLine,
@@ -120,8 +100,7 @@ export class CodeBlock extends HTMLElement {
 
     this.EditorState = _EditorState;
 
-    const lineNums =
-      this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
+    const lineNums = this.getAttribute("showLineNumbers") === "true" ? lineNumbers() : [];
     const basicSetup = [
       lineNums,
       highlightActiveLineGutter(),
@@ -130,9 +109,7 @@ export class CodeBlock extends HTMLElement {
       indentOnInput(),
       bracketMatching(),
       closeBrackets(),
-      rectangularSelection(),
       highlightActiveLine(),
-      highlightSelectionMatches(),
       keymap.of([
         ...closeBracketsKeymap,
         ...defaultKeymap.filter((k) => k.key !== "Mod-Enter"),
@@ -180,9 +157,7 @@ export class CodeBlock extends HTMLElement {
           rust(),
           basicSetup,
           runKeymap,
-          placeholder(
-            this.getAttribute("placeholder") || "PLACEHOLDER NOT DEFINED",
-          ),
+          placeholder(this.getAttribute("placeholder") || "PLACEHOLDER NOT DEFINED"),
           this.theme.of(await this.importTheme(theme)),
           this.readonly.of(this.EditorState.readOnly.of(!editable)),
           EditorView.editable.of(editable),
@@ -198,8 +173,7 @@ export class CodeBlock extends HTMLElement {
   public setProps({ setup, vars = [], validator, onsuccess }: CodeQuestion) {
     const replaceVars = (r: string) =>
       vars.reduce(
-        (acc, { v, d, c = (v) => v }) =>
-          acc.replaceAll(`$${v}`, c(localStorage.getItem(v) || d)),
+        (acc, { v, d, c = (v) => v }) => acc.replaceAll(`$${v}`, c(localStorage.getItem(v) || d)),
         r,
       );
     this.code = replaceVars(this.getAttribute("code") || this.code);
@@ -221,9 +195,7 @@ export class CodeBlock extends HTMLElement {
 
   public setReadonly(readonly: boolean) {
     this.editor.dispatch({
-      effects: this.readonly.reconfigure(
-        this.EditorState.readOnly.of(readonly),
-      ),
+      effects: this.readonly.reconfigure(this.EditorState.readOnly.of(readonly)),
     });
   }
 
@@ -303,12 +275,8 @@ export class CodeBlock extends HTMLElement {
   /** Returns `undefined` if the validation was successful or a `string` with the error. */
   public async validateSnippet(snippet: string): Promise<string | undefined> {
     snippet = cleanProtectedCode(snippet);
-    const v = this.validator(
-      snippet,
-      (regex: RegExp, ignoreWhitespace = false) =>
-        ignoreWhitespace
-          ? regex.test(snippet.replaceAll(/\s/g, ""))
-          : regex.test(snippet),
+    const v = this.validator(snippet, (regex: RegExp, ignoreWhitespace = false) =>
+      ignoreWhitespace ? regex.test(snippet.replaceAll(/\s/g, "")) : regex.test(snippet),
     )?.trim();
 
     return v;
@@ -371,9 +339,7 @@ function rangeHighlighter(
       }
 
       readonlyDec() {
-        return this.readonly.map(([start, end]) =>
-          _Decoration.mark({}).range(start, end),
-        );
+        return this.readonly.map(([start, end]) => _Decoration.mark({}).range(start, end));
       }
 
       modifiableDec() {
@@ -428,18 +394,6 @@ const domHandlers = ({ domEventHandlers }: typeof EditorView) =>
       }
       return false;
     },
-    click(event, view) {
-      // TODO: Fix error when clicking too much at the left of a modifiable section and warping up
-      /*       console.log(`Selected line ${view.state.doc.lineAt(view.state.selection.main.head).number}`);
-      const doc = view.state.doc;
-      const pos = view.state.selection.main.head;
-      const line = doc.lineAt(pos).number;
-      const { leftModifiable, rightModifiable } = getLeftRightModifiable(doc.toString(), pos);
-      const nearestModifiable = getNearestModifiable(doc, pos, leftModifiable, rightModifiable, line);
-      const something = view.lineBlockAtHeight(event.clientY);
-      console.log({something, maybeLine: doc.lineAt(something.to).number});
-      view.dispatch({ selection: { head: nearestModifiable, anchor: nearestModifiable } }); */
-    },
   });
 
 const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
@@ -447,7 +401,8 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
     if (tr.docChanged || !tr.selection) return tr;
 
     // allow selecting all text
-    if (Math.abs(tr.newSelection.main.from - tr.newSelection.main.to) > 1) {
+    if (Math.abs(tr.newSelection.main.from - tr.newSelection.main.to) > 0) {
+      console.log(tr.newSelection.ranges);
       return tr;
     }
 
@@ -462,11 +417,8 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
     const line = doc.lineAt(pos);
     const newLine = doc.lineAt(newPos);
     const lineDist = line.number - newLine.number;
-
-    if (
-      !tr.isUserEvent("select.pointer") &&
-      Math.abs(line.number - newLine.number) > 1
-    ) {
+    
+    if (!tr.isUserEvent("select.pointer") && Math.abs(line.number - newLine.number) > 1) {
       // Solve line skip bug
       let nearestLine = line;
       if (lineDist > 1) {
@@ -476,19 +428,20 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
       }
       const col = pos - line.from;
       const newPos = Math.min(nearestLine.to, nearestLine.from + col);
-      const nearest = getNearestModifiableInLine(
-        newPos,
-        modifiableRanges,
-        nearestLine,
-      );
+      const { nearest, index } = getNearestModifiableInLine(newPos, modifiableRanges, nearestLine);
+      console.log({nearest, index, newPos});
       // if modifiable section found in line
       if (nearest !== Number.POSITIVE_INFINITY)
-        return { selection: { anchor: nearest, head: nearest } };
+        return getModifiableSelection(nearest, modifiableRanges[index], doc);
     }
-    
-    const nearest = getNearestModifiable(newPos, modifiableRanges);
+
+    // TODO: Consider if worth adding logic for handling multiple lines when going up (preserve column)
+
+    // get nearest modifiable section and go to it
+    const { nearest, index } = getNearestModifiable(newPos, modifiableRanges);
+    console.log({nearest, index, newPos, newSelection: tr.newSelection});
     if (nearest === Number.POSITIVE_INFINITY) return [];
-    return { selection: { anchor: nearest, head: nearest } };
+    return getModifiableSelection(nearest, modifiableRanges[index], doc);
   });
 
 const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>

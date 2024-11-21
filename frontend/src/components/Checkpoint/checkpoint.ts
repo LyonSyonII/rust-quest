@@ -1,9 +1,6 @@
 import * as idb from "idb-keyval";
 
-const store = idb.createStore(
-  "rustquest-checkpoints",
-  "rustquest-checkpoints-store",
-);
+const store = idb.createStore("rustquest-checkpoints", "rustquest-checkpoints-store");
 
 export async function add(id: string) {
   const level = getLevel(id);
@@ -58,30 +55,22 @@ export async function getAll() {
 }
 
 export async function stringifyStore(): Promise<string> {
-  const entries = (await idb.entries(store)).map(
-    ([k, v]: [IDBValidKey, Set<string>]) => [
-      k,
-      JSON.stringify([...v.values()]),
-    ],
-  );
+  const entries = (await idb.entries(store)).map(([k, v]: [IDBValidKey, Set<string>]) => [
+    k,
+    JSON.stringify([...v.values()]),
+  ]);
   return JSON.stringify(entries);
 }
 
 /** Parses a specified JSON, sets the store to the parsed values and returns it. */
-export async function parseStore(
-  json: string,
-): Promise<[IDBValidKey, Set<string>][]> {
+export async function parseStore(json: string): Promise<[IDBValidKey, Set<string>][]> {
   const parsed = JSON.parse(json) as [IDBValidKey, string][];
-  const entries: [IDBValidKey, Set<string>][] = parsed.map(([k, v]) => [
-    k,
-    new Set(JSON.parse(v)),
-  ]);
+  const entries: [IDBValidKey, Set<string>][] = parsed.map(([k, v]) => [k, new Set(JSON.parse(v))]);
   await idb.setMany(entries, store);
   return entries;
 }
 
-const subscribed: Map<string, ((checkpoints: Set<string>) => Promise<void>)[]> =
-  new Map();
+const subscribed: Map<string, ((checkpoints: Set<string>) => Promise<void>)[]> = new Map();
 
 async function callSubscribed(level: string) {
   const events = subscribed.get(level);

@@ -45,10 +45,7 @@ export async function importData(data: Uint8Array) {
   const save: SaveData = JSON.parse(json);
   const local: Storage = JSON.parse(save.localStorage);
 
-  Promise.allSettled([
-    setCheckpoints(save.checkpoints),
-    setUserCodes(save.userCodes),
-  ]);
+  Promise.allSettled([setCheckpoints(save.checkpoints), setUserCodes(save.userCodes)]);
   for (const [key, value] of Object.entries(local)) {
     localStorage.setItem(key, value);
   }
@@ -56,10 +53,7 @@ export async function importData(data: Uint8Array) {
 }
 
 export async function exportData(): Promise<Uint8Array> {
-  const [checkpoints, userCodes] = await Promise.all([
-    getCheckpoints(),
-    getUserCodes(),
-  ]);
+  const [checkpoints, userCodes] = await Promise.all([getCheckpoints(), getUserCodes()]);
   const save: SaveData = {
     checkpoints,
     userCodes,

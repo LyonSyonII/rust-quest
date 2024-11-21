@@ -26,11 +26,7 @@ const {
   showOutput,
 } = Astro.props;
 
-const code = (
-  Astro.props.code !== undefined
-    ? Astro.props.code
-    : (await importQuestion(id)).code
-)
+const code = (Astro.props.code !== undefined ? Astro.props.code : (await importQuestion(id)).code)
   .trim()
   .replaceAll("$\\n", "");
 

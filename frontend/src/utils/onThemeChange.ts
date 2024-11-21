@@ -1,6 +1,4 @@
-export function onThemeChange(
-  callback: (theme: "dark" | "light") => void,
-): MutationObserver {
+export function onThemeChange(callback: (theme: "dark" | "light") => void): MutationObserver {
   const target = document.documentElement;
   const config = { attributeFilter: ["data-theme"] };
 

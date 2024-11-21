@@ -1,3 +1,4 @@
+import type { Text } from "@codemirror/state";
 import type { RobotGameProps } from "@components/RobotGame/RobotGameTypes";
 import { createRegExp, exactly } from "magic-regexp";
 
@@ -42,7 +43,7 @@ export function getAnswer(s: string, value: string): string {
 /** Dynamically imports a question from `id` */
 export async function importQuestion(id: string): Promise<CodeQuestion> {
   const module = await import(`../questions/${id}.ts`);
-  return ("question" in module) ? module.question : module.default;
+  return "question" in module ? module.question : module.default;
 }
 
 export async function importRobotQuestion(id: string): Promise<RobotGameProps> {
@@ -53,7 +54,6 @@ export async function importRobotQuestion(id: string): Promise<RobotGameProps> {
   throw `Failed importing '${id}' as a RobotGame question`;
 }
 
-
 /** Modifiable opening marker. */
 // export const mo = "→";
 /** Modifiable closing marker. */
@@ -63,10 +63,12 @@ export const mo = "\u200B";
 /** Modifiable closing marker. */
 export const mc = "\u200B";
 
-export function getProtectedRanges(code: string): [start: number, end: number][] {
+export function getProtectedRanges(
+  code: string,
+): [start: number, end: number][] {
   const chars = [...code];
   const ranges: [number, number][] = [];
-  
+
   let inProtected = false;
   let start = 0;
   for (const [i, c] of chars.entries()) {
@@ -75,7 +77,7 @@ export function getProtectedRanges(code: string): [start: number, end: number][]
       start = i;
     } else if (c === mo && !inProtected) {
       inProtected = true;
-      ranges.push([start, i+1]);
+      ranges.push([start, i + 1]);
     }
   }
   if (ranges.length === 0) return [];
@@ -83,7 +85,9 @@ export function getProtectedRanges(code: string): [start: number, end: number][]
 
   return ranges;
 }
-export function getModifiableRanges(protectedRanges: [start: number, end: number][]): [start: number, end: number][] {
+export function getModifiableRanges(
+  protectedRanges: [start: number, end: number][],
+): [start: number, end: number][] {
   const ranges: [number, number][] = [];
   // first range is always protected
   let prev = protectedRanges[0][1];
@@ -95,45 +99,78 @@ export function getModifiableRanges(protectedRanges: [start: number, end: number
 }
 
 /// Returns the position of the nearest modifiable section.
+type NearestModifiable = {
+  index: number;
+  nearest: number;
+};
 export function getNearestModifiable(
   pos: number,
   modifiableRanges: [start: number, end: number][],
   { seekLeft = true, seekRight = true, seekDifferent = false } = {},
-): number {
-  if (!seekLeft && !seekRight) return -1;
+): NearestModifiable {
+  if (!seekLeft && !seekRight) return { nearest: Number.POSITIVE_INFINITY, index: -1 };
   
   let dist = Number.POSITIVE_INFINITY;
-  for (const [start, end] of modifiableRanges) {
+  let index = -1;
+  for (const [i, [start, end]] of modifiableRanges.entries()) {
     const distL = start - pos;
     const distR = end - pos;
     if (pos < start && !seekRight) continue;
     if (pos > end && !seekLeft) continue;
     if (pos > start && pos < end) {
       if (seekDifferent) continue;
-      return pos;
+      return { nearest: pos, index: i };
     }
-    if (Math.abs(distL) < Math.abs(dist)) dist = distL;
-    if (Math.abs(distR) < Math.abs(dist)) dist = distR;
-    console.log({distL, distR, dist});
+    if (Math.abs(distL) < Math.abs(dist)) { 
+      dist = distL;
+      index = i;
+    }
+    if (Math.abs(distR) < Math.abs(dist)) { 
+      dist = distR;
+      index = i;
+    }
   }
-  return pos + dist;
+  return { nearest: pos + dist, index: index };
 }
 
 // Returns the position of the nearest modifiable section in the specified line.
-export function getNearestModifiableInLine(pos: number, modifiableRanges: [start: number, end: number][], { from: lineStart, to: lineEnd }: { from: number, to: number }): number {
+export function getNearestModifiableInLine(
+  pos: number,
+  modifiableRanges: [start: number, end: number][],
+  { from: lineStart, to: lineEnd }: { from: number; to: number },
+): NearestModifiable {
   let dist = Number.POSITIVE_INFINITY;
-  for (const [start, end] of modifiableRanges) {
+  let index = -1;
+  for (const [i, [start, end]] of modifiableRanges.entries()) {
     const distL = start - pos;
     const distR = end - pos;
     if (start < lineStart || end > lineEnd) continue;
-    if (Math.abs(distL) < Math.abs(dist)) dist = distL;
-    if (Math.abs(distR) < Math.abs(dist)) dist = distR;
+    if (Math.abs(distL) < Math.abs(dist)) { 
+      dist = distL;
+      index = i;
+    }
+    if (Math.abs(distR) < Math.abs(dist)) { 
+      dist = distR;
+      index = i;
+    }
   }
-  return pos + dist;
+  return { nearest: pos + dist, index };
+}
+
+
+export function getModifiableSelection(pos: number, [start, end]: [number, number], doc: Text): { selection: { anchor: number, head: number } } {
+  const string = doc.sliceString(start, end);
+  console.log({pos, start, end, line: doc.lineAt(pos).number});
+  // TODO: Does not work as expected, first and last modifiable sections are not even selectable
+  if (false && (string.length === 0 || string.match(/^\s+$/))) {
+    return { selection: { anchor: start, head: end } };
+  }
+  
+  return { selection: { anchor: pos, head: pos } };
 }
 
 export function cleanProtectedCode(code: string): string {
-  return code.replaceAll(createRegExp(exactly(mo).or(mc), ["g"]), "")
+  return code.replaceAll(createRegExp(exactly(mo).or(mc), ["g"]), "");
 }
 
 export type Validator = (
