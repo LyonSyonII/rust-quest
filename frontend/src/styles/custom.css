@@ -1,25 +1,5 @@
-/* Dark mode colors. */
-:root {
-  --sl-color-accent-low: #460b05;
-  --sl-color-accent: #c60e00;
-  --sl-color-accent-high: #f57b00;
-	--sl-color-white: #ffffff;
-	--sl-color-gray-1: #f3ecea;
-	--sl-color-gray-2: #cfc6c4;
-	--sl-color-gray-3: #b0a09d;
-	--sl-color-gray-4: #635451;
-	--sl-color-gray-5: #423432;
-	--sl-color-gray-6: #302321;
-	--sl-color-black: #1d1715;
-  --sl-color-text: #ebe3e2;
-  
-  --color-paper: #302321;
-  --card-padding: 0.5rem;
-  --border-radius: 0.25rem;
-}
-
 /* Light mode colors. */
-:root[data-theme="light"] {
+:root, :root[data-theme="light"] {
   --sl-color-accent-low: #ffc8be;
   --sl-color-accent: #f45d22;
   --sl-color-accent-high: #640300;
@@ -34,7 +14,30 @@
   --sl-color-black: #ffffff;
   --sl-color-text: #423432;
   
+  /* TODO: Center text content based on screen instead of div */
+  /* --sl-content-margin-inline: calc(10vw); */
+  
   --color-paper: #fff7e8;
+  --card-padding: 0.5rem;
+  --border-radius: 0.25rem;
+}
+
+/* Dark mode colors. */
+:root[data-theme="dark"] {
+  --sl-color-accent-low: #460b05;
+  --sl-color-accent: #c60e00;
+  --sl-color-accent-high: #f57b00;
+	--sl-color-white: #ffffff;
+	--sl-color-gray-1: #f3ecea;
+	--sl-color-gray-2: #cfc6c4;
+	--sl-color-gray-3: #b0a09d;
+	--sl-color-gray-4: #635451;
+	--sl-color-gray-5: #423432;
+	--sl-color-gray-6: #302321;
+	--sl-color-black: #1d1715;
+  --sl-color-text: #ebe3e2;
+  
+  --color-paper: #302321;
 }
 
 :root[data-theme="dark"] div.swal2-toast {

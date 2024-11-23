@@ -11,14 +11,17 @@ export async function set(key: string, value: string) {
 }
 
 export async function stringifyStore(): Promise<string> {
-  return JSON.stringify(await idb.entries(store));
+  return JSON.stringify(await idb.entries<string, string>(store));
+}
+
+export type CodeStore = [key: IDBValidKey, value: string][];
+export async function getSerializableStore(): Promise<CodeStore> {
+  return (await idb.entries<string, string>(store));
 }
 
 /** Parses a specified JSON, sets the store to the parsed values and returns it. */
 export async function parseStore(
-  json: string,
-): Promise<[IDBValidKey, string][]> {
-  const entries = JSON.parse(json) as [IDBValidKey, string][];
+  entries: CodeStore,
+) {
   await idb.setMany(entries, store);
-  return entries;
 }

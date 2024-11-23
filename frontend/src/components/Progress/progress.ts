@@ -1,6 +1,6 @@
 import { confetti } from "src/utils/confetti";
 import { $ } from "src/utils/querySelector";
-import { exportDataToFile, importDataFromFile } from "src/utils/saveData";
+import { exportDataToFile, exportDataToURI, importDataFromFile } from "src/utils/saveData";
 import { add, removeAll, subscribe } from "../Checkpoint/checkpoint";
 
 export class Progress extends HTMLElement {
@@ -27,6 +27,8 @@ export class Progress extends HTMLElement {
           confetti();
         }
         add(completedId);
+
+        exportDataToURI()
       },
       true,
     );

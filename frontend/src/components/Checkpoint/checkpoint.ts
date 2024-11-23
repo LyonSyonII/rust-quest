@@ -67,17 +67,21 @@ export async function stringifyStore(): Promise<string> {
   return JSON.stringify(entries);
 }
 
+export type CheckpointStore = [key: IDBValidKey, value: string[]][];
+export async function getSerializableStore(): Promise<CheckpointStore> {
+  const entries = await idb.entries<IDBValidKey, Set<string>>(store);
+  return entries.map(([k, v]) => [k, [...v.values()]]);
+}
+
 /** Parses a specified JSON, sets the store to the parsed values and returns it. */
 export async function parseStore(
-  json: string,
-): Promise<[IDBValidKey, Set<string>][]> {
-  const parsed = JSON.parse(json) as [IDBValidKey, string][];
-  const entries: [IDBValidKey, Set<string>][] = parsed.map(([k, v]) => [
+  checkpoints: CheckpointStore,
+) {
+  const entries: [IDBValidKey, Set<string>][] = checkpoints.map(([k, v]) => [
     k,
-    new Set(JSON.parse(v)),
+    new Set(v),
   ]);
   await idb.setMany(entries, store);
-  return entries;
 }
 
 const subscribed: Map<string, ((checkpoints: Set<string>) => Promise<void>)[]> =
