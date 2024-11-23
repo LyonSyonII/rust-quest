@@ -55,7 +55,7 @@ if temp > MAX_TEMP {
   println!("'target' is set to maximum temperature\n");
   println!("The temperature target now adjusts correctly!\nSUCCESS");
   `,
-  validator: (value, test) => {
+  validator: (value) => {
     const regex = createRegExp(
       start, _,
       "if", _, "temp", _, ">", _, "MAX_TEMP", _, "{", _,

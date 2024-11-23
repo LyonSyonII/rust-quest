@@ -1,7 +1,7 @@
-import { type CodeQuestion, codeMessQuestion } from "./CodeQuestion";
+import { type CodeQuestion, codeMessQuestion, mc, mo } from "./CodeQuestion";
 
 export const question: CodeQuestion = {
-  code: 'let name = "$NAME";',
+  code: `let name = "${mo}\$NAME${mc}";`,
   /** Invisible part of the code.
    *
    *  All instances of `__VALUE__` will be replaced with the current editor value. */
@@ -12,11 +12,11 @@ export const question: CodeQuestion = {
    *  If it returns `Some`, it will be displayed in the output and the code will not be executed. */
   validator: (value, test) =>
     value.includes("?") && "Hint: Just replace ? with your name!" 
-    || !test(/^let name = "[A-Za-zÀ-ÖØ-öø-ÿ]+";$/) && codeMessQuestion
+    || !test(/^let name = "[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ ]*";$/) && codeMessQuestion
     || undefined,
   /** Callback that will be called when "SUCCESS" is returned. */
   onsuccess: (stdout: string) => {
     const name = stdout.substring(0, stdout.indexOf(","));
-    localStorage.setItem("NAME", name);
+    localStorage.setItem("NAME", name.trim());
   },
 };

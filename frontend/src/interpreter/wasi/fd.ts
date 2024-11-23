@@ -1,4 +1,6 @@
+// @ts-nocheck
 /* eslint @typescript-eslint/no-unused-vars:0 */
+
 import * as wasi from "./wasi_defs.js";
 
 export abstract class Fd {

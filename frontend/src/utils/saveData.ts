@@ -19,17 +19,17 @@ type SaveData = {
 export async function importDataFromFile() {
   const input = document.createElement("input");
   input.type = "file";
-  
+
   input.addEventListener("change", async function () {
     if (!this.files) return;
-    
+
     const file = this.files[0];
     const data = new Uint8Array(await file.arrayBuffer());
     importData(decompressFromUint8Array(data));
     
     input.remove();
   });
-  
+
   input.click();
 }
 

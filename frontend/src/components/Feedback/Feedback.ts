@@ -3,7 +3,7 @@ import { $ } from "src/utils/querySelector";
 export class FeedbackElement extends HTMLElement {
   constructor() {
     super();
-    
+
     const iframe = $("iframe", this);
     const dialog = $("dialog", this);
     const close = $("button", dialog);

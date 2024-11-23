@@ -1,3 +1,4 @@
+import { removeAll as removeAllUserCodes } from "@components/CodeBlock/persistence";
 import { confetti } from "src/utils/confetti";
 import { $ } from "src/utils/querySelector";
 import { exportDataToFile, exportDataToURI, importDataFromFile } from "src/utils/saveData";
@@ -33,21 +34,16 @@ export class Progress extends HTMLElement {
       true,
     );
 
-    $("button#import", this).addEventListener("click", () =>
-      importDataFromFile(),
-    );
-    $("button#export", this).addEventListener("click", () =>
-      exportDataToFile(),
-    );
+    $("button#import", this).addEventListener("click", () => importDataFromFile());
+    $("button#export", this).addEventListener("click", () => exportDataToFile());
 
     const feedback = $("dialog", this);
-    $("button#feedback", this).addEventListener("click", () =>
-      feedback.showModal(),
-    );
+    $("button#feedback", this).addEventListener("click", () => feedback.showModal());
 
     if (import.meta.env.DEV) {
       $("button#reset", this).addEventListener("click", async () => {
-        await removeAll(id);
+        await removeAllCheckpoints(id);
+        await removeAllUserCodes(id);
         location.reload();
       });
     }

@@ -1,4 +1,4 @@
-import { type CodeQuestion, codeMessQuestion, replace } from "./CodeQuestion";
+import { type CodeQuestion, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
 
 type SimpleQuestion = {
   code: string;
@@ -48,7 +48,7 @@ export function FreeQuestion({ code, correct, validators = [] }: FreeQuestion): 
 }
 
 export const question: CodeQuestion = SimpleQuestion({
-  code: "5 + 5 == ?",
+  code: `5 + 5 == ${mo}?${mc}`,
   answer: "10",
   getAnswer: "5+5==",
   correct: "5 + 5 == 10, good job!",
