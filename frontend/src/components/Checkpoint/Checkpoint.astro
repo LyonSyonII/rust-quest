@@ -30,7 +30,7 @@ const { id } = Astro.props;
 </style>
 
 <script>
-  import { subscribe } from "./checkpoint";
+  import { subscribe } from "src/persistence/checkpoint";
 
   class Checkpoint extends HTMLElement {
     constructor() {

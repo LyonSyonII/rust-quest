@@ -69,9 +69,8 @@ export async function getSerializableStore(): Promise<CheckpointStore> {
 }
 
 /** Parses a specified JSON, sets the store to the parsed values and returns it. */
-export async function parseStore(json: string): Promise<[IDBValidKey, Set<string>][]> {
-  const parsed = JSON.parse(json) as [IDBValidKey, string][];
-  const entries: [IDBValidKey, Set<string>][] = parsed.map(([k, v]) => [k, new Set(JSON.parse(v))]);
+export async function parseStore(checkpoints: CheckpointStore) {
+  const entries: [IDBValidKey, Set<string>][] = checkpoints.map(([k, v]) => [k, new Set(v)]);
   await idb.setMany(entries, store);
 }
 

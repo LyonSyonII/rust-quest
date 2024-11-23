@@ -1,14 +1,18 @@
 import {
+  compressToEncodedURIComponent,
+  compressToUint8Array,
+  decompressFromUint8Array,
+} from "lz-string";
+import {
+  type CheckpointStore,
   getSerializableStore as getCheckpoints,
   parseStore as setCheckpoints,
-  type CheckpointStore,
-} from "@components/Checkpoint/checkpoint";
+} from "src/persistence/checkpoint";
 import {
+  type CodeStore,
   getSerializableStore as getUserCodes,
   parseStore as setUserCodes,
-  type CodeStore,
-} from "@components/CodeBlock/persistence";
-import { compressToEncodedURIComponent, compressToUint8Array, decompressFromUint8Array } from "lz-string";
+} from "src/persistence/codeBlock";
 
 type SaveData = {
   checkpoints: CheckpointStore;
@@ -26,7 +30,7 @@ export async function importDataFromFile() {
     const file = this.files[0];
     const data = new Uint8Array(await file.arrayBuffer());
     importData(decompressFromUint8Array(data));
-    
+
     input.remove();
   });
 
@@ -51,12 +55,9 @@ export async function exportDataToURI() {
 }
 
 export async function importData(json: string) {
-  const {checkpoints, userCodes, local}: SaveData = JSON.parse(json);
+  const { checkpoints, userCodes, local }: SaveData = JSON.parse(json);
 
-  Promise.allSettled([
-    setCheckpoints(checkpoints), 
-    setUserCodes(userCodes),
-  ]);
+  Promise.allSettled([setCheckpoints(checkpoints), setUserCodes(userCodes)]);
   for (const [key, value] of Object.entries(local)) {
     localStorage.setItem(key, value);
   }
@@ -64,10 +65,7 @@ export async function importData(json: string) {
 }
 
 export async function exportData(): Promise<string> {
-  const [checkpoints, userCodes] = await Promise.all([
-    getCheckpoints(),
-    getUserCodes(),
-  ]);
+  const [checkpoints, userCodes] = await Promise.all([getCheckpoints(), getUserCodes()]);
   const save: SaveData = { checkpoints, userCodes, local: localStorage };
   const json = JSON.stringify(save);
   return json;

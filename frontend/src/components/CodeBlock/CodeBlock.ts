@@ -4,8 +4,8 @@ import type { Decoration, EditorView, ViewPlugin, ViewUpdate } from "@codemirror
 import {
   type CodeQuestion,
   cleanProtectedCode,
-  getModifiableSelection,
   getModifiableRanges,
+  getModifiableSelection,
   getNearestModifiable,
   getNearestModifiableInLine,
   getProtectedRanges,
@@ -17,8 +17,8 @@ import { onThemeChange } from "src/utils/onThemeChange";
 import { log } from "src/utils/popup";
 import { $ } from "src/utils/querySelector";
 import { reverseIndex } from "src/utils/strings";
+import * as persistence from "../../persistence/codeBlock";
 import { type EvalResponse, evaluate } from "./evaluate";
-import * as persistence from "./persistence";
 
 export class CodeBlock extends HTMLElement {
   output: HTMLOutputElement;
@@ -70,8 +70,8 @@ export class CodeBlock extends HTMLElement {
     if (import.meta.env.DEV) {
       const reset = $("#DEV-RESET", this);
       reset.addEventListener("click", async () => {
-        await (await import("../Checkpoint/checkpoint")).remove(this.id);
-        await (await import("./persistence")).remove(this.id);
+        await (await import("../../persistence/checkpoint")).remove(this.id);
+        await (await import("../../persistence/codeBlock")).remove(this.id);
         location.reload();
       });
     }
@@ -226,7 +226,7 @@ export class CodeBlock extends HTMLElement {
   }
 
   public async setSuccess() {
-    (await import("../Checkpoint/checkpoint")).add(this.id);
+    (await import("../../persistence/checkpoint")).add(this.id);
     this.persistCode();
   }
 
@@ -417,7 +417,7 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
     const line = doc.lineAt(pos);
     const newLine = doc.lineAt(newPos);
     const lineDist = line.number - newLine.number;
-    
+
     if (!tr.isUserEvent("select.pointer") && Math.abs(line.number - newLine.number) > 1) {
       // Solve line skip bug
       let nearestLine = line;
@@ -429,7 +429,7 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
       const col = pos - line.from;
       const newPos = Math.min(nearestLine.to, nearestLine.from + col);
       const { nearest, index } = getNearestModifiableInLine(newPos, modifiableRanges, nearestLine);
-      console.log({nearest, index, newPos});
+      console.log({ nearest, index, newPos });
       // if modifiable section found in line
       if (nearest !== Number.POSITIVE_INFINITY)
         return getModifiableSelection(nearest, modifiableRanges[index], doc);
@@ -439,7 +439,7 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
 
     // get nearest modifiable section and go to it
     const { nearest, index } = getNearestModifiable(newPos, modifiableRanges);
-    console.log({nearest, index, newPos, newSelection: tr.newSelection});
+    console.log({ nearest, index, newPos, newSelection: tr.newSelection });
     if (nearest === Number.POSITIVE_INFINITY) return [];
     return getModifiableSelection(nearest, modifiableRanges[index], doc);
   });

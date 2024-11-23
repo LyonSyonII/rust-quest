@@ -29,12 +29,10 @@ export async function stringifyStore(): Promise<string> {
 
 export type CodeStore = [key: IDBValidKey, value: string][];
 export async function getSerializableStore(): Promise<CodeStore> {
-  return (await idb.entries<string, string>(store));
+  return await idb.entries<string, string>(store);
 }
 
 /** Parses a specified JSON, sets the store to the parsed values and returns it. */
-export async function parseStore(
-  entries: CodeStore,
-) {
+export async function parseStore(entries: CodeStore) {
   await idb.setMany(entries, store);
 }

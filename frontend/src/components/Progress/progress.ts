@@ -1,8 +1,8 @@
-import { removeAll as removeAllUserCodes } from "@components/CodeBlock/persistence";
+import { add, removeAll as removeAllCheckpoints, subscribe } from "src/persistence/checkpoint";
+import { removeAll as removeAllUserCodes } from "src/persistence/codeBlock";
+import { exportDataToFile, exportDataToURI, importDataFromFile } from "src/persistence/saveData";
 import { confetti } from "src/utils/confetti";
 import { $ } from "src/utils/querySelector";
-import { exportDataToFile, exportDataToURI, importDataFromFile } from "src/utils/saveData";
-import { add, removeAll, subscribe } from "../Checkpoint/checkpoint";
 
 export class Progress extends HTMLElement {
   constructor() {
@@ -29,7 +29,7 @@ export class Progress extends HTMLElement {
         }
         add(completedId);
 
-        exportDataToURI()
+        exportDataToURI();
       },
       true,
     );
