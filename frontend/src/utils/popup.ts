@@ -28,3 +28,13 @@ export const ConfirmToast = (options?: SweetAlertOptions) =>
       toast.onmouseleave = Swal.resumeTimer;
     },
   }).fire();
+
+export function log(message: unknown) {
+  console.log(message);
+  const text = JSON.stringify(message, null, "\t");
+  Toast({
+    html: `<div style="white-space:pre-wrap">${text}</div>`,
+    grow: "column",
+    showCloseButton: true,
+  });
+}

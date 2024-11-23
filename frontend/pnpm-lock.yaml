@@ -38,9 +38,15 @@ importers:
       appwrite:
         specifier: ^16.0.2
         version: 16.0.2
+      codemirror-readonly-ranges:
+        specifier: 0.1.0-alpha.2
+        version: 0.1.0-alpha.2(@codemirror/state@6.4.1)(@codemirror/view@6.34.3)
       confettis:
         specifier: ^0.3.7
         version: 0.3.7
+      eruda:
+        specifier: ^3.4.1
+        version: 3.4.1
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.1
@@ -61,8 +67,8 @@ importers:
         specifier: ^0.9.4
         version: 0.9.4(prettier-plugin-astro@0.14.0)(prettier@3.3.2)(typescript@5.6.3)
       '@astrojs/starlight':
-        specifier: ^0.28.6
-        version: 0.28.6(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))
+        specifier: ^0.29.0
+        version: 0.29.0(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))
       '@biomejs/biome':
         specifier: 1.8.3
         version: 1.8.3
@@ -76,8 +82,8 @@ importers:
         specifier: ^0.4.1
         version: 0.4.1
       astro-purgecss:
-        specifier: ^4.8.0
-        version: 4.8.0(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))(purgecss@6.0.0)
+        specifier: ^4.7.0
+        version: 4.7.0(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))(purgecss@6.0.0)
       astro-robots-txt:
         specifier: ^1.0.0
         version: 1.0.0
@@ -143,8 +149,8 @@ packages:
   '@astrojs/sitemap@3.2.1':
     resolution: {integrity: sha512-uxMfO8f7pALq0ADL6Lk68UV6dNYjJ2xGUzyjjVj60JLBs5a6smtlkBYv3tQ0DzoqwS7c9n4FUx5lgv0yPo/fgA==}
 
-  '@astrojs/starlight@0.28.6':
-    resolution: {integrity: sha512-lY+rbRMIVxDGiXhS4lBuVrU2jTUezEt4QeTxUTHxfj2tuKBwquG7Jg+alON6l+uaV+anbOkFb001MMXZF8X85w==}
+  '@astrojs/starlight@0.29.0':
+    resolution: {integrity: sha512-0HRr7LiI0XJUA5n0Mj5LPSLZtw80ttkL6eh824y6t/DCcvJzC6e+HRQZ0hIolU8jsEMc7Qs07mMQIvPTpX9KMg==}
     peerDependencies:
       astro: ^4.14.0
 
@@ -487,17 +493,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@expressive-code/core@0.35.6':
-    resolution: {integrity: sha512-xGqCkmfkgT7lr/rvmfnYdDSeTdCSp1otAHgoFS6wNEeO7wGDPpxdosVqYiIcQ8CfWUABh/pGqWG90q+MV3824A==}
+  '@expressive-code/core@0.38.3':
+    resolution: {integrity: sha512-s0/OtdRpBONwcn23O8nVwDNQqpBGKscysejkeBkwlIeHRLZWgiTVrusT5Idrdz1d8cW5wRk9iGsAIQmwDPXgJg==}
 
-  '@expressive-code/plugin-frames@0.35.6':
-    resolution: {integrity: sha512-CqjSWjDJ3wabMJZfL9ZAzH5UAGKg7KWsf1TBzr4xvUbZvWoBtLA/TboBML0U1Ls8h/4TRCIvR4VEb8dv5+QG3w==}
+  '@expressive-code/plugin-frames@0.38.3':
+    resolution: {integrity: sha512-qL2oC6FplmHNQfZ8ZkTR64/wKo9x0c8uP2WDftR/ydwN/yhe1ed7ZWYb8r3dezxsls+tDokCnN4zYR594jbpvg==}
 
-  '@expressive-code/plugin-shiki@0.35.6':
-    resolution: {integrity: sha512-xm+hzi9BsmhkDUGuyAWIydOAWer7Cs9cj8FM0t4HXaQ+qCubprT6wJZSKUxuvFJIUsIOqk1xXFaJzGJGnWtKMg==}
+  '@expressive-code/plugin-shiki@0.38.3':
+    resolution: {integrity: sha512-kqHnglZeesqG3UKrb6e9Fq5W36AZ05Y9tCREmSN2lw8LVTqENIeCIkLDdWtQ5VoHlKqwUEQFTVlRehdwoY7Gmw==}
 
-  '@expressive-code/plugin-text-markers@0.35.6':
-    resolution: {integrity: sha512-/k9eWVZSCs+uEKHR++22Uu6eIbHWEciVHbIuD8frT8DlqTtHYaaiwHPncO6KFWnGDz5i/gL7oyl6XmOi/E6GVg==}
+  '@expressive-code/plugin-text-markers@0.38.3':
+    resolution: {integrity: sha512-dPK3+BVGTbTmGQGU3Fkj3jZ3OltWUAlxetMHI6limUGCWBCucZiwoZeFM/WmqQa71GyKRzhBT+iEov6kkz2xVA==}
 
   '@img/sharp-darwin-arm64@0.33.5':
     resolution: {integrity: sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==}
@@ -971,13 +977,13 @@ packages:
   astro-compressor@0.4.1:
     resolution: {integrity: sha512-IAgYAlxYRMolaptsFB9quH7RxX4eUeC4UfULCPhT+ILcg7m1kbaxuyUKqGg9Hh+KZ+FNPPDAz7DqUfl+HDWhQg==}
 
-  astro-expressive-code@0.35.6:
-    resolution: {integrity: sha512-1U4KrvFuodaCV3z4I1bIR16SdhQlPkolGsYTtiANxPZUVv/KitGSCTjzksrkPonn1XuwVqvnwmUUVzTLWngnBA==}
+  astro-expressive-code@0.38.3:
+    resolution: {integrity: sha512-Tvdc7RV0G92BbtyEOsfJtXU35w41CkM94fOAzxbQP67Wj5jArfserJ321FO4XA7WG9QMV0GIBmQq77NBIRDzpQ==}
     peerDependencies:
-      astro: ^4.0.0-beta || ^3.3.0
+      astro: ^4.0.0-beta || ^5.0.0-beta || ^3.3.0
 
-  astro-purgecss@4.8.0:
-    resolution: {integrity: sha512-mUrGS1ugT72DHTuL6Pg2nKj8nHmnAIu1e0s8MAWXXnXpgcmV7pAKvHsfOIVZgqJ2SyuMTpkD9V1rriHDRLP1nQ==}
+  astro-purgecss@4.7.0:
+    resolution: {integrity: sha512-tq0cwQnG9MdUnkcyT6FYANe+elcDMde8JjqMGMQ7it2LH1j/nr7A/01ouS6nwhdbhIpU6rjHL6SbRumrsyuq3g==}
     peerDependencies:
       astro: ^4.0.0
       purgecss: ^6.0.0
@@ -1091,6 +1097,12 @@ packages:
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
+
+  codemirror-readonly-ranges@0.1.0-alpha.2:
+    resolution: {integrity: sha512-PjT/gDAn9cm7wN/YigxgBMsxYbO52bvPQLbN8dXG9seHNANNE9KELteFaS00/+1UR4fAnCq7Ueh+KmRTlPgFTw==}
+    peerDependencies:
+      '@codemirror/state': '>= 0.19.9'
+      '@codemirror/view': '>= 0.19.48'
 
   collapse-white-space@2.1.0:
     resolution: {integrity: sha512-loKTxY1zCOuG4j9f6EPnuyyYkf58RnhhWTvRoZEokgB+WbdXehfjFviyOVYkqzEWz1Q5kRiZdBYS5SwxbQYwzw==}
@@ -1280,6 +1292,9 @@ packages:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
     engines: {node: '>=0.12'}
 
+  eruda@3.4.1:
+    resolution: {integrity: sha512-RmaO5yD97URY/9Q0lye3cmmNPoXNKreeePIw7c/zllbscR92CjGFZFuQ70+0fLIvLcKW3Xha8DS8NFhmeNbEBQ==}
+
   es-module-lexer@1.5.4:
     resolution: {integrity: sha512-MVNK56NiMrOwitFB7cqDwq0CQutbw+0BvLshJSse0MUNU+y1FC3bUS/AQg7oUng+/wKrrki7JfmwtVHkVfPLlw==}
 
@@ -1334,8 +1349,8 @@ packages:
   eventemitter3@5.0.1:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
 
-  expressive-code@0.35.6:
-    resolution: {integrity: sha512-+mx+TPTbMqgo0mL92Xh9QgjW0kSQIsEivMgEcOnaqKqL7qCw8Vkqc5Rg/di7ZYw4aMUSr74VTc+w8GQWu05j1g==}
+  expressive-code@0.38.3:
+    resolution: {integrity: sha512-COM04AiUotHCKJgWdn7NtW2lqu8OW8owAidMpkXt1qxrZ9Q2iC7+tok/1qIn2ocGnczvr9paIySgGnEwFeEQ8Q==}
 
   extend-shallow@2.0.1:
     resolution: {integrity: sha512-zCnTtlxNoAiDc3gqY2aYAWFx7XWWiasuF2K8Me5WbN8otHKTUKBwjPtNpRs/rbUZm7KxWAaNj7P1a/p52GbVug==}
@@ -2124,6 +2139,9 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
+  range-analyzer@0.1.1-alpha.2:
+    resolution: {integrity: sha512-Ad9J4t3zljH/DHNSDthAFyQdd5DniHTaqES/oTwAFB7prV7E4u01et6WYCpqbJSmUDC05XlMMR2ycO84Hi1IvA==}
+
   readdirp@4.0.2:
     resolution: {integrity: sha512-yDMz9g+VaZkqBYS/ozoBJwaBhTbZo3UNYQHNRw1D3UFQB8oHB4uS/tAODO+ZLjGWmUbKnIlOWO+aaIiAxrUWHA==}
     engines: {node: '>= 14.16.0'}
@@ -2156,8 +2174,8 @@ packages:
     resolution: {integrity: sha512-iETxpjK6YoRWJG5o6hXLwvjYAoW+FEZn9os0PD/b6AP6xQwsa/Y7lCVgIixBbUPMfhu+i2LtdeAqVTgGlQarfA==}
     hasBin: true
 
-  rehype-expressive-code@0.35.6:
-    resolution: {integrity: sha512-pPdE+pRcRw01kxMOwHQjuRxgwlblZt5+wAc3w2aPGgmcnn57wYjn07iKO7zaznDxYVxMYVvYlnL+R3vWFQS4Gw==}
+  rehype-expressive-code@0.38.3:
+    resolution: {integrity: sha512-RYSSDkMBikoTbycZPkcWp6ELneANT4eTpND1DSRJ6nI2eVFUwTBDCvE2vO6jOOTaavwnPiydi4i/87NRyjpdOA==}
 
   rehype-format@5.0.1:
     resolution: {integrity: sha512-zvmVru9uB0josBVpr946OR8ui7nJEdzZobwLOOqHb/OOD88W0Vk2SqLwoVOj0fM6IPCCO6TaV9CvQvJMWwukFQ==}
@@ -2842,7 +2860,7 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.23.8
 
-  '@astrojs/starlight@0.28.6(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))':
+  '@astrojs/starlight@0.29.0(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))':
     dependencies:
       '@astrojs/mdx': 3.1.9(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))
       '@astrojs/sitemap': 3.2.1
@@ -2850,7 +2868,7 @@ snapshots:
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       astro: 4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3)
-      astro-expressive-code: 0.35.6(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))
+      astro-expressive-code: 0.38.3(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))
       bcp-47: 2.1.0
       hast-util-from-html: 2.0.3
       hast-util-select: 6.0.3
@@ -3187,7 +3205,7 @@ snapshots:
   '@esbuild/win32-x64@0.21.5':
     optional: true
 
-  '@expressive-code/core@0.35.6':
+  '@expressive-code/core@0.38.3':
     dependencies:
       '@ctrl/tinycolor': 4.1.0
       hast-util-select: 6.0.3
@@ -3199,18 +3217,18 @@ snapshots:
       unist-util-visit: 5.0.0
       unist-util-visit-parents: 6.0.1
 
-  '@expressive-code/plugin-frames@0.35.6':
+  '@expressive-code/plugin-frames@0.38.3':
     dependencies:
-      '@expressive-code/core': 0.35.6
+      '@expressive-code/core': 0.38.3
 
-  '@expressive-code/plugin-shiki@0.35.6':
+  '@expressive-code/plugin-shiki@0.38.3':
     dependencies:
-      '@expressive-code/core': 0.35.6
+      '@expressive-code/core': 0.38.3
       shiki: 1.23.0
 
-  '@expressive-code/plugin-text-markers@0.35.6':
+  '@expressive-code/plugin-text-markers@0.38.3':
     dependencies:
-      '@expressive-code/core': 0.35.6
+      '@expressive-code/core': 0.38.3
 
   '@img/sharp-darwin-arm64@0.33.5':
     optionalDependencies:
@@ -3696,12 +3714,12 @@ snapshots:
 
   astro-compressor@0.4.1: {}
 
-  astro-expressive-code@0.35.6(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3)):
+  astro-expressive-code@0.38.3(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3)):
     dependencies:
       astro: 4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3)
-      rehype-expressive-code: 0.35.6
+      rehype-expressive-code: 0.38.3
 
-  astro-purgecss@4.8.0(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))(purgecss@6.0.0):
+  astro-purgecss@4.7.0(astro@4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3))(purgecss@6.0.0):
     dependencies:
       astro: 4.16.13(@types/node@22.5.0)(lightningcss@1.27.0)(rollup@4.27.2)(terser@5.36.0)(typescript@5.6.3)
       purgecss: 6.0.0
@@ -3883,6 +3901,12 @@ snapshots:
 
   clsx@2.1.1: {}
 
+  codemirror-readonly-ranges@0.1.0-alpha.2(@codemirror/state@6.4.1)(@codemirror/view@6.34.3):
+    dependencies:
+      '@codemirror/state': 6.4.1
+      '@codemirror/view': 6.34.3
+      range-analyzer: 0.1.1-alpha.2
+
   collapse-white-space@2.1.0: {}
 
   color-convert@2.0.1:
@@ -4037,6 +4061,8 @@ snapshots:
 
   entities@4.5.0: {}
 
+  eruda@3.4.1: {}
+
   es-module-lexer@1.5.4: {}
 
   esast-util-from-estree@2.0.0:
@@ -4122,12 +4148,12 @@ snapshots:
 
   eventemitter3@5.0.1: {}
 
-  expressive-code@0.35.6:
+  expressive-code@0.38.3:
     dependencies:
-      '@expressive-code/core': 0.35.6
-      '@expressive-code/plugin-frames': 0.35.6
-      '@expressive-code/plugin-shiki': 0.35.6
-      '@expressive-code/plugin-text-markers': 0.35.6
+      '@expressive-code/core': 0.38.3
+      '@expressive-code/plugin-frames': 0.38.3
+      '@expressive-code/plugin-shiki': 0.38.3
+      '@expressive-code/plugin-text-markers': 0.38.3
 
   extend-shallow@2.0.1:
     dependencies:
@@ -5309,6 +5335,8 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
+  range-analyzer@0.1.1-alpha.2: {}
+
   readdirp@4.0.2: {}
 
   recma-build-jsx@1.0.0:
@@ -5353,9 +5381,9 @@ snapshots:
 
   regexp-tree@0.1.27: {}
 
-  rehype-expressive-code@0.35.6:
+  rehype-expressive-code@0.38.3:
     dependencies:
-      expressive-code: 0.35.6
+      expressive-code: 0.38.3
 
   rehype-format@5.0.1:
     dependencies:

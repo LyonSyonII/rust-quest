@@ -9,9 +9,7 @@ interface Props {
 }
 
 const { src, alt, eager } = Astro.props;
-const image: Promise<{ default: ImageMetadata }> = import(
-  `../assets/comics/${src}.svg`
-);
+const image: Promise<{ default: ImageMetadata }> = import(`../assets/comics/${src}.svg`);
 ---
 
 <Image src={image} {alt} loading={eager ? "eager" : "lazy"} />

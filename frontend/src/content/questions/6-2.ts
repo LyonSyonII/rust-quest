@@ -1,6 +1,6 @@
 import { createRegExp } from "magic-regexp";
-import { type CodeQuestion, codeMessLines, replace, rustRandomNum } from "./CodeQuestion";
-import { _, any, end, start } from "./regex";
+import { type CodeQuestion, replace } from "./CodeQuestion";
+import { _ } from "./regex";
 
 /* 
 | Salmon  | 25.0  |
@@ -36,10 +36,11 @@ let price = if name == ? {
     }
   }
   `,
-  validator: (value, test) => {
+  validator: (value) => {
     // TODO: `else if "Tuna"` without  `name ==`
     // TODO: Explain that it can be done with `match`
     // TODO: Ask for lowercase names
+    const _regex = createRegExp();
 /*     const regex = createRegExp(
       start, _,
       "if", _, "temp", _, ">", _, "MAX_TEMP", _, "{", _,

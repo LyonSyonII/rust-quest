@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { debug } from "./debug.js";
 import type { Fd } from "./fd.js";
 import * as wasi from "./wasi_defs.js";

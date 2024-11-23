@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 class Debug {
   prefix?: string = "wasi:";
   log: (...args: unknown[]) => void;

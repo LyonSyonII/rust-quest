@@ -3,14 +3,14 @@ import {
   type RobotGameProps,
 } from "@components/RobotGame/RobotGameTypes";
 import { createRegExp, exactly, maybe, word } from "magic-regexp";
-import { type Validator, codeMessQuestion, replace } from "./CodeQuestion";
+import { type Validator, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
 import { _, end, semicolon, start } from "./regex";
 
 const code = `
-if ? {
+if ${mo}?${mc} {
   left();
 }
-if ? {
+if ${mo}?${mc} {
   right();
 }`;
 

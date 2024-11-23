@@ -20,9 +20,7 @@ declare global {
   interface ParentNode {
     querySelector<S extends string>(selector: S): ParseSelector<S> | null;
 
-    querySelectorAll<S extends string>(
-      selector: S,
-    ): NodeListOf<ParseSelector<S>>;
+    querySelectorAll<S extends string>(selector: S): NodeListOf<ParseSelector<S>>;
   }
 
   interface Element {
@@ -132,28 +130,25 @@ type PostprocessEach<I> = I extends `${string}.` // invalid class selector
   : I extends `${string}#` // invalid ID selector
     ? unknown
     : PostprocessEachUnchecked<I>;
-type PostprocessEachUnchecked<I> =
-  I extends `${infer Tag}.${string}&${infer Rest}`
-    ? PostprocessEachUnchecked<`${Tag}&${Rest}`>
-    : I extends `${infer Tag}.${string}`
-      ? PostprocessEachUnchecked<Tag>
-      : I extends `${infer Tag}#${string}&${infer Rest}`
-        ? PostprocessEachUnchecked<`${Tag}&${Rest}`>
-        : I extends `${infer Tag}#${string}`
-          ? PostprocessEachUnchecked<Tag>
-          : I extends `${infer Tag}:${PseudoPrefix}${string}&${infer Rest}`
-            ? PostprocessEachUnchecked<`${Tag}&${Rest}`>
-            : I extends `${infer Tag}:${PseudoPrefix}${string}`
+type PostprocessEachUnchecked<I> = I extends `${infer Tag}.${string}&${infer Rest}`
+  ? PostprocessEachUnchecked<`${Tag}&${Rest}`>
+  : I extends `${infer Tag}.${string}`
+    ? PostprocessEachUnchecked<Tag>
+    : I extends `${infer Tag}#${string}&${infer Rest}`
+      ? PostprocessEachUnchecked<`${Tag}&${Rest}`>
+      : I extends `${infer Tag}#${string}`
+        ? PostprocessEachUnchecked<Tag>
+        : I extends `${infer Tag}:${PseudoPrefix}${string}&${infer Rest}`
+          ? PostprocessEachUnchecked<`${Tag}&${Rest}`>
+          : I extends `${infer Tag}:${PseudoPrefix}${string}`
+            ? PostprocessEachUnchecked<Tag>
+            : I extends `${string}|${infer Tag}` // namespace prefix
               ? PostprocessEachUnchecked<Tag>
-              : I extends `${string}|${infer Tag}` // namespace prefix
-                ? PostprocessEachUnchecked<Tag>
-                : I;
+              : I;
 
 type ParseSelectorToTagNames<I extends string> = Trim<I> extends ""
   ? unknown
-  : Postprocess<
-      Split<ExpandFunctions<Preprocess<PreprocessGrouping<Trim<I>>>>>
-    >;
+  : Postprocess<Split<ExpandFunctions<Preprocess<PreprocessGrouping<Trim<I>>>>>>;
 
 export type ParseSelector<
   I extends string,
@@ -170,10 +165,10 @@ export type ParseSelector<
  * `&` is valid, but the expander will return the default result which is `unknown`,
  * so we must check the result and if it's `unknown` we will turn it into `Fallback`.
  */
-type ExpandAnd<
-  I extends string,
-  Fallback extends Element,
-> = unknown extends ExpandAndInner<I, Fallback>
+type ExpandAnd<I extends string, Fallback extends Element> = unknown extends ExpandAndInner<
+  I,
+  Fallback
+>
   ? Fallback
   : ExpandAndInner<I, Fallback>;
 
@@ -242,11 +237,7 @@ type LowerCaseLetter =
 
 type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
-type IdentifierFirstChar =
-  | LowerCaseLetter
-  | Uppercase<LowerCaseLetter>
-  | "-"
-  | "_";
+type IdentifierFirstChar = LowerCaseLetter | Uppercase<LowerCaseLetter> | "-" | "_";
 type IdentifierChar = IdentifierFirstChar | Digit;
 
 type IsIdentifier<S> = S extends `${infer FirstChar}${infer Rest}`

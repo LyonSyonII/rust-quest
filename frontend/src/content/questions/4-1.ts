@@ -1,9 +1,9 @@
-import { type CodeQuestion, type Validator, codeMess, getAnswer, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMess, getAnswer, mc, mo, replace } from "./CodeQuestion";
 
 const code = `
-let name = "$NAME";
-let surname = ?;
-let mut age = ?;
+let name = "${mo}$NAME${mc}";
+let surname = ${mo}?${mc};
+let mut age = ${mo}?${mc};
 `;
 
 const setup =  `
@@ -31,7 +31,7 @@ export const question: CodeQuestion = {
   setup,
   vars: [{ v: "NAME", d: "Hero" }],
   onsuccess: (_, value) => {
-    const name = getAnswer("name = ", value).slice(1, -1);
+    const name = getAnswer("name = ", value).slice(2, -2);
     localStorage.setItem("NAME", name);
   },
   validator,

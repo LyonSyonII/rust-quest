@@ -26,11 +26,7 @@ const {
   showOutput,
 } = Astro.props;
 
-const code = (
-  Astro.props.code !== undefined
-    ? Astro.props.code
-    : (await importQuestion(id)).code
-)
+const code = (Astro.props.code !== undefined ? Astro.props.code : (await importQuestion(id)).code)
   .trim()
   .replaceAll("$\\n", "");
 
@@ -70,6 +66,19 @@ const props = {
   }
 </x-code-block>
 
+{
+  import.meta.env.DEV && (
+  <style>
+      @media only screen and (min-width: 72rem) {
+      #DEV-RESET {
+        position: absolute;
+        right: -4rem;
+      }
+    }
+  </style>
+  )
+}
+
 <style>
   x-code-block {
     display: grid;
@@ -78,7 +87,7 @@ const props = {
     grid-template-columns: minmax(0px, 1fr) 60px;
   }
 
-  @media only screen and (min-width: 1020px) {
+  @media only screen and (min-width: 72rem) {
     x-code-block {
       font-size: 1rem;
       grid-template-columns: 90% auto;

@@ -25,9 +25,7 @@ const {
 const code = propsCode !== undefined ? propsCode : questionCode || "";
 
 const slimes = (
-  await Astro.glob<Record<string, ImageMetadata>>(
-    "/src/assets/monsters/slime/*",
-  )
+  await Astro.glob<Record<string, ImageMetadata>>("/src/assets/monsters/slime/*")
 ).map((v) => v.default);
 const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)];
 ---

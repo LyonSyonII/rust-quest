@@ -1,14 +1,15 @@
-import { type CodeQuestion, type Validator, codeMessQuestion, getAnswer, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion, getAnswer, mc, mo, replace } from "./CodeQuestion";
 
+// TODO: Vertical cursor navigation is inconsistent
 const code = `
-let mut height = ?;
-let mut weight = ?;
-let mut money = 12.50;
+let mut height = ${mo}?${mc};
+let mut weight = ${mo}?${mc};
+let mut money = ${mo}12.50${mc};
 `;
 
 const setup = `
 __VALUE__
-println!("Your height is {height} meters, your weight is {weight} kilograms and you have {money} coins.SUCCESS");
+println!("You measure {height} meters, you weight {weight} kilograms and you have {money} coins.SUCCESS");
 `;
 
 const validator: Validator = (value, test) => {
