@@ -34,7 +34,7 @@
     "@astrojs/check": "^0.9.4",
     "@astrojs/starlight": "^0.28.6",
     "@biomejs/biome": "1.8.3",
-    "astro": "^4.16.13",
+    "astro": "^4.16.17",
     "astro-compress": "^2.3.5",
     "astro-compressor": "^0.4.1",
     "astro-purgecss": "^4.8.0",
