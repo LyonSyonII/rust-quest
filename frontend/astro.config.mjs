@@ -75,6 +75,6 @@ export default defineConfig({
   },
   experimental: {
     clientPrerender: true,
-    contentCollectionCache: false,
+    contentIntellisense: true
   },
 });

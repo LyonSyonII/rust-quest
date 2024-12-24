@@ -13,37 +13,35 @@
     "analyze": "source-map-explorer 'dist/_astro/*.js'"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.18.3",
+    "@codemirror/autocomplete": "^6.18.4",
     "@codemirror/commands": "^6.7.1",
     "@codemirror/lang-rust": "^6.0.1",
-    "@codemirror/language": "^6.10.3",
-    "@codemirror/search": "^6.5.7",
-    "@codemirror/state": "^6.4.1",
-    "@codemirror/view": "^6.34.3",
+    "@codemirror/language": "^6.10.8",
+    "@codemirror/search": "^6.5.8",
+    "@codemirror/state": "^6.5.0",
+    "@codemirror/view": "^6.36.1",
     "@lezer/highlight": "^1.2.1",
-    "@sweetalert2/theme-dark": "^5.0.18",
-    "appwrite": "^16.0.2",
-    "codemirror-readonly-ranges": "0.1.0-alpha.2",
+    "@sweetalert2/theme-dark": "^5.0.20",
     "confettis": "^0.3.7",
     "eruda": "^3.4.1",
     "idb-keyval": "^6.2.1",
     "lz-string": "^1.5.0",
     "magic-regexp": "^0.8.0",
-    "purgecss": "^6.0.0",
-    "sweetalert2": "^11.14.5"
+    "purgecss": "^7.0.2",
+    "sweetalert2": "^11.15.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "@astrojs/starlight": "^0.29.0",
-    "@biomejs/biome": "1.8.3",
-    "astro": "^4.16.13",
+    "@astrojs/starlight": "^0.30.3",
+    "@biomejs/biome": "1.9.4",
+    "astro": "^5.1.1",
     "astro-compress": "^2.3.5",
-    "astro-compressor": "^0.4.1",
-    "astro-purgecss": "^4.7.0",
+    "astro-compressor": "^1.0.0",
+    "astro-purgecss": "^5.0.0",
     "astro-robots-txt": "^1.0.0",
     "rollup-plugin-visualizer": "^5.12.0",
     "sharp": "^0.33.5",
-    "typescript": "^5.6.3",
-    "vite-bundle-analyzer": "^0.10.6"
+    "typescript": "^5.7.2",
+    "vite-bundle-analyzer": "^0.15.2"
   }
 }
