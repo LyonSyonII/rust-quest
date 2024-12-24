@@ -343,12 +343,22 @@ function rangeHighlighter(
       }
 
       modifiableDec() {
+        const style = (start: number, end: number) => {
+          return `
+          text-decoration:${(end - start >= 3 && "dashed") || ""} underline;
+          text-underline-offset:4px; 
+          text-decoration-thickness:2px;
+          ${end - start === 0 && "padding-left:1ch; border-bottom: 2px solid"}
+          `.replaceAll("\n", "");
+        };
+        // TODO(fix): end + 1 causes an invisible modifiable section to appear, which can't be interacted with except if the real one is empty
+        // Currently does not affect user experience
         return this.modifiable.map(([start, end]) => {
           return _Decoration
             .mark({
               inclusive: false,
               attributes: {
-                style: `text-decoration: ${(end - start >= 1 && "dashed") || ""} underline;text-underline-offset: 4px; text-decoration-thickness:2px`,
+                style: style(start, end),
               },
             })
             .range(start, end + 1);
@@ -358,15 +368,13 @@ function rangeHighlighter(
     {
       decorations: (instance) => {
         const { readonly, modifiable } = instance.rangesToDec();
-
-        return _Decoration.set([...readonly, ...modifiable], true);
+        return _Decoration.set([...modifiable, ...readonly], true);
       },
 
       provide: (plugin) => {
-        const of = (view: EditorView) => {
-          return _Decoration.set(view.plugin(plugin)?.readonlyDec() || []);
-        };
-        return atomicRanges.of(of);
+        return atomicRanges.of((view: EditorView) =>
+          _Decoration.set(view.plugin(plugin)?.readonlyDec() || []),
+        );
       },
     },
   );
