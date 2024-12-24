@@ -351,8 +351,8 @@ function rangeHighlighter(
           ${end - start === 0 && "padding-right:1ch; border-bottom: 2px solid"}
           `.replaceAll("\n", "");
         };
-        // TODO(fix): end + 1 causes an invisible modifiable section to appear, which can't be interacted with except if the real one is empty
-        // Currently does not affect user experience
+        //! BUG: end + 1 causes an invisible modifiable section to appear, which can't be interacted with except if the real one is empty
+        //! Currently does not affect user experience
         return this.modifiable.map(([start, end]) => {
           return _Decoration
             .mark({
@@ -410,7 +410,6 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
 
     // allow selecting all text
     if (Math.abs(tr.newSelection.main.from - tr.newSelection.main.to) > 0) {
-      console.log(tr.newSelection.ranges);
       return tr;
     }
 
@@ -425,9 +424,10 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
     const line = doc.lineAt(pos);
     const newLine = doc.lineAt(newPos);
     const lineDist = line.number - newLine.number;
-
+    
+    // if editor is trying to skip two lines (and is not mouse)
     if (!tr.isUserEvent("select.pointer") && Math.abs(line.number - newLine.number) > 1) {
-      // Solve line skip bug
+      // workaround line skip bug
       let nearestLine = line;
       if (lineDist > 1) {
         nearestLine = doc.line(line.number - 1);
@@ -437,17 +437,16 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
       const col = pos - line.from;
       const newPos = Math.min(nearestLine.to, nearestLine.from + col);
       const { nearest, index } = getNearestModifiableInLine(newPos, modifiableRanges, nearestLine);
-      console.log({ nearest, index, newPos });
       // if modifiable section found in line
       if (nearest !== Number.POSITIVE_INFINITY)
         return getModifiableSelection(nearest, modifiableRanges[index], doc);
     }
-    
+
     // get nearest modifiable section and go to it
     const { nearest, index } = getNearestModifiable(newPos, modifiableRanges);
-    console.log({ nearest, index, newPos, newSelection: tr.newSelection });
-    if (nearest === Number.POSITIVE_INFINITY) return [];
-    return getModifiableSelection(nearest, modifiableRanges[index], doc);
+    return nearest !== Number.POSITIVE_INFINITY
+      ? getModifiableSelection(nearest, modifiableRanges[index], doc)
+      : [];
   });
 
 const protectedRangesExtension = ({ changeFilter }: typeof EditorState) =>

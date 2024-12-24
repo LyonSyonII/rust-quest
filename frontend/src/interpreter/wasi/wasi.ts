@@ -186,7 +186,6 @@ export default class WASI {
           }
           buffer.setBigUint64(time, monotonic_time, true);
         } else {
-          // TODO
           buffer.setBigUint64(time, 0n, true);
         }
         return 0;

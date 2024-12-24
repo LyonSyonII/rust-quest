@@ -1,6 +1,5 @@
 import { type CodeQuestion, type Validator, codeMessQuestion, getAnswer, mc, mo, replace } from "./CodeQuestion";
 
-// TODO: Vertical cursor navigation is inconsistent
 const code = `
 let mut height = ${mo}?${mc};
 let mut weight = ${mo}?${mc};
