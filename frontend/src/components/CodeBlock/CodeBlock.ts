@@ -348,7 +348,7 @@ function rangeHighlighter(
           text-decoration:${(end - start >= 3 && "dashed") || ""} underline;
           text-underline-offset:4px; 
           text-decoration-thickness:2px;
-          ${end - start === 0 && "padding-left:1ch; border-bottom: 2px solid"}
+          ${end - start === 0 && "padding-right:1ch; border-bottom: 2px solid"}
           `.replaceAll("\n", "");
         };
         // TODO(fix): end + 1 causes an invisible modifiable section to appear, which can't be interacted with except if the real one is empty
@@ -442,9 +442,7 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
       if (nearest !== Number.POSITIVE_INFINITY)
         return getModifiableSelection(nearest, modifiableRanges[index], doc);
     }
-
-    // TODO: Consider if worth adding logic for handling multiple lines when going up (preserve column)
-
+    
     // get nearest modifiable section and go to it
     const { nearest, index } = getNearestModifiable(newPos, modifiableRanges);
     console.log({ nearest, index, newPos, newSelection: tr.newSelection });
