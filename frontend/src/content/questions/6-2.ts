@@ -40,7 +40,6 @@ let price = if name == ? {
     // TODO: `else if "Tuna"` without  `name ==`
     // TODO: Explain that it can be done with `match`
     // TODO: Ask for lowercase names
-    const _regex = createRegExp();
 /*     const regex = createRegExp(
       start, _,
       "if", _, "temp", _, ">", _, "MAX_TEMP", _, "{", _,

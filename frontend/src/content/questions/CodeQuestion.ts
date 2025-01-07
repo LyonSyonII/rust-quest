@@ -159,7 +159,7 @@ export function getNearestModifiableInLine(
 
 
 export function getModifiableSelection(pos: number, [start, end]: [number, number], doc: Text): { selection: { anchor: number, head: number } } {
-  const string = doc.sliceString(start, end);
+  // const string = doc.sliceString(start, end);
   // console.log({pos, start, end, line: doc.lineAt(pos).number});
   // TODO: Does not work as expected, first and last modifiable sections are not even selectable
   // if (false && (string.length === 0 || string.match(/^\s+$/))) {
