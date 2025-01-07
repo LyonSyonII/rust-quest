@@ -39,9 +39,7 @@
     "astro-compressor": "^1.0.0",
     "astro-purgecss": "^5.1.0",
     "astro-robots-txt": "^1.0.0",
-    "rollup-plugin-visualizer": "^5.14.0",
     "sharp": "^0.33.5",
-    "typescript": "^5.7.2",
-    "vite-bundle-analyzer": "^0.15.2"
+    "typescript": "^5.7.2"
   }
 }
