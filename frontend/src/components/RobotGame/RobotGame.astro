@@ -24,10 +24,10 @@ const {
 
 const code = propsCode !== undefined ? propsCode : questionCode || "";
 
-const slimes = (
-  await Astro.glob<Record<string, ImageMetadata>>("/src/assets/monsters/slime/*")
-).map((v) => v.default);
-const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)];
+const slimes = Object.values(
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/monsters/slime/*", { eager: true }),
+);
+const getRandomSlime = () => slimes[Math.floor(Math.random() * slimes.length)].default;
 ---
 
 <Card title={question} gap="0">
