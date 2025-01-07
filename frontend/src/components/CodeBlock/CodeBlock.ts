@@ -1,10 +1,8 @@
 import {
-  Prec,
   type Compartment,
   type EditorState,
   type Extension,
   type RangeSet,
-  type Text,
 } from "@codemirror/state";
 import type { Decoration, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 
@@ -89,7 +87,7 @@ export class CodeBlock extends HTMLElement {
     );
     const { rust } = await import("@codemirror/lang-rust");
     const { bracketMatching, foldKeymap, indentOnInput } = await import("@codemirror/language");
-    const { Compartment, EditorState: _EditorState, RangeSet } = await import("@codemirror/state");
+    const { Compartment, EditorState: _EditorState, RangeSet, Prec } = await import("@codemirror/state");
     const {
       EditorView,
       highlightActiveLine,
@@ -191,7 +189,7 @@ export class CodeBlock extends HTMLElement {
         r,
       );
     this.code = replaceVars(this.getAttribute("code") || this.code);
-    this.rangeProtected = this.code.includes(mo);
+    this.rangeProtected = this.code.includes(mo) && this.code.includes(mc);
     this.setup = replaceVars(setup || this.setup);
     this.validator = validator || this.validator;
     this.onsuccess = onsuccess || this.onsuccess;
@@ -406,7 +404,7 @@ const domHandlers = ({ domEventHandlers }: typeof EditorView) =>
       clip.setData("text/plain", replaced);
       return true;
     },
-    cut(event, view) {
+    cut(_event, view) {
       const ranges = getProtectedRanges(view.state.doc.toString());
       for (const { from, to } of view.state.selection.ranges) {
         for (const [start, end] of ranges) {
