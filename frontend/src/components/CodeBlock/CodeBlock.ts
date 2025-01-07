@@ -1,4 +1,11 @@
-import type { Compartment, EditorState, Extension, RangeSet, Text } from "@codemirror/state";
+import {
+  Prec,
+  type Compartment,
+  type EditorState,
+  type Extension,
+  type RangeSet,
+  type Text,
+} from "@codemirror/state";
 import type { Decoration, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 
 import {
@@ -14,9 +21,7 @@ import {
   mo,
 } from "src/content/questions/CodeQuestion";
 import { onThemeChange } from "src/utils/onThemeChange";
-import { log } from "src/utils/popup";
 import { $ } from "src/utils/querySelector";
-import { reverseIndex } from "src/utils/strings";
 import * as persistence from "../../persistence/codeBlock";
 import { type EvalResponse, evaluate } from "./evaluate";
 
@@ -84,7 +89,6 @@ export class CodeBlock extends HTMLElement {
     );
     const { rust } = await import("@codemirror/lang-rust");
     const { bracketMatching, foldKeymap, indentOnInput } = await import("@codemirror/language");
-    const { highlightSelectionMatches } = await import("@codemirror/search");
     const { Compartment, EditorState: _EditorState, RangeSet } = await import("@codemirror/state");
     const {
       EditorView,
@@ -95,7 +99,6 @@ export class CodeBlock extends HTMLElement {
       keymap,
       lineNumbers,
       placeholder,
-      rectangularSelection,
     } = await import("@codemirror/view");
 
     this.EditorState = _EditorState;
@@ -112,7 +115,7 @@ export class CodeBlock extends HTMLElement {
       highlightActiveLine(),
       keymap.of([
         ...closeBracketsKeymap,
-        ...defaultKeymap.filter((k) => k.key !== "Mod-Enter"),
+        ...defaultKeymap.filter((k) => k.key !== "Mod-Enter" && k.key !== "Shift-Enter"),
         ...historyKeymap,
         ...foldKeymap,
       ]),
@@ -121,23 +124,34 @@ export class CodeBlock extends HTMLElement {
     this.readonly = new Compartment();
     this.theme = new Compartment();
 
-    const runKeymap = keymap.of([
-      {
-        key: "Mod-Enter",
-        run: () => {
-          this.handleRun();
-          return true;
+    const runKeymap = Prec.highest(
+      keymap.of([
+        {
+          key: "Shift-Enter",
+          run: () => {
+            this.handleRun();
+            return true;
+          },
+          stopPropagation: true,
+          preventDefault: true
         },
-        stopPropagation: true,
-        preventDefault: true,
-      },
-      {
-        key: "Tab",
-        run: insertTab,
-        stopPropagation: true,
-        preventDefault: true,
-      },
-    ]);
+        {
+          key: "Mod-Enter",
+          run: () => {
+            this.handleRun();
+            return true;
+          },
+          stopPropagation: true,
+          preventDefault: true,
+        },
+        {
+          key: "Tab",
+          run: insertTab,
+          stopPropagation: true,
+          preventDefault: true,
+        },
+      ]),
+    );
     const editable = this.getAttribute("editable") === "true";
     const theme: string = document.documentElement.dataset.theme || "light";
 
@@ -424,7 +438,7 @@ const navigationExtension = ({ transactionFilter }: typeof EditorState) =>
     const line = doc.lineAt(pos);
     const newLine = doc.lineAt(newPos);
     const lineDist = line.number - newLine.number;
-    
+
     // if editor is trying to skip two lines (and is not mouse)
     if (!tr.isUserEvent("select.pointer") && Math.abs(line.number - newLine.number) > 1) {
       // workaround line skip bug
