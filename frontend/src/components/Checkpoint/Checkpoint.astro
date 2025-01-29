@@ -18,13 +18,19 @@ const { id } = Astro.props;
     pointer-events: none;
     user-select: none;
   }
+  x-checkpoint[aria-disabled] > :global(img) {
+    opacity: 0;
+  }
   x-checkpoint {
     transition: filter 0.25s ease-out;
+  }
+  x-checkpoint > :global(img) {
+    transition: opacity 0.5s ease-in;
   }
 </style>
 
 <script>
-  import { subscribe } from "./checkpoint";
+  import { subscribe } from "src/persistence/checkpoint";
 
   class Checkpoint extends HTMLElement {
     constructor() {

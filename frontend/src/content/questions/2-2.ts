@@ -1,7 +1,8 @@
 import { SimpleQuestion } from "./2-1";
+import { mc, mo } from "./CodeQuestion";
 
 export const question = SimpleQuestion({
-  code: "-1 - 1 == ?",
+  code: `-1 - 1 == ${mo}?${mc}`,
   answer: "-2",
   getAnswer: "-1-1==",
   correct: "That's right, -2! I see you aren't fooled easily.",

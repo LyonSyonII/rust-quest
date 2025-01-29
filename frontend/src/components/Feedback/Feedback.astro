@@ -23,6 +23,8 @@ const { id } = Astro.props;
     
     border: none;
     border-radius: var(--border-radius);
+    
+    background-color: white;
   }
 
   iframe {
@@ -34,8 +36,7 @@ const { id } = Astro.props;
 
   button {
     position: absolute;
-    left: 20;
-    top: 20;
+    right: var(--card-padding);
     
     background-color: var(--sl-color-accent-low);
     border-radius: 0.25rem;

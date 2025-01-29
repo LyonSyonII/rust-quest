@@ -1,11 +1,11 @@
 import { createRegExp, word } from "magic-regexp";
-import { type CodeQuestion, type Validator, codeMessQuestion, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
 import { _, char, end, semicolon, start, stringZ, wrongCharZ } from "./regex";
 
 const code = `
-let initial1 = '$NAME';
-let initial2 = ?;
-let mut cardinal = ?;
+let initial1 = ${mo}'$NAME'${mc};
+let initial2 = ${mo}?${mc};
+let mut cardinal = ${mo}?${mc};
 `;
 
 const setup = `
@@ -62,7 +62,7 @@ export const question: CodeQuestion = {
   vars: [{
     v: "NAME",
     d: "Hero",
-    c: (v) => v[0]?.toUpperCase()
+    c: (v) => v[0]?.toUpperCase() || "H"
   }],
   validator,
 };

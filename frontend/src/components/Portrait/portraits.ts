@@ -1,6 +1,6 @@
-import GuildGirl from "@assets/portraits/AdventurersGuildGirl.svg";
-import FishShop from "@assets/portraits/FishShop.svg";
-import Grocery from "@assets/portraits/GroceryStore.svg";
+import GuildGirl from "@assets/portraits/AdventurersGuildGirl-opt.svg";
+import FishShop from "@assets/portraits/FishShop-opt.svg";
+import Grocery from "@assets/portraits/GroceryStore-opt.svg";
 import { bgToDark } from "src/utils/colors";
 
 export const colors = {
