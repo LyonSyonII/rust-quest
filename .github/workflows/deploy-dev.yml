@@ -34,3 +34,5 @@ jobs:
           personal_token: ${{ secrets.DEV_DEPLOY_TOKEN }}
           external_repository: lyonsyonii/dev.rust-quest
           publish_branch: gh-pages  # default: gh-pages
+          publish_dir: ./frontend/dist
+          cname: dev.rust-quest.com
