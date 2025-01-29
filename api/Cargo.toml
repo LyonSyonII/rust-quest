@@ -1,7 +1,0 @@
-[package]
-name = "api"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-memchr = "2.7.4"
