@@ -21,7 +21,6 @@
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.36.4",
     "@lezer/highlight": "^1.2.1",
-    "@sweetalert2/theme-dark": "^5.0.27",
     "confettis": "^0.3.7",
     "eruda": "^3.4.1",
     "idb-keyval": "^6.2.1",
