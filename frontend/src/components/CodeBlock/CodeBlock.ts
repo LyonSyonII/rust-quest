@@ -1,8 +1,8 @@
-import {
-  type Compartment,
-  type EditorState,
-  type Extension,
-  type RangeSet,
+import type {
+  Compartment,
+  EditorState,
+  Extension,
+  RangeSet,
 } from "@codemirror/state";
 import type { Decoration, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 

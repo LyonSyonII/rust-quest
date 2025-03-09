@@ -4,7 +4,6 @@ interface Props {
 }
 
 const { visible = undefined } = Astro.props;
-// const id = `hint-${Math.random().toString(36).substring(2, 10)}`;
 ---
 
 <x-hint {visible}>
@@ -94,11 +93,13 @@ const { visible = undefined } = Astro.props;
 </style>
 
 <script>
+import { $ } from "src/utils/querySelector";
+
   class Hint extends HTMLElement {
     constructor() {
       super();
 
-      this.querySelector("button")!.addEventListener("click", () =>
+      $("button", this).addEventListener("click", () =>
         this.toggleAttribute("visible"),
       );
     }
