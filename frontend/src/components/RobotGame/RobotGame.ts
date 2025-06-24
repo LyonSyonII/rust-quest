@@ -1,7 +1,7 @@
 import type { CodeBlock, ResetEvent } from "@components/CodeBlock/CodeBlock";
 import type { EvalResponse } from "@components/CodeBlock/evaluate";
 import { type CodeQuestion, importRobotQuestion } from "src/content/questions/CodeQuestion";
-import { confetti } from "src/utils/confetti";
+import { spawnConfetti } from "src/utils/confetti";
 import { $, querySelectorAll } from "src/utils/querySelector";
 import { parenthesisCheck } from "../../content/questions/0-robot";
 import { type Board, Functions } from "./RobotGameTypes";
@@ -49,7 +49,7 @@ export class RobotGame extends HTMLElement {
       this.codeblock.setRunning(true);
       this.codeblock.setOutput("Compiling...");
 
-      this.resetBoards();
+      await this.resetBoards();
 
       const value = this.codeblock.getValue();
 
@@ -78,7 +78,7 @@ export class RobotGame extends HTMLElement {
         );
         await new Promise((r) => setTimeout(r, 1000));
         this.codeblock.setRunning(false);
-        this.resetBoards();
+        await this.resetBoards();
       };
 
       if (responses === undefined || responses.length !== this.boards.length) {
@@ -94,9 +94,7 @@ export class RobotGame extends HTMLElement {
         const steps = await this.handleResponse(response, board);
         if (steps === undefined) {
           this.codeblock.setOutput(this.loseText);
-          await new Promise((r) => setTimeout(r, 1000));
           this.codeblock.setRunning(false);
-          this.resetBoards();
           return;
         }
         if (this.solveWithMinimumSteps && board.steps < steps) {
@@ -107,7 +105,7 @@ export class RobotGame extends HTMLElement {
       }
 
       this.codeblock.setOutput(`${this.winText}SUCCESS`);
-      confetti({ count: 20 });
+      spawnConfetti({ count: 20 });
       this.codeblock.setRunning(false);
     });
 
@@ -144,9 +142,8 @@ export class RobotGame extends HTMLElement {
   async resetBoards() {
     for (let i = 0; i < this.boards.length; i += 1) {
       const board = this.boards[i];
-
       if (!board.tableChanged) {
-        break;
+        return;
       }
 
       board.tableChanged = false;
