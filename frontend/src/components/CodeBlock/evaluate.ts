@@ -6,20 +6,6 @@ export type EvalResponse = string | { error: string };
 
 let interpreter: Interpreter | undefined = undefined;
 
-async function loadEruda() {
-  const params = new URLSearchParams(window.location.search);
-  if (!params.has("dbg")) return;
-
-  const { default: eruda } = await import("eruda");
-  eruda.init();
-  eruda.show();
-  const console = eruda.get("console");
-  window.console = console;
-  console.config.set("catchGlobalErr", true);
-
-  console.log("Loaded Eruda");
-}
-
 (async () => {
   const toast = async () =>
     ConfirmToast({
@@ -28,8 +14,6 @@ async function loadEruda() {
       confirmButtonText: "Yes!",
       denyButtonText: "Nope",
     }).then((t) => t.isConfirmed);
-
-  await loadEruda();
 
   console.log("Loading Interpreter");
 
