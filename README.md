@@ -19,8 +19,10 @@ Well, my mission here is to demonstrate the opposite!
 
 ## Contributing
 
-Feel free to open a PR if you find any error!  
-Translations are also welcome.
+Feel free to open an Issue or PR if you find an error!  
+
+The book is still in a very early stage of development, and translations aren't supported yet.    
+I'd really apreciate any proofreading though!
 
 ## Tooling
 
