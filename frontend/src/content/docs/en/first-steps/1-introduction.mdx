@@ -6,17 +6,12 @@ description: An introduction to the Rust Quest interactive book.
 import CodeQuestion from "@components/CodeQuestion.astro";
 import Checkpoint from "@components/Checkpoint/Checkpoint.astro";
 import Hint from "@components/Hint.astro";
-import Feedback from "@components/Feedback/Feedback.astro";
-import Donate from "@components/Donate.astro";
+import RunButton from "@components/CodeBlock/RunButton.astro"
 
-export function Run() {
-  return <svg style="display:inline;margin-bottom:-6px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8" /><path fill="currentColor" d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z" /><path fill="currentColor" d="M19 19v6l5-3z" /></svg>
-}
-
-Rust Quest is a book for learning programming from scratch, without any previous experience.  
+Rust Quest is an interactive book for learning programming from scratch, without any previous experience.  
 
 Then... Why Rust? Isn't it seen as a very difficult language and usually not recommended for beginners?  
-Well, my goal is to prove that not only can it be your first programming language, but that it's one of the best choices.
+Well, my goal is to prove that not only it can be your first programming language, but that it's one of the best choices.
 
 This is a strong opinion to have, but hopefully my reasoning will become clear as you read.  
 
@@ -25,7 +20,7 @@ Now, what makes this book special?
 [The official Rust book](https://doc.rust-lang.org/book/) is excellent, and I would recommend it to anyone that wants to learn Rust.  
 The problem is that is assumes that you know at least another language, so it's less than ideal for starting out.
 
-This book is meant to fill this gap, to provide a way to learn Rust from zero, in a fun and fullfilling way. 
+This book is meant to fill this gap, to provide a way to learn Rust from zero, in a fun and fulfilling way. 
 
 To achieve this objective, I've divided core concepts into "Quests".  
 Each quest provides small programming exercises that you'll need to solve to continue.
@@ -40,43 +35,11 @@ If you find yourself stuck, you can always click on the "Hint" button (the light
   Click me when you are stuck with a problem, but try solving it for yourself first!
 </Hint>
 
-Now, try running the following snippet (click the <Run/> button on the right or press `Ctrl + ↵` on your keyboard while editing):
-
-
-
-
-
-
-
-
-
-
-
-
-{/* Thank you for reading Rust Quest!  
-This book is designed for people with zero experience in Rust or programming in general, so don't worry, I'm sure you'll leave having learned something!
-
-Usually, Rust is seen as a difficult language to learn, and is not recommended as a first language.  
-Well, my goal is to prove otherwise!
-
-I believe Rust is a very strict but thorough teacher, that makes sure you understand your code before letting you run it.  
-Some may find this unappealing at first: "Let me run my program!"  
-However, this strictness will make you a better programmer, one that writes code that "works the first time".
-
-What makes this book unique is that it's organized into 'Quests'.  
-Each quest provides a programming lesson and includes snippets of code that you'll need to write modify in order to complete it.
-
-It is possible that sometimes you won't understand what's going on, and that's okay!
-
-Most exercises follow the "learn by doing" approach, and will expect you to find the solution on your own, even if you do not fully grasp all the concepts.  
-If you find yourself stuck, you can always click on the "Hint" button (the light bulb icon) to get a little help.
-
- */}
+Now, try running the following snippet (click the <RunButton style="display:inline;margin-bottom:-6px"/> button on the right or press `Ctrl + ↵` on your keyboard while editing):
 
 export const errorMsg =
 `Woops, something went wrong and the code does not compile!
 If you've mistakenly messed up the code, click the "Reset" button to return it back to its original state.`;
-
 
 <CodeQuestion
   showLineNumbers={false}
@@ -87,7 +50,7 @@ If you've mistakenly messed up the code, click the "Reset" button to return it b
 <Checkpoint id="1-1">
 :::tip[Exercise]
 Well... Your name isn't _World_, right?  
-**Try changing the line to say `Hello YourName!`** instead.  
+**Try changing the line to say `Hello {your_name}!`** instead.  
 e.g. `"Hello Liam!"`.
 :::
 
