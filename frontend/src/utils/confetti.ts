@@ -13,7 +13,7 @@ export async function confetti({
     x = centerX / clientWidth;
     y = centerY / clientHeight;
   }
-  canvasConfetti({
+  return canvasConfetti({
     origin: {
       x,
       y,

@@ -25,7 +25,7 @@ export class Progress extends HTMLElement {
         }
         const completedId = `${id}-completed`;
         if (launchConfetti && !checkpoint.has(completedId)) {
-          confetti({ x: 0.5, y: 1, count: 300 });
+          confetti({ x: 0.5, y: 1, count: 180 });
         }
         add(completedId);
 
