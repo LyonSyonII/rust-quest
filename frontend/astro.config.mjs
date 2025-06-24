@@ -18,9 +18,9 @@ export default defineConfig({
         src: "./src/assets/ferris.svg",
       },
       favicon: "/favicon.svg",
-      social: {
-        github: "https://github.com/lyonsyonii/rust-quest",
-      },
+      social: [
+        { icon: "github", label: "Github", href: "https://github.com/lyonsyonii/rust-quest", },
+      ],
       sidebar: [
         {
           label: "First Steps",

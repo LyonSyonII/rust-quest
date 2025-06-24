@@ -29,7 +29,7 @@ export class Progress extends HTMLElement {
         }
         add(completedId);
 
-        exportDataToURI();
+        // exportDataToURI();
       },
       true,
     );
