@@ -6,6 +6,10 @@ on:
       - opened
       - reopened
       - synchronize
+      
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   update-pr-description:
