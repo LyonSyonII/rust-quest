@@ -1,7 +1,7 @@
 import type { CodeBlock, ResetEvent } from "@components/CodeBlock/CodeBlock";
 import type { EvalResponse } from "@components/CodeBlock/evaluate";
 import { type CodeQuestion, importRobotQuestion } from "src/content/questions/CodeQuestion";
-import { spawnConfetti } from "src/utils/confetti";
+import { confetti } from "src/utils/confetti";
 import { $, querySelectorAll } from "src/utils/querySelector";
 import { parenthesisCheck } from "../../content/questions/0-robot";
 import { type Board, Functions } from "./RobotGameTypes";
@@ -105,7 +105,8 @@ export class RobotGame extends HTMLElement {
       }
 
       this.codeblock.setOutput(`${this.winText}SUCCESS`);
-      spawnConfetti({ count: 20 });
+      // biome-ignore lint/style/noNonNullAssertion: <explanation>
+      await confetti({ count: 20, y: 1, targetElement: this.parentElement! });
       this.codeblock.setRunning(false);
     });
 

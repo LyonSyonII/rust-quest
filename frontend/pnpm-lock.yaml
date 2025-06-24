@@ -32,12 +32,9 @@ importers:
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
-      confettis:
-        specifier: ^0.3.7
-        version: 0.3.7
-      eruda:
-        specifier: ^3.4.1
-        version: 3.4.1
+      canvas-confetti:
+        specifier: ^1.9.3
+        version: 1.9.3
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.1
@@ -63,6 +60,9 @@ importers:
       '@biomejs/biome':
         specifier: 1.9.4
         version: 1.9.4
+      '@types/canvas-confetti':
+        specifier: ^1.9.0
+        version: 1.9.0
       astro:
         specifier: ^5.4.2
         version: 5.4.2(@types/node@22.10.5)(idb-keyval@6.2.1)(jiti@2.4.2)(lightningcss@1.28.2)(rollup@4.35.0)(terser@5.37.0)(typescript@5.8.2)(yaml@2.7.0)
@@ -753,6 +753,9 @@ packages:
   '@types/acorn@4.0.6':
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
 
+  '@types/canvas-confetti@1.9.0':
+    resolution: {integrity: sha512-aBGj/dULrimR1XDZLtG9JwxX1b4HPRF6CX9Yfwh3NvstZEm1ZL7RBnel4keCPSqs1ANRu1u2Aoz9R+VmtjYuTg==}
+
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
 
@@ -960,6 +963,9 @@ packages:
     resolution: {integrity: sha512-8WB3Jcas3swSvjIeA2yvCJ+Miyz5l1ZmB6HFb9R1317dt9LCQoswg/BGrmAmkWVEszSrrg4RwmO46qIm2OEnSA==}
     engines: {node: '>=16'}
 
+  canvas-confetti@1.9.3:
+    resolution: {integrity: sha512-rFfTURMvmVEX1gyXFgn5QMn81bYk70qa0HLzcIOSVEyl57n6o9ItHeBtUSWdvKAPY0xlvBHno4/v3QPrT83q9g==}
+
   ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
 
@@ -1047,9 +1053,6 @@ packages:
 
   confbox@0.1.8:
     resolution: {integrity: sha512-RMtmw0iFkeR4YV+fUOSucriAQNb9g8zFR52MWCtl+cCZOFRNL6zeB395vPzFhEjjn4fMxXudmELnl/KF/WrK6w==}
-
-  confettis@0.3.7:
-    resolution: {integrity: sha512-VE1Cst9Pg/jydKvABNhRDHR1Hf3dbxsXLhy8RDZueFLZwJ4HLHmgSUf0MLWDsh7bOLltQQQHj/Sb2txuHx989g==}
 
   cookie-es@1.2.2:
     resolution: {integrity: sha512-+W7VmiVINB+ywl1HGXJXmrqkOhpKrIiVZV6tQuV54ZyQC7MMuBt81Vc336GMLoHBq5hV/F9eXgt5Mnx0Rha5Fg==}
@@ -1192,9 +1195,6 @@ packages:
   entities@4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
     engines: {node: '>=0.12'}
-
-  eruda@3.4.1:
-    resolution: {integrity: sha512-RmaO5yD97URY/9Q0lye3cmmNPoXNKreeePIw7c/zllbscR92CjGFZFuQ70+0fLIvLcKW3Xha8DS8NFhmeNbEBQ==}
 
   es-module-lexer@1.6.0:
     resolution: {integrity: sha512-qqnD1yMU6tk/jnaMosogGySTZP8YtUgAffA9nMN+E/rjxcfRQ6IEk7IiozUjgxKoFHBGjTLnrHB/YC45r/59EQ==}
@@ -3330,6 +3330,8 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.6
 
+  '@types/canvas-confetti@1.9.0': {}
+
   '@types/cookie@0.6.0': {}
 
   '@types/css-tree@2.3.10': {}
@@ -3688,6 +3690,8 @@ snapshots:
 
   camelcase@8.0.0: {}
 
+  canvas-confetti@1.9.3: {}
+
   ccount@2.0.1: {}
 
   chalk@5.4.1: {}
@@ -3753,8 +3757,6 @@ snapshots:
   common-ancestor-path@1.0.1: {}
 
   confbox@0.1.8: {}
-
-  confettis@0.3.7: {}
 
   cookie-es@1.2.2: {}
 
@@ -3877,8 +3879,6 @@ snapshots:
   emoji-regex@9.2.2: {}
 
   entities@4.5.0: {}
-
-  eruda@3.4.1: {}
 
   es-module-lexer@1.6.0: {}
 
