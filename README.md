@@ -24,13 +24,13 @@ Feel free to open an Issue or PR if you find an error!
 The book is still in a very early stage of development, and translations aren't supported yet.    
 I'd really apreciate any proofreading though!
 
-## Tooling
+## Thanks
 
 This book has been made possible thanks to [Astro](https://astro.build/), [Starlight](https://starlight.astro.build/), the [Rust Playground](https://play.rust-lang.org/) and [Godbolt's Compiler Explorer](https://godbolt.org/).
 
 The character portraits have been created with the [DiceBear](https://editor.dicebear.com/) tool, specifically in the [Lorelei](https://www.figma.com/community/file/1198749693280469639/lorelei-dicebear) style by [Lisa Wischofsky](https://www.instagram.com/lischi_art/).
 
-Comic drawings made by my friend Sofi ❤️.
+Special thanks to my friend Sofi for her drawings ❤️.
 
 ## License
 
