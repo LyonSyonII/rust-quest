@@ -10,12 +10,7 @@ import Progress from "@components/Progress/Progress.astro";
 import Feedback from "@components/Feedback/Feedback.astro";
 import Donate from "@components/Donate.astro";
 import Comic from "@components/Comic.astro";
-
-export const codeMess =
-`Seems like you've messed up the code, click the "Reset" button to return it back to its original state.
-Remember to only modify the ? symbol.`
-export const replace = "Replace ? with your answer."
-export const wrongAnswer = "Wrong answer, try again!"
+import WIP from "@components/WIP.astro";
 
 export function Guild(props) {
   return <Portrait 
@@ -23,6 +18,8 @@ export function Guild(props) {
     {...props} 
   />
 }
+
+<WIP testing />
 
 <Comic src="guild-opt" alt="guild" eager />
 
@@ -73,6 +70,19 @@ If you mess up the code, click the "Reset" button to return it to its original s
 </Checkpoint>
 
 <Checkpoint id="2-3">
+  :::note[Seems like normal math?]
+  Exactly! If you've worked with Excel before, it should feel very familiar.  
+  This syntax is shared between almost all programming languages.
+
+  Have you noticed the double equal sign `==`?  
+  As you can imagine, it means "the left expression is equal to the right expression".  
+
+  This symbol is also used in many languages, although some give it slightly different meanings.
+
+  Why a double sign you say?  
+  You'll see in the next chapter...
+  :::
+
   <Guild>
   Well, well, Mx. Calculator knows their math!  
   Just kidding, I promised this would be pretty easy 😉.

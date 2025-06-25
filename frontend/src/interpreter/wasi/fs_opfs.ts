@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Fd, Inode } from "./fd.js";
 import * as wasi from "./wasi_defs.js";
 

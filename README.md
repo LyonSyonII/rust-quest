@@ -19,15 +19,21 @@ Well, my mission here is to demonstrate the opposite!
 
 ## Contributing
 
-Feel free to open a PR if you find any error!  
-Translations are also welcome.
+Feel free to open an Issue or PR if you find an error!  
 
-## Tooling
+The book is still in a very early stage of development, and translations aren't supported yet.    
+I'd really apreciate any proofreading though!
+
+## Thanks
 
 This book has been made possible thanks to [Astro](https://astro.build/), [Starlight](https://starlight.astro.build/), the [Rust Playground](https://play.rust-lang.org/) and [Godbolt's Compiler Explorer](https://godbolt.org/).
+
+The character portraits have been created with the [DiceBear](https://editor.dicebear.com/) tool, specifically in the [Lorelei](https://www.figma.com/community/file/1198749693280469639/lorelei-dicebear) style by [Lisa Wischofsky](https://www.instagram.com/lischi_art/).
+
+Special thanks to my friend Sofi for her drawings ❤️.
 
 ## License
 
 Rust Quest is licensed under CC BY-NC-SA 4.0.  
 It allows redistribution and modification for noncommercial use.  
-To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/

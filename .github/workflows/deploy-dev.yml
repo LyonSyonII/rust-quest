@@ -23,14 +23,11 @@ jobs:
         with:
           path: "frontend"
           package-manager: pnpm@latest
-          
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy
+      - name: Deploy to dev.rust-quest
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.DEV_DEPLOY_TOKEN }}
           external_repository: lyonsyonii/dev.rust-quest
           publish_branch: gh-pages  # default: gh-pages
+          publish_dir: ./frontend/dist
+          cname: dev.rust-quest.com

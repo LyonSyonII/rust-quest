@@ -1,5 +1,4 @@
 ---
-import Checkpoint from "../Checkpoint/Checkpoint.astro";
 import Donate from "../Donate.astro";
 import Feedback from "../Feedback/Feedback.astro";
 
@@ -9,31 +8,36 @@ type Props = {
   confetti: boolean;
 };
 
+const size = "32px";
 const { id, total, confetti = true } = Astro.props;
 ---
-<Checkpoint id=`${id}-completed`>
-  <Donate />
-</Checkpoint>
 
+<Donate />
 <x-progress data-confetti={`${confetti}`}>
   <label for={id}>0 / {total}</label>
   <progress {id} value={0} max={total}></progress>
   
   <div>
-    <button id="import">Import Save Data</button>
-    <button id="export">Export Save Data</button>
+    <button id="export" title="Export Save Data">
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 32 32"><path fill="currentColor" d="M23.5 22H23v-2h.5a4.5 4.5 0 0 0 .36-9H23l-.1-.82a7 7 0 0 0-13.88 0L9 11h-.86a4.5 4.5 0 0 0 .36 9H9v2h-.5A6.5 6.5 0 0 1 7.2 9.14a9 9 0 0 1 17.6 0A6.5 6.5 0 0 1 23.5 22"/><path fill="currentColor" d="M17 26.17V14h-2v12.17l-2.59-2.58L11 25l5 5l5-5l-1.41-1.41z"/></svg>    
+    </button>
+    <button id="import" title="Import Save Data">
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 32 32"><path fill="currentColor" d="m11 18l1.41 1.41L15 16.83V29h2V16.83l2.59 2.58L21 18l-5-5z"/><path fill="currentColor" d="M23.5 22H23v-2h.5a4.5 4.5 0 0 0 .36-9H23l-.1-.82a7 7 0 0 0-13.88 0L9 11h-.86a4.5 4.5 0 0 0 .36 9H9v2h-.5A6.5 6.5 0 0 1 7.2 9.14a9 9 0 0 1 17.6 0A6.5 6.5 0 0 1 23.5 22"/></svg>
+    </button>
+    <button id="feedback" title="Give Feedback">
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 32 32"><path fill="currentColor" d="M19 3h10c1.104 0 2 .897 2 2v6a2 2 0 0 1-2 2h-2.423l-1.731 3l-1.733-1l2.31-4H29V5H19v6h3v2h-3c-1.103 0-2-.896-2-2V5c0-1.103.897-2 2-2m-4 27h-2v-5a3.003 3.003 0 0 0-3-3H6a3.003 3.003 0 0 0-3 3v5H1v-5a5.006 5.006 0 0 1 5-5h4a5.006 5.006 0 0 1 5 5zM8 10a3 3 0 1 1 0 6a3 3 0 0 1 0-6m0-2a5 5 0 1 0 0 10A5 5 0 0 0 8 8"/></svg>
+    </button>
   </div>
+    {
+      import.meta.env.DEV && (
+        <button id="reset" style="background-color:red;">
+          <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 32 32"><path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z"/><path fill="currentColor" d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"/></svg>
+        </button>
+      )
+    }
   
-  <button id="feedback">Give Feedback</button>
   <Feedback id={id} />
   
-  {
-    import.meta.env.DEV && (
-      <button id="reset">
-        <b>RESET</b>
-      </button>
-    )
-  }
 </x-progress>
 
 <style>
@@ -49,21 +53,28 @@ const { id, total, confetti = true } = Astro.props;
   }
   button {
     background-color: var(--sl-color-accent-low);
-    border-radius: 0.25rem;
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem;
     cursor: pointer;
 
     border: 1px;
-    border-radius: 0.25em;
+    border-radius: 999px;
 
     transition: opacity 0.2s;
   }
   button:hover {
     opacity: 0.8;
   }
-  #reset {
-    background-color: red;
+  @media screen and (min-width: 72rem) {
+    div {
+      display: grid;
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      margin: var(--card-padding);
+    }
   }
+
+
 </style>
 
 <script>

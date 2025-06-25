@@ -1,16 +1,7 @@
 import type { EvalResponse } from "@components/CodeBlock/evaluate";
-import {
-  Directory,
-  Fd,
-  File,
-  PreopenDirectory,
-  WASI,
-  strace,
-} from "./wasi/index";
+import { Directory, Fd, File, PreopenDirectory, WASI, strace } from "./wasi/index";
 
-export async function initInterpreter(
-  { color } = { color: false },
-): Promise<Interpreter> {
+export async function initInterpreter({ color } = { color: false }): Promise<Interpreter> {
   console.time("init");
 
   // Build the filesystem needed for Miri to work
@@ -48,7 +39,7 @@ export async function initInterpreter(
   ];
 
   console.timeEnd("init");
-  
+
   return new Interpreter(miri, sysroot, args, env);
 }
 
@@ -59,12 +50,7 @@ class Interpreter {
   readonly env: string[];
   next_thread_id: number;
 
-  constructor(
-    miri: WebAssembly.Module,
-    sysroot: PreopenDirectory,
-    args: string[],
-    env: string[],
-  ) {
+  constructor(miri: WebAssembly.Module, sysroot: PreopenDirectory, args: string[], env: string[]) {
     this.miri = miri;
     this.sysroot = sysroot;
     this.args = args;
@@ -74,15 +60,9 @@ class Interpreter {
 
   async run(code: string): Promise<EvalResponse> {
     const out: Uint8Array[] = [];
-    const [stdin, stdout, stderr] = [
-      new Stdio(out),
-      new Stdio(out),
-      new Stdio(out),
-    ];
+    const [stdin, stdout, stderr] = [new Stdio(out), new Stdio(out), new Stdio(out)];
     const tmp = new PreopenDirectory("/tmp", []);
-    const root = new PreopenDirectory("/", [
-      ["main.rs", new File(encode(code))],
-    ]);
+    const root = new PreopenDirectory("/", [["main.rs", new File(encode(code))]]);
     const fds: Fd[] = [stdin, stdout, stderr, tmp, this.sysroot, root];
 
     const wasi = new WASI(this.args, this.env, fds, { debug: false });
@@ -115,12 +95,17 @@ class Interpreter {
       // @ts-ignore
       wasi.start(inst);
       console.timeEnd("miri execution");
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: can't type properly
     } catch (e: any) {
       return { error: stdout.text() || e.message };
     }
 
-    return stdout.text();
+    const output = stdout.text();
+    if (output.startsWith("\u001b[0m\u001b[1m\u001b[38;5;9merror")) {
+      return { error: output }
+    } else {
+      return output;
+    }
   }
 }
 
@@ -257,8 +242,4 @@ async function buildSysroot(): Promise<PreopenDirectory> {
 
 function encode(text: string): Uint8Array {
   return new TextEncoder().encode(text);
-}
-
-function file(name: string, text: string): [string, File] {
-  return [name, new File(encode(text))];
 }

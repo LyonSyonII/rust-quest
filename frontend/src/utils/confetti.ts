@@ -1,8 +1,33 @@
-const confettis = await import("confettis");
-
 export async function confetti({
-  y = 1,
   count = 100,
-}: { y?: number; count?: number } = {}) {
-  confettis.create({ y, count });
+  x = 0.5,
+  y = 0.5,
+  targetElement,
+}: ConfettyProps = {}) {
+  if (targetElement) {
+    const rect = targetElement.getBoundingClientRect();
+    const clientWidth = document.documentElement.clientWidth;
+    const clientHeight = document.documentElement.clientHeight;
+    const centerX = rect.left + x*rect.width;
+    const centerY = rect.top + y*rect.height;
+    x = centerX / clientWidth;
+    y = centerY / clientHeight;
+  }
+  return canvasConfetti({
+    origin: {
+      x,
+      y,
+    },
+    particleCount: count,
+    disableForReducedMotion: true
+  });
 }
+
+const { default: canvasConfetti } = await import("canvas-confetti");
+
+type ConfettyProps = {
+  count?: number;
+  x?: number;
+  y?: number;
+  targetElement?: HTMLElement;
+};

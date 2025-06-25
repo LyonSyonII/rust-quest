@@ -1,5 +1,6 @@
-import { ConfirmToast, Toast } from "@components/Alert/alert";
+import { cleanProtectedCode } from "src/content/questions/CodeQuestion";
 import { Interpreter } from "src/interpreter";
+import { ConfirmToast, Toast } from "src/utils/popup";
 
 export type EvalResponse = string | { error: string };
 
@@ -14,36 +15,41 @@ let interpreter: Interpreter | undefined = undefined;
       denyButtonText: "Nope",
     }).then((t) => t.isConfirmed);
 
-  const hasSaidOk = localStorage.getItem("download-interpreter");
+  console.log("Loading Interpreter");
+
+  const hasSaidOk = localStorage.getItem("interpreter-download");
+  const showMessage = !sessionStorage.getItem("interpreter-message-shown");
+
   if (hasSaidOk || (await toast())) {
-    localStorage.setItem("download-interpreter", "true");
+    localStorage.setItem("interpreter-download", "true");
     interpreter = new Interpreter();
     interpreter.onAssetDownloaded((a) => {
       console.log(`Downloaded "${a}"`);
+      showMessage && Toast({ text: `Downloaded "${a}"`, timer: 1000 });
     });
-    interpreter.onLoaded(() => { 
+    interpreter.onLoaded(() => {
+      sessionStorage.setItem("interpreter-message-shown", "true");
       console.log("Interpreter loaded!");
-      !hasSaidOk && Toast({title: "Interpreter downloaded successfully!", timer: 3000});
+      showMessage &&
+        Toast({
+          title: `Interpreter ${hasSaidOk ? "loaded" : "downloaded"} successfully!`,
+          timer: 3000,
+        });
     });
   }
 })();
 
-export async function evaluate(
-  code: string,
-  error: string,
-): Promise<EvalResponse> {
+export async function evaluate(code: string, error: string): Promise<EvalResponse> {
+  code = cleanProtectedCode(code);
   if (interpreter?.isLoaded()) {
     return interpreter.runAsync(code);
   }
   return Promise.race([
     godbolt(code, error).catch(() => playground(code, error)),
     new Promise<EvalResponse>((resolve, _) =>
-      setTimeout(
-        () => resolve(err("Execution timed out, please try again.")),
-        5000,
-      ),
+      setTimeout(() => resolve(err("Execution timed out, please try again.")), 5000),
     ),
-  ]).catch(() => err("There was an error during execution, please try again."));
+  ]);
 }
 
 async function godbolt(code: string, error: string): Promise<EvalResponse> {
@@ -83,17 +89,14 @@ async function godbolt(code: string, error: string): Promise<EvalResponse> {
     allowStoreCodeDebug: true,
   };
 
-  const response = await fetch(
-    "https://godbolt.org/api/compiler/nightly/compile",
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      mode: "cors",
-      body: JSON.stringify(params),
+  const response = await fetch("https://godbolt.org/api/compiler/nightly/compile", {
+    headers: {
+      "Content-Type": "application/json",
     },
-  ).then((r) => r.text());
+    method: "POST",
+    mode: "cors",
+    body: JSON.stringify(params),
+  }).then((r) => r.text());
   console.log({ params, response });
 
   const execution = response.indexOf("# Exec");
@@ -106,9 +109,7 @@ async function godbolt(code: string, error: string): Promise<EvalResponse> {
   const compilation = response.indexOf("# Compiler");
   const stderr_idx = response.indexOf("\nStandard error:", compilation);
   if (stderr_idx !== -1) {
-    return err(
-      error || response.substring(stderr_idx + "Standard error:\n".length + 1),
-    );
+    return err(error || response.substring(stderr_idx + "Standard error:\n".length + 1));
   }
 
   return "";
@@ -135,9 +136,7 @@ async function playground(code: string, error: string): Promise<EvalResponse> {
       console.log({ params, response });
       return response;
     })
-    .then((response) =>
-      response.error === null ? response.result : err(error || response.error),
-    )
+    .then((response) => (response.error === null ? response.result : err(error || response.error)))
     .catch((error) => err(error || error.message));
 }
 

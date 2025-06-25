@@ -95,6 +95,7 @@ export class Interpreter {
     return await new Promise((resolve) => {
       const callback = ({ data }: WorkerMessage) => {
         if ("result" in data && uuid === data.uuid) {
+          console.log(data);
           this.worker.removeEventListener("message", callback);
           resolve(data.result);
         }

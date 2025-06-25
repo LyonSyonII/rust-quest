@@ -2,6 +2,8 @@
 import { translation } from "@i18n/_CodeBlock";
 import type { Langs } from "@i18n/_langs";
 import { importQuestion } from "src/content/questions/CodeQuestion";
+import RunButton from "./RunButton.astro";
+import ResetButton from "./ResetButton.astro";
 
 /** CodeBlock */
 export type Props = {
@@ -26,11 +28,7 @@ const {
   showOutput,
 } = Astro.props;
 
-const code = (
-  Astro.props.code !== undefined
-    ? Astro.props.code
-    : (await importQuestion(id)).code
-)
+const code = (Astro.props.code !== undefined ? Astro.props.code : (await importQuestion(id)).code)
   .trim()
   .replaceAll("$\\n", "");
 
@@ -49,15 +47,11 @@ const props = {
   <pre>{code || placeholder}</pre>
   <div id="buttons">
     <button id="run" title="Run (Ctrl+Enter)">
-      <!-- carbon:run -->
-      <!-- prettier-ignore -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M21 16a6 6 0 1 1-6 6a6 6 0 0 1 6-6m0-2a8 8 0 1 0 8 8a8 8 0 0 0-8-8" /><path fill="currentColor" d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h4v-2H6V12h22V6a2 2 0 0 0-2-2M6 10V6h20v4Z" /><path fill="currentColor" d="M19 19v6l5-3z" /></svg>
+      <RunButton />
     </button>
     
     <button id="reset" title="Reset code">
-      <!-- carbon:reset -->
-      <!-- prettier-ignore -->
-      <svg xmlns=svgtp://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" ><path fill="currentColor" d="M18 28A12 12 0 1 0 6 16v6.2l-3.6-3.6L1 20l6 6l6-6l-1.4-1.4L8 22.2V16a10 10 0 1 1 10 10Z" /></svg>
+      <ResetButton />
     </button>
   </div>
   <output />
@@ -70,6 +64,19 @@ const props = {
   }
 </x-code-block>
 
+{
+  import.meta.env.DEV && (
+  <style>
+      @media only screen and (min-width: 72rem) {
+      #DEV-RESET {
+        position: absolute;
+        right: -4rem;
+      }
+    }
+  </style>
+  )
+}
+
 <style>
   x-code-block {
     display: grid;
@@ -78,16 +85,20 @@ const props = {
     grid-template-columns: minmax(0px, 1fr) 60px;
   }
 
-  @media only screen and (min-width: 1020px) {
+  @media only screen and (min-width: 72rem) {
     x-code-block {
       font-size: 1rem;
       grid-template-columns: 90% auto;
     }
   }
+  x-code-block[showlinenumbers="true"] pre {
+    padding-left: 26px;
+  }
   pre {
     color: gray;
     line-height: 1.4;
-    margin-bottom: 8px; /* 75.2px */
+    padding: 4px;
+    padding-left: 6px;
   }
   #buttons {
     display: flex;
@@ -118,7 +129,11 @@ const props = {
     padding: 1rem;
     grid-column: span 3;
     margin-top: 1rem;
-    white-space: pre-line;
+    white-space: pre-wrap;
+
+    height: min-content;
+    max-height: 400px;
+    overflow: scroll;
 
     display: none;
   }

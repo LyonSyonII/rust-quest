@@ -1,10 +1,10 @@
 import { createRegExp, word } from "magic-regexp";
-import { type CodeQuestion, type Validator, codeMessQuestion, replace } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
 import { _, end, integer, semicolon, start } from "./regex";
 
-const code = "let ? = ?;"
+const code = `let ${mo}?${mc} = ${mo}?${mc};`
 const setup = `
-if "__VALUE__".replace(" ", "") == "letapples=18;" {
+if "__VALUE__".replace(|c: char| c.is_ascii_whitespace(), "") == "letapples=18;" {
   println!("Well done, the crate is now operative!");
   println!("SUCCESS");
 } else {

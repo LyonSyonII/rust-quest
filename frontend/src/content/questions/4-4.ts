@@ -1,18 +1,18 @@
 import { createRegExp } from "magic-regexp";
-import { type CodeQuestion, type Validator, codeMessQuestion } from "./CodeQuestion";
+import { type CodeQuestion, type Validator, codeMessQuestion, mc, mo } from "./CodeQuestion";
 import { _, any, bool, end, semicolon, start } from "./regex";
 
 const code = `
-let is_human = true;
-let mut registered = false;
-let mut dead = ?;
-let mut wears_glasses = ?;
+let is_human = ${mo}true${mc};
+let mut registered = ${mo}false${mc};
+let mut dead = ${mo}?${mc};
+let mut wears_glasses = ${mo}?${mc};
 `;
 
 const setup = `
 __VALUE__;
 let glasses = match wears_glasses {
-    true => "And I also wear glasses, we match!",
+    true => "And I also wear glasses, we match 😉",
     false => "And good! As an adventurer, it's better if you don't need glasses."
 };
 println!("I'm glad you're not dead!\\n{glasses}\\nSUCCESS");
@@ -48,6 +48,7 @@ const validator: Validator = (value) => {
   return dead.includes("?") && "[dead] Are you dead or alive?"
       || dead === "true" && "[dead] Are you sure you're dead? How are you answering this question?"
       || dead !== "false" && `[dead]${wrong}`
+      || registered === "true" && "[registered] You're not registered yet!"
       || glasses.includes("?") && "[wears_glasses] Do you wear glasses?"
       || !(/true|false/).test(glasses) && `[wears_glasses]${wrong}`
       || undefined

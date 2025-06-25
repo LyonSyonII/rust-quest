@@ -1,10 +1,10 @@
 import starlight from "@astrojs/starlight";
 import compress from "astro-compress";
 import compressor from "astro-compressor";
+import purgecss from "astro-purgecss";
 import robotsTxt from "astro-robots-txt";
 import { defineConfig, sharpImageService } from "astro/config";
 import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
-import { visualizer } from "rollup-plugin-visualizer";
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,9 +17,10 @@ export default defineConfig({
       logo: {
         src: "./src/assets/ferris.svg",
       },
-      social: {
-        github: "https://github.com/lyonsyonii/rust-quest",
-      },
+      favicon: "/favicon.svg",
+      social: [
+        { icon: "github", label: "Github", href: "https://github.com/lyonsyonii/rust-quest", },
+      ],
       sidebar: [
         {
           label: "First Steps",
@@ -48,8 +49,10 @@ export default defineConfig({
       },
       */
       },
+      expressiveCode: false,
     }),
     robotsTxt(),
+    purgecss(),
     compress(),
     compressor(),
   ],
@@ -60,7 +63,7 @@ export default defineConfig({
     inlineStylesheets: "auto",
   },
   vite: {
-    plugins: [visualizer(), MagicRegExpTransformPlugin.vite()],
+    plugins: [MagicRegExpTransformPlugin.vite()],
   },
   markdown: {
     remarkPlugins: [],
@@ -71,6 +74,6 @@ export default defineConfig({
   },
   experimental: {
     clientPrerender: true,
-    contentCollectionCache: false,
+    contentIntellisense: true,
   },
 });

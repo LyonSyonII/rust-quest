@@ -1,9 +1,6 @@
 import type { CodeBlock, ResetEvent } from "@components/CodeBlock/CodeBlock";
 import type { EvalResponse } from "@components/CodeBlock/evaluate";
-import {
-  type CodeQuestion,
-  importRobotQuestion,
-} from "src/content/questions/CodeQuestion";
+import { type CodeQuestion, importRobotQuestion } from "src/content/questions/CodeQuestion";
 import { confetti } from "src/utils/confetti";
 import { $ } from "src/utils/querySelector";
 import { parenthesisCheck } from "../../content/questions/0-robot";
@@ -31,8 +28,7 @@ export class RobotGame extends HTMLElement {
       this.functions = props.functions || this.functions;
       this.winText = props.winText || this.winText;
       this.loseText = props.loseText || this.loseText;
-      this.solveWithMinimumSteps =
-        props.solveWithMinimumSteps || this.solveWithMinimumSteps;
+      this.solveWithMinimumSteps = props.solveWithMinimumSteps || this.solveWithMinimumSteps;
 
       this.boards = [...this.querySelectorAll("table")].map((htmlTable, i) => ({
         htmlTable,
@@ -53,16 +49,14 @@ export class RobotGame extends HTMLElement {
       this.codeblock.setRunning(true);
       this.codeblock.setOutput("Compiling...");
 
-      this.resetBoards();
+      await this.resetBoards();
 
       const value = this.codeblock.getValue();
 
-      const v =
-        parenthesisCheck(value) ||
-        (await this.codeblock.validateSnippet(value));
+      const v = parenthesisCheck(value) || (await this.codeblock.validateSnippet(value));
       if (v !== undefined) {
         // Wait a bit to emphasize that the code is running
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((r ) => setTimeout(r , 50));
         this.codeblock.setOutput(v);
         this.codeblock.setRunning(false);
         return Promise.reject();
@@ -80,12 +74,11 @@ export class RobotGame extends HTMLElement {
 
       const simulationError = async (err?: { error: string }) => {
         this.codeblock.setOutput(
-          err?.error ||
-            "There was an error during the simulation, please try again.",
+          err?.error || "There was an error during the simulation, please try again.",
         );
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 250));
         this.codeblock.setRunning(false);
-        this.resetBoards();
+        await this.resetBoards();
       };
 
       if (responses === undefined || responses.length !== this.boards.length) {
@@ -101,9 +94,7 @@ export class RobotGame extends HTMLElement {
         const steps = await this.handleResponse(response, board);
         if (steps === undefined) {
           this.codeblock.setOutput(this.loseText);
-          await new Promise((r) => setTimeout(r, 1000));
           this.codeblock.setRunning(false);
-          this.resetBoards();
           return;
         }
         if (this.solveWithMinimumSteps && board.steps < steps) {
@@ -114,7 +105,8 @@ export class RobotGame extends HTMLElement {
       }
 
       this.codeblock.setOutput(`${this.winText}SUCCESS`);
-      confetti({ count: 20 });
+      // biome-ignore lint/style/noNonNullAssertion: This element always has a parent
+      confetti({ count: 20, y: 1, targetElement: this.parentElement! });
       this.codeblock.setRunning(false);
     });
 
@@ -151,9 +143,8 @@ export class RobotGame extends HTMLElement {
   async resetBoards() {
     for (let i = 0; i < this.boards.length; i += 1) {
       const board = this.boards[i];
-
       if (!board.tableChanged) {
-        break;
+        return;
       }
 
       board.tableChanged = false;
@@ -161,9 +152,7 @@ export class RobotGame extends HTMLElement {
       await new Promise((r) => setTimeout(r, 200));
       this.startingHtmlBoards[i].style.opacity = "0";
 
-      const newTable = this.startingHtmlBoards[i].cloneNode(
-        true,
-      ) as HTMLTableElement;
+      const newTable = this.startingHtmlBoards[i].cloneNode(true) as HTMLTableElement;
       board.htmlTable.replaceWith(newTable);
       board.htmlTable = newTable;
 
@@ -178,17 +167,13 @@ export class RobotGame extends HTMLElement {
    *
    *  If the robot didn't kill all the slimes, return `undefined`.
    */
-  async handleResponse(
-    response: string,
-    board: Board,
-  ): Promise<number | undefined> {
+  async handleResponse(response: string, board: Board): Promise<number | undefined> {
     const cells = board.htmlTable.querySelectorAll("td");
     let killedEnemies = 0;
     let currentPos = board.start;
     let steps = 0;
 
-    const wait = async (ms: number) =>
-      new Promise((resolve) => setTimeout(resolve, ms));
+    const wait = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const setPos = async (newPos: number, direction: string) => {
       board.tableChanged = true;
