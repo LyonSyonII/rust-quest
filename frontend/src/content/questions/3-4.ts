@@ -22,7 +22,7 @@ const validator: Validator = (value) => {
   const regex = createRegExp(
     start, 
     exactly("?").or(keyword.as("_let"), _, keyword.as("_mut")), _, "apples", _, "=", _, "18", semicolon, 
-    maybe("apples", _, "=", _, "apples", _, "-", _, "2", semicolon).as("line2").or(line, _),
+    maybe("apples", _, "=", _, "apples", _, "-", _, "2", semicolon).as("line2"),
     end
   );
   const matches = value.match(regex);

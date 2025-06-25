@@ -525,3 +525,6 @@ export class ResetEvent extends Event {
     this.codeBlock = cb;
   }
 }
+
+// TODO: Hook into Codemirror's Duplicate Line to avoid duplicating Protected Ranges.
+// TODO: Hook into Codemirror's Move Line to avoid moving Protected Ranges.

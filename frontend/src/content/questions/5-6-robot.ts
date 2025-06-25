@@ -10,12 +10,12 @@ import { _, __, end, fn, line, start } from "./regex";
 const code = `
 ${mo}${mc}
 if ${mo}?${mc} {
-  ${mo} ${mc}
-  ${mo} ${mc}
+  ${mo}${mc}
+  ${mo}${mc}
 }
 if ${mo}?${mc} {
-  ${mo} ${mc}
-  ${mo} ${mc}
+  ${mo}${mc}
+  ${mo}${mc}
 }`;
 
 const validator: Validator = (value: string) => {

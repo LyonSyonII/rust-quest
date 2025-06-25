@@ -25,7 +25,7 @@
     "canvas-confetti": "^1.9.3",
     "idb-keyval": "^6.2.2",
     "lz-string": "^1.5.0",
-    "magic-regexp": "^0.10.0",
+    "magic-regexp": "^0.9.0",
     "sweetalert2": "^11.22.1"
   },
   "purgecss": "^7.0.2",

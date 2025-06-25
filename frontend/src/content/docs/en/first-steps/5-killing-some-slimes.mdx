@@ -84,8 +84,14 @@ Don't forget the semicolon at the end of each function!
 </Checkpoint>
 
 <Checkpoint id="5-2-robot">
+:::note[Why the semicolons?]
+All programming languages need a way to separate statements.  
+Some do it with line breaks, Rust does it with semicolons.
 
-Once the simulation is complete, the robot moves swiftly and punches the slime to death, well done!.
+It can be cumbersome at the start, but you'll get used to it in no time.
+:::
+
+Once the simulation is complete, the robot moves swiftly and punches the slime to death, well done!
 
 But the machine's fighting isn't specially stealthy, causing it to alert a nearby monster.
 
@@ -168,23 +174,23 @@ If you're receiving the "You don't need more than two instructions" message, it 
 Read your code and see if you can simplify it.  
 For example, the following snippet:
 ```rust
-if is_slime_left() {
+if _ {
   down(); // repeated
-  left();
+  ...
 }
-if is_slime_right() {
+if _ {
   down();  // repeated
-  right();
+  ...
 }
 ```
 Can be simplified to:
 ```rust
 down(); // no longer repeated
-if is_slime_left() {
-  left();
+if _ {
+  ...
 }
-if is_slime_right() {
-  right();
+if _ {
+  ...
 }
 ```
 </Hint>
