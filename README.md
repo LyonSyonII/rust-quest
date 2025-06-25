@@ -28,6 +28,8 @@ I'd really apreciate any proofreading though!
 
 This book has been made possible thanks to [Astro](https://astro.build/), [Starlight](https://starlight.astro.build/), the [Rust Playground](https://play.rust-lang.org/) and [Godbolt's Compiler Explorer](https://godbolt.org/).
 
+The character portraits have been created with the [DiceBear](https://editor.dicebear.com/) tool, specifically in the [Lorelei](https://www.figma.com/community/file/1198749693280469639/lorelei-dicebear) style by [Lisa Wischofsky](https://www.instagram.com/lischi_art/).
+
 ## License
 
 Rust Quest is licensed under CC BY-NC-SA 4.0.  
