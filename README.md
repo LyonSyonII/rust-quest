@@ -30,8 +30,10 @@ This book has been made possible thanks to [Astro](https://astro.build/), [Starl
 
 The character portraits have been created with the [DiceBear](https://editor.dicebear.com/) tool, specifically in the [Lorelei](https://www.figma.com/community/file/1198749693280469639/lorelei-dicebear) style by [Lisa Wischofsky](https://www.instagram.com/lischi_art/).
 
+Comic drawings made by my friend Sofi ❤️.
+
 ## License
 
 Rust Quest is licensed under CC BY-NC-SA 4.0.  
 It allows redistribution and modification for noncommercial use.  
-To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
