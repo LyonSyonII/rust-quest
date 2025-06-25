@@ -49,7 +49,7 @@ export async function evaluate(code: string, error: string): Promise<EvalRespons
     new Promise<EvalResponse>((resolve, _) =>
       setTimeout(() => resolve(err("Execution timed out, please try again.")), 5000),
     ),
-  ]).catch(() => err("There was an error during execution, please try again."));
+  ]);
 }
 
 async function godbolt(code: string, error: string): Promise<EvalResponse> {

@@ -56,7 +56,7 @@ export class RobotGame extends HTMLElement {
       const v = parenthesisCheck(value) || (await this.codeblock.validateSnippet(value));
       if (v !== undefined) {
         // Wait a bit to emphasize that the code is running
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((r ) => setTimeout(r , 50));
         this.codeblock.setOutput(v);
         this.codeblock.setRunning(false);
         return Promise.reject();
@@ -76,7 +76,7 @@ export class RobotGame extends HTMLElement {
         this.codeblock.setOutput(
           err?.error || "There was an error during the simulation, please try again.",
         );
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 250));
         this.codeblock.setRunning(false);
         await this.resetBoards();
       };
@@ -105,8 +105,8 @@ export class RobotGame extends HTMLElement {
       }
 
       this.codeblock.setOutput(`${this.winText}SUCCESS`);
-      // biome-ignore lint/style/noNonNullAssertion: <explanation>
-      await confetti({ count: 20, y: 1, targetElement: this.parentElement! });
+      // biome-ignore lint/style/noNonNullAssertion: This element always has a parent
+      confetti({ count: 20, y: 1, targetElement: this.parentElement! });
       this.codeblock.setRunning(false);
     });
 

@@ -129,7 +129,11 @@ const props = {
     padding: 1rem;
     grid-column: span 3;
     margin-top: 1rem;
-    white-space: pre-line;
+    white-space: pre-wrap;
+
+    height: min-content;
+    max-height: 400px;
+    overflow: scroll;
 
     display: none;
   }

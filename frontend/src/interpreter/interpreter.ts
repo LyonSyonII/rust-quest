@@ -95,12 +95,17 @@ class Interpreter {
       // @ts-ignore
       wasi.start(inst);
       console.timeEnd("miri execution");
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: can't type properly
     } catch (e: any) {
       return { error: stdout.text() || e.message };
     }
 
-    return stdout.text();
+    const output = stdout.text();
+    if (output.startsWith("\u001b[0m\u001b[1m\u001b[38;5;9merror")) {
+      return { error: output }
+    } else {
+      return output;
+    }
   }
 }
 

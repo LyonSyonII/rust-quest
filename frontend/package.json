@@ -21,6 +21,7 @@
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.37.2",
     "@lezer/highlight": "^1.2.1",
+    "ansi_up": "^6.0.6",
     "canvas-confetti": "^1.9.3",
     "idb-keyval": "^6.2.2",
     "lz-string": "^1.5.0",

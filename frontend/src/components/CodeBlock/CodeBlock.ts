@@ -22,6 +22,7 @@ import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
 import * as persistence from "../../persistence/codeBlock";
 import { type EvalResponse, evaluate } from "./evaluate";
+import type { AnsiUp } from "ansi_up";
 
 export class CodeBlock extends HTMLElement {
   output: HTMLOutputElement;
@@ -41,6 +42,8 @@ export class CodeBlock extends HTMLElement {
   readonly!: Compartment;
   theme!: Compartment;
   themeObserver: MutationObserver;
+
+  ansiUp!: AnsiUp;
 
   constructor() {
     super();
@@ -180,6 +183,8 @@ export class CodeBlock extends HTMLElement {
     });
     // Can't disable outline in any other way
     this.editor.dom.style.outline = "none";
+
+    this.ansiUp = new (await import("ansi_up")).AnsiUp();
   }
 
   public setProps({ setup, vars = [], validator, onsuccess }: CodeQuestion) {
@@ -249,7 +254,8 @@ export class CodeBlock extends HTMLElement {
       this.onsuccess(out.trim(), this.getValue());
     }
 
-    this.output.innerText = out.trim();
+    this.output.innerHTML = this.ansiUp.ansi_to_html(out.trim());
+    console.log(this.output.innerHTML);
     this.output.style.display = "block";
   }
 
