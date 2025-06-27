@@ -32,9 +32,7 @@ export class OpenFile extends Fd {
   fd_filestat_set_size(size: bigint): number {
     if (this.file.size > size) {
       // truncate
-      this.file.data = new Uint8Array(
-        this.file.data.buffer.slice(0, Number(size)),
-      );
+      this.file.data = new Uint8Array(this.file.data.buffer.slice(0, Number(size)));
     } else {
       // extend
       const new_data = new Uint8Array(Number(size));
@@ -45,19 +43,13 @@ export class OpenFile extends Fd {
   }
 
   fd_read(size: number): { ret: number; data: Uint8Array } {
-    const slice = this.file.data.slice(
-      Number(this.file_pos),
-      Number(this.file_pos + BigInt(size)),
-    );
+    const slice = this.file.data.slice(Number(this.file_pos), Number(this.file_pos + BigInt(size)));
     this.file_pos += BigInt(slice.length);
     return { ret: 0, data: slice };
   }
 
   fd_pread(size: number, offset: bigint): { ret: number; data: Uint8Array } {
-    const slice = this.file.data.slice(
-      Number(offset),
-      Number(offset + BigInt(size)),
-    );
+    const slice = this.file.data.slice(Number(offset), Number(offset + BigInt(size)));
     return { ret: 0, data: slice };
   }
 
@@ -94,9 +86,7 @@ export class OpenFile extends Fd {
 
     if (this.file_pos + BigInt(data.byteLength) > this.file.size) {
       const old = this.file.data;
-      this.file.data = new Uint8Array(
-        Number(this.file_pos + BigInt(data.byteLength)),
-      );
+      this.file.data = new Uint8Array(Number(this.file_pos + BigInt(data.byteLength)));
       this.file.data.set(old);
     }
 
@@ -174,9 +164,7 @@ export class OpenDirectory extends Fd {
       return { ret: 0, dirent: null };
     }
 
-    const [name, entry] = Array.from(this.dir.contents.entries())[
-      Number(cookie - 2n)
-    ];
+    const [name, entry] = Array.from(this.dir.contents.entries())[Number(cookie - 2n)];
 
     return {
       ret: 0,
@@ -269,14 +257,7 @@ export class OpenDirectory extends Fd {
   }
 
   path_create_directory(path: string): number {
-    return this.path_open(
-      0,
-      path,
-      wasi.OFLAGS_CREAT | wasi.OFLAGS_DIRECTORY,
-      0n,
-      0n,
-      0,
-    ).ret;
+    return this.path_open(0, path, wasi.OFLAGS_CREAT | wasi.OFLAGS_DIRECTORY, 0n, 0n, 0).ret;
   }
 
   path_link(path_str: string, inode: Inode, allow_dir: boolean): number {
@@ -398,10 +379,7 @@ export class OpenDirectory extends Fd {
       return parent_ret;
     }
 
-    if (
-      !(entry instanceof Directory) ||
-      entry.stat().filetype !== wasi.FILETYPE_DIRECTORY
-    ) {
+    if (!(entry instanceof Directory) || entry.stat().filetype !== wasi.FILETYPE_DIRECTORY) {
       return wasi.ERRNO_NOTDIR;
     }
     if (entry.contents.size !== 0) {
@@ -481,8 +459,7 @@ export class File extends Inode {
   path_open(oflags: number, fs_rights_base: bigint, fd_flags: number) {
     if (
       this.readonly &&
-      (fs_rights_base & BigInt(wasi.RIGHTS_FD_WRITE)) ==
-        BigInt(wasi.RIGHTS_FD_WRITE)
+      (fs_rights_base & BigInt(wasi.RIGHTS_FD_WRITE)) == BigInt(wasi.RIGHTS_FD_WRITE)
     ) {
       // no write permission to file
       return { ret: wasi.ERRNO_PERM, fd_obj: null };
@@ -612,8 +589,7 @@ export class Directory extends Inode {
       };
     }
 
-    const { ret: entry_ret, entry: parent_entry } =
-      this.get_entry_for_path(path);
+    const { ret: entry_ret, entry: parent_entry } = this.get_entry_for_path(path);
     if (parent_entry == null) {
       return {
         ret: entry_ret,
@@ -658,10 +634,7 @@ export class Directory extends Inode {
     return { ret: wasi.ERRNO_SUCCESS, parent_entry, filename, entry };
   }
 
-  create_entry_for_path(
-    path_str: string,
-    is_dir: boolean,
-  ): { ret: number; entry: Inode | null } {
+  create_entry_for_path(path_str: string, is_dir: boolean): { ret: number; entry: Inode | null } {
     const { ret: path_ret, path } = Path.from(path_str);
     if (path == null) {
       return { ret: path_ret, entry: null };
@@ -716,10 +689,7 @@ export class ConsoleStdout extends Fd {
   }
 
   fd_filestat_get(): { ret: number; filestat: wasi.Filestat } {
-    const filestat = new wasi.Filestat(
-      wasi.FILETYPE_CHARACTER_DEVICE,
-      BigInt(0),
-    );
+    const filestat = new wasi.Filestat(wasi.FILETYPE_CHARACTER_DEVICE, BigInt(0));
     return { ret: 0, filestat };
   }
 

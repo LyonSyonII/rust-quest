@@ -56,7 +56,7 @@ export class RobotGame extends HTMLElement {
       const v = parenthesisCheck(value) || (await this.codeblock.validateSnippet(value));
       if (v !== undefined) {
         // Wait a bit to emphasize that the code is running
-        await new Promise((r ) => setTimeout(r , 50));
+        await new Promise((r) => setTimeout(r, 50));
         this.codeblock.setOutput(v);
         this.codeblock.setRunning(false);
         return Promise.reject();

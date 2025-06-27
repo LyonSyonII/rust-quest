@@ -1,9 +1,6 @@
-import {
-  Functions,
-  type RobotGameProps,
-} from "@components/RobotGame/RobotGameTypes";
+import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGameTypes";
 import { createRegExp, exactly, maybe, word } from "magic-regexp";
-import { type Validator, codeMessQuestion, replace } from "./CodeQuestion";
+import { codeMessQuestion, replace, type Validator } from "./CodeQuestion";
 import { _, end, line, semicolon, start } from "./regex";
 
 const code = `
@@ -19,12 +16,45 @@ if ? {
 const validator: Validator = (value) => {
   const condition = exactly("?").or(word, "()", maybe(";"));
   const regex = createRegExp(
-    start, _,
-    "up()", semicolon,
-    "if", _, condition.as("first"), _, "{", _, line, _, line.as("extra1"), _, "}", _, 
-    "else if", _, condition.as("second"), _, "{", _, line, _, line.as("extra2"), _, "}", _, 
-    "else", _, "{", _, line, _, line.as("extra3"), _, "}", _,
-    end
+    start,
+    _,
+    "up()",
+    semicolon,
+    "if",
+    _,
+    condition.as("first"),
+    _,
+    "{",
+    _,
+    line,
+    _,
+    line.as("extra1"),
+    _,
+    "}",
+    _,
+    "else if",
+    _,
+    condition.as("second"),
+    _,
+    "{",
+    _,
+    line,
+    _,
+    line.as("extra2"),
+    _,
+    "}",
+    _,
+    "else",
+    _,
+    "{",
+    _,
+    line,
+    _,
+    line.as("extra3"),
+    _,
+    "}",
+    _,
+    end,
   );
   const matches = value.match(regex);
   if (!matches) return codeMessQuestion;
@@ -33,12 +63,14 @@ const validator: Validator = (value) => {
   if (!first || !second) return codeMessQuestion;
 
   const wrong = "Look closely at the instructions, you don't need a semicolon!";
-  
-  return value.includes("?") && replace
-    || (extra1 || extra2 || extra3) && "You don't need more than one line in each condition!"
-    || first.includes(";") && `[first condition] ${wrong}`
-    || second.includes(";") && `[second condition] ${wrong}`
-    || undefined
+
+  return (
+    (value.includes("?") && replace) ||
+    ((extra1 || extra2 || extra3) && "You don't need more than one line in each condition!") ||
+    (first.includes(";") && `[first condition] ${wrong}`) ||
+    (second.includes(";") && `[second condition] ${wrong}`) ||
+    undefined
+  );
 };
 
 export const question: RobotGameProps = {

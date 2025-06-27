@@ -1,4 +1,11 @@
-import { type CodeQuestion, type Validator, codeMessQuestion, mc, mo, replace } from "./CodeQuestion";
+import {
+  type CodeQuestion,
+  codeMessQuestion,
+  mc,
+  mo,
+  replace,
+  type Validator,
+} from "./CodeQuestion";
 
 const code = `
 let potatoes = ${mo}5${mc};
@@ -27,21 +34,22 @@ Remember to use the magical properties of the crates!
 Replace the ? with only one thing, no operations other than + are necessary!
 Remember the labels on the boxes.
   `;
-  const answer = value
-    .substring(value.lastIndexOf("=") + 1, value.length - 1)
-    .replace(" ", "");
-  return ( 
-    answer.includes("?") && replace
-    || answer.includes("let") && almost
-    || answer.split("+").some((x) => Number(x)) && copy
-    || answer.match(/[-*/]/) && operations
-    || !test(/^let potatoes = \d+;\nlet carrots = \d+;\nlet onions = \d+;\n*let total =\s*\w+\s*\+\s*\w+\s*\+\s*\w+\s*;\s*$/) && codeMessQuestion
-    || undefined
+  const answer = value.substring(value.lastIndexOf("=") + 1, value.length - 1).replace(" ", "");
+  return (
+    (answer.includes("?") && replace) ||
+    (answer.includes("let") && almost) ||
+    (answer.split("+").some((x) => Number(x)) && copy) ||
+    (answer.match(/[-*/]/) && operations) ||
+    (!test(
+      /^let potatoes = \d+;\nlet carrots = \d+;\nlet onions = \d+;\n*let total =\s*\w+\s*\+\s*\w+\s*\+\s*\w+\s*;\s*$/,
+    ) &&
+      codeMessQuestion) ||
+    undefined
   );
-}
+};
 
 export const question: CodeQuestion = {
   code,
   setup,
-  validator
+  validator,
 };

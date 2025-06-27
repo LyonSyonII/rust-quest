@@ -11,10 +11,7 @@ export interface FileSystemSyncAccessHandle {
   getSize(): number;
   read(buffer: ArrayBuffer | ArrayBufferView, options?: { at: number }): number;
   truncate(to: number): void;
-  write(
-    buffer: ArrayBuffer | ArrayBufferView,
-    options?: { at: number },
-  ): number;
+  write(buffer: ArrayBuffer | ArrayBufferView, options?: { at: number }): number;
 }
 
 // Synchronous access to an individual file in the origin private file system.
@@ -38,8 +35,7 @@ export class SyncOPFSFile extends Inode {
   path_open(oflags: number, fs_rights_base: bigint, fd_flags: number) {
     if (
       this.readonly &&
-      (fs_rights_base & BigInt(wasi.RIGHTS_FD_WRITE)) ==
-        BigInt(wasi.RIGHTS_FD_WRITE)
+      (fs_rights_base & BigInt(wasi.RIGHTS_FD_WRITE)) == BigInt(wasi.RIGHTS_FD_WRITE)
     ) {
       // no write permission to file
       return { ret: wasi.ERRNO_PERM, fd_obj: null };
@@ -90,10 +86,7 @@ export class OpenSyncOPFSFile extends Fd {
   fd_filestat_get(): { ret: number; filestat: wasi.Filestat } {
     return {
       ret: 0,
-      filestat: new wasi.Filestat(
-        wasi.FILETYPE_REGULAR_FILE,
-        BigInt(this.file.handle.getSize()),
-      ),
+      filestat: new wasi.Filestat(wasi.FILETYPE_REGULAR_FILE, BigInt(this.file.handle.getSize())),
     };
   }
 
@@ -110,10 +103,7 @@ export class OpenSyncOPFSFile extends Fd {
     return { ret: 0, data: buf.slice(0, n) };
   }
 
-  fd_seek(
-    offset: number | bigint,
-    whence: number,
-  ): { ret: number; offset: bigint } {
+  fd_seek(offset: number | bigint, whence: number): { ret: number; offset: bigint } {
     let calculated_offset: bigint;
     switch (whence) {
       case wasi.WHENCE_SET:

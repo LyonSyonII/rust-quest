@@ -43,21 +43,14 @@ export default class WASI {
   }
 
   /// Initialize a WASI reactor
-  initialize(instance: {
-    exports: { memory: WebAssembly.Memory; _initialize?: () => unknown };
-  }) {
+  initialize(instance: { exports: { memory: WebAssembly.Memory; _initialize?: () => unknown } }) {
     this.inst = instance;
     if (instance.exports._initialize) {
       instance.exports._initialize();
     }
   }
 
-  constructor(
-    args: Array<string>,
-    env: Array<string>,
-    fds: Array<Fd>,
-    options: Options = {},
-  ) {
+  constructor(args: Array<string>, env: Array<string>, fds: Array<Fd>, options: Options = {}) {
     debug.enable(options.debug);
 
     this.args = args;
@@ -82,10 +75,7 @@ export default class WASI {
           buf_size += arg.length + 1;
         }
         buffer.setUint32(argv_buf_size, buf_size, true);
-        debug.log(
-          buffer.getUint32(argc, true),
-          buffer.getUint32(argv_buf_size, true),
-        );
+        debug.log(buffer.getUint32(argc, true), buffer.getUint32(argv_buf_size, true));
         return 0;
       },
       args_get(argv: number, argv_buf: number): number {
@@ -101,11 +91,7 @@ export default class WASI {
           argv_buf += arg.length + 1;
         }
         if (debug.enabled) {
-          debug.log(
-            new TextDecoder("utf-8").decode(
-              buffer8.slice(orig_argv_buf, argv_buf),
-            ),
-          );
+          debug.log(new TextDecoder("utf-8").decode(buffer8.slice(orig_argv_buf, argv_buf)));
         }
         return 0;
       },
@@ -118,10 +104,7 @@ export default class WASI {
           buf_size += environ.length + 1;
         }
         buffer.setUint32(environ_size, buf_size, true);
-        debug.log(
-          buffer.getUint32(environ_count, true),
-          buffer.getUint32(environ_size, true),
-        );
+        debug.log(buffer.getUint32(environ_count, true), buffer.getUint32(environ_size, true));
         return 0;
       },
       environ_get(environ: number, environ_buf: number): number {
@@ -137,11 +120,7 @@ export default class WASI {
           environ_buf += e.length + 1;
         }
         if (debug.enabled) {
-          debug.log(
-            new TextDecoder("utf-8").decode(
-              buffer8.slice(orig_environ_buf, environ_buf),
-            ),
-          );
+          debug.log(new TextDecoder("utf-8").decode(buffer8.slice(orig_environ_buf, environ_buf)));
         }
         return 0;
       },
@@ -170,11 +149,7 @@ export default class WASI {
       clock_time_get(id: number, precision: bigint, time: number): number {
         const buffer = new DataView(self.inst.exports.memory.buffer);
         if (id === wasi.CLOCKID_REALTIME) {
-          buffer.setBigUint64(
-            time,
-            BigInt(new Date().getTime()) * 1_000_000n,
-            true,
-          );
+          buffer.setBigUint64(time, BigInt(new Date().getTime()) * 1_000_000n, true);
         } else if (id === wasi.CLOCKID_MONOTONIC) {
           let monotonic_time: bigint;
           try {
@@ -234,10 +209,7 @@ export default class WASI {
         if (self.fds[fd] != undefined) {
           const { ret, fdstat } = self.fds[fd].fd_fdstat_get();
           if (fdstat != null) {
-            fdstat.write_bytes(
-              new DataView(self.inst.exports.memory.buffer),
-              fdstat_ptr,
-            );
+            fdstat.write_bytes(new DataView(self.inst.exports.memory.buffer), fdstat_ptr);
           }
           return ret;
         } else {
@@ -257,10 +229,7 @@ export default class WASI {
         fs_rights_inheriting: bigint,
       ): number {
         if (self.fds[fd] != undefined) {
-          return self.fds[fd].fd_fdstat_set_rights(
-            fs_rights_base,
-            fs_rights_inheriting,
-          );
+          return self.fds[fd].fd_fdstat_set_rights(fs_rights_base, fs_rights_inheriting);
         } else {
           return wasi.ERRNO_BADF;
         }
@@ -269,10 +238,7 @@ export default class WASI {
         if (self.fds[fd] != undefined) {
           const { ret, filestat } = self.fds[fd].fd_filestat_get();
           if (filestat != null) {
-            filestat.write_bytes(
-              new DataView(self.inst.exports.memory.buffer),
-              filestat_ptr,
-            );
+            filestat.write_bytes(new DataView(self.inst.exports.memory.buffer), filestat_ptr);
           }
           return ret;
         } else {
@@ -286,12 +252,7 @@ export default class WASI {
           return wasi.ERRNO_BADF;
         }
       },
-      fd_filestat_set_times(
-        fd: number,
-        atim: bigint,
-        mtim: bigint,
-        fst_flags: number,
-      ): number {
+      fd_filestat_set_times(fd: number, atim: bigint, mtim: bigint, fst_flags: number): number {
         if (self.fds[fd] != undefined) {
           return self.fds[fd].fd_filestat_set_times(atim, mtim, fst_flags);
         } else {
@@ -308,11 +269,7 @@ export default class WASI {
         const buffer = new DataView(self.inst.exports.memory.buffer);
         const buffer8 = new Uint8Array(self.inst.exports.memory.buffer);
         if (self.fds[fd] != undefined) {
-          const iovecs = wasi.Iovec.read_bytes_array(
-            buffer,
-            iovs_ptr,
-            iovs_len,
-          );
+          const iovecs = wasi.Iovec.read_bytes_array(buffer, iovs_ptr, iovs_len);
           let nread = 0;
           for (const iovec of iovecs) {
             const { ret, data } = self.fds[fd].fd_pread(iovec.buf_len, offset);
@@ -380,18 +337,11 @@ export default class WASI {
         const buffer = new DataView(self.inst.exports.memory.buffer);
         const buffer8 = new Uint8Array(self.inst.exports.memory.buffer);
         if (self.fds[fd] != undefined) {
-          const iovecs = wasi.Ciovec.read_bytes_array(
-            buffer,
-            iovs_ptr,
-            iovs_len,
-          );
+          const iovecs = wasi.Ciovec.read_bytes_array(buffer, iovs_ptr, iovs_len);
           let nwritten = 0;
           for (const iovec of iovecs) {
             const data = buffer8.slice(iovec.buf, iovec.buf + iovec.buf_len);
-            const { ret, nwritten: nwritten_part } = self.fds[fd].fd_pwrite(
-              data,
-              offset,
-            );
+            const { ret, nwritten: nwritten_part } = self.fds[fd].fd_pwrite(data, offset);
             if (ret != wasi.ERRNO_SUCCESS) {
               buffer.setUint32(nwritten_ptr, nwritten, true);
               return ret;
@@ -408,20 +358,11 @@ export default class WASI {
           return wasi.ERRNO_BADF;
         }
       },
-      fd_read(
-        fd: number,
-        iovs_ptr: number,
-        iovs_len: number,
-        nread_ptr: number,
-      ): number {
+      fd_read(fd: number, iovs_ptr: number, iovs_len: number, nread_ptr: number): number {
         const buffer = new DataView(self.inst.exports.memory.buffer);
         const buffer8 = new Uint8Array(self.inst.exports.memory.buffer);
         if (self.fds[fd] != undefined) {
-          const iovecs = wasi.Iovec.read_bytes_array(
-            buffer,
-            iovs_ptr,
-            iovs_len,
-          );
+          const iovecs = wasi.Iovec.read_bytes_array(buffer, iovs_ptr, iovs_len);
           let nread = 0;
           for (const iovec of iovecs) {
             const { ret, data } = self.fds[fd].fd_read(iovec.buf_len);
@@ -513,18 +454,10 @@ export default class WASI {
           return wasi.ERRNO_BADF;
         }
       },
-      fd_seek(
-        fd: number,
-        offset: bigint,
-        whence: number,
-        offset_out_ptr: number,
-      ): number {
+      fd_seek(fd: number, offset: bigint, whence: number, offset_out_ptr: number): number {
         const buffer = new DataView(self.inst.exports.memory.buffer);
         if (self.fds[fd] != undefined) {
-          const { ret, offset: offset_out } = self.fds[fd].fd_seek(
-            offset,
-            whence,
-          );
+          const { ret, offset: offset_out } = self.fds[fd].fd_seek(offset, whence);
           buffer.setBigInt64(offset_out_ptr, offset_out, true);
           return ret;
         } else {
@@ -548,25 +481,15 @@ export default class WASI {
           return wasi.ERRNO_BADF;
         }
       },
-      fd_write(
-        fd: number,
-        iovs_ptr: number,
-        iovs_len: number,
-        nwritten_ptr: number,
-      ): number {
+      fd_write(fd: number, iovs_ptr: number, iovs_len: number, nwritten_ptr: number): number {
         const buffer = new DataView(self.inst.exports.memory.buffer);
         const buffer8 = new Uint8Array(self.inst.exports.memory.buffer);
         if (self.fds[fd] != undefined) {
-          const iovecs = wasi.Ciovec.read_bytes_array(
-            buffer,
-            iovs_ptr,
-            iovs_len,
-          );
+          const iovecs = wasi.Ciovec.read_bytes_array(buffer, iovs_ptr, iovs_len);
           let nwritten = 0;
           for (const iovec of iovecs) {
             const data = buffer8.slice(iovec.buf, iovec.buf + iovec.buf_len);
-            const { ret, nwritten: nwritten_part } =
-              self.fds[fd].fd_write(data);
+            const { ret, nwritten: nwritten_part } = self.fds[fd].fd_write(data);
             if (ret != wasi.ERRNO_SUCCESS) {
               buffer.setUint32(nwritten_ptr, nwritten, true);
               return ret;
@@ -582,11 +505,7 @@ export default class WASI {
           return wasi.ERRNO_BADF;
         }
       },
-      path_create_directory(
-        fd: number,
-        path_ptr: number,
-        path_len: number,
-      ): number {
+      path_create_directory(fd: number, path_ptr: number, path_len: number): number {
         const buffer8 = new Uint8Array(self.inst.exports.memory.buffer);
         if (self.fds[fd] != undefined) {
           const path = new TextDecoder("utf-8").decode(
@@ -633,13 +552,7 @@ export default class WASI {
           const path = new TextDecoder("utf-8").decode(
             buffer8.slice(path_ptr, path_ptr + path_len),
           );
-          return self.fds[fd].path_filestat_set_times(
-            flags,
-            path,
-            atim,
-            mtim,
-            fst_flags,
-          );
+          return self.fds[fd].path_filestat_set_times(flags, path, atim, mtim, fst_flags);
         } else {
           return wasi.ERRNO_BADF;
         }
@@ -661,10 +574,7 @@ export default class WASI {
           const new_path = new TextDecoder("utf-8").decode(
             buffer8.slice(new_path_ptr, new_path_ptr + new_path_len),
           );
-          const { ret, inode_obj } = self.fds[old_fd].path_lookup(
-            old_path,
-            old_flags,
-          );
+          const { ret, inode_obj } = self.fds[old_fd].path_lookup(old_path, old_flags);
           if (inode_obj == null) {
             return ret;
           }
@@ -742,11 +652,7 @@ export default class WASI {
           return wasi.ERRNO_BADF;
         }
       },
-      path_remove_directory(
-        fd: number,
-        path_ptr: number,
-        path_len: number,
-      ): number {
+      path_remove_directory(fd: number, path_ptr: number, path_len: number): number {
         const buffer8 = new Uint8Array(self.inst.exports.memory.buffer);
         if (self.fds[fd] != undefined) {
           const path = new TextDecoder("utf-8").decode(
@@ -780,10 +686,7 @@ export default class WASI {
           }
           ret = self.fds[new_fd].path_link(new_path, inode_obj, true);
           if (ret != wasi.ERRNO_SUCCESS) {
-            if (
-              self.fds[fd].path_link(old_path, inode_obj, true) !=
-              wasi.ERRNO_SUCCESS
-            ) {
+            if (self.fds[fd].path_link(old_path, inode_obj, true) != wasi.ERRNO_SUCCESS) {
               throw "path_link should always return success when relinking an inode back to the original place";
             }
           }
@@ -837,9 +740,10 @@ export default class WASI {
       },
       sched_yield() {},
       random_get(buf: number, buf_len: number) {
-        const buffer8 = new Uint8Array(
-          self.inst.exports.memory.buffer,
-        ).subarray(buf, buf + buf_len);
+        const buffer8 = new Uint8Array(self.inst.exports.memory.buffer).subarray(
+          buf,
+          buf + buf_len,
+        );
 
         if (
           "crypto" in globalThis /* &&

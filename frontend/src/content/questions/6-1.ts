@@ -5,7 +5,8 @@ import { _, any, end, start } from "./regex";
 const MAX_TEMP = 0;
 const MIN_TEMP = -2;
 
-const instructions = "Remember the instructions, set 'target' to the minimum or maximum temperature!";
+const instructions =
+  "Remember the instructions, set 'target' to the minimum or maximum temperature!";
 
 export const question: CodeQuestion = {
   code: `
@@ -57,21 +58,64 @@ if temp > MAX_TEMP {
   `,
   validator: (value) => {
     const regex = createRegExp(
-      start, _,
-      "if", _, "temp", _, ">", _, "MAX_TEMP", _, "{", _,
-      "target", _, "=", _, any.times.any().as("first"), _, ";", _,
-      "}", _, "else", _, "if", _, "temp", _, "<", _, "MIN_TEMP", _, "{", _,
-      "target", _, "=", _, any.times.any().as("second"), _, ";", _,
-      "}", _, end
+      start,
+      _,
+      "if",
+      _,
+      "temp",
+      _,
+      ">",
+      _,
+      "MAX_TEMP",
+      _,
+      "{",
+      _,
+      "target",
+      _,
+      "=",
+      _,
+      any.times.any().as("first"),
+      _,
+      ";",
+      _,
+      "}",
+      _,
+      "else",
+      _,
+      "if",
+      _,
+      "temp",
+      _,
+      "<",
+      _,
+      "MIN_TEMP",
+      _,
+      "{",
+      _,
+      "target",
+      _,
+      "=",
+      _,
+      any.times.any().as("second"),
+      _,
+      ";",
+      _,
+      "}",
+      _,
+      end,
     );
     const matches = value.match(regex);
     if (!matches) return codeMessLines([2, 4]);
-    
+
     const { first = "", second = "" } = matches.groups;
     const valid = ["MAX_TEMP", "MIN_TEMP"];
-    return value.split("\n").length > 5 && "You don't need more than 5 lines!"
-      || !valid.includes(first.trim()) && `There's an error in the assignment on the 2nd line.\n${instructions}`
-      || !valid.includes(second.trim()) && `There's an error in the assignment on the 4th line.\n${instructions}`
-      || undefined;
-  }
+    return (
+      (value.split("\n").length > 5 && "You don't need more than 5 lines!") ||
+      (!valid.includes(first.trim()) &&
+        `There's an error in the assignment on the 2nd line.\n${instructions}`) ||
+      (!valid.includes(second.trim()) &&
+        `There's an error in the assignment on the 4th line.\n${instructions}`) ||
+      undefined
+    );
+  },
 } as const;

@@ -4,7 +4,7 @@ import { ConfirmToast, Toast } from "src/utils/popup";
 
 export type EvalResponse = string | { error: string };
 
-let interpreter: Interpreter | undefined = undefined;
+let interpreter: Interpreter | undefined;
 
 (async () => {
   const toast = async () =>

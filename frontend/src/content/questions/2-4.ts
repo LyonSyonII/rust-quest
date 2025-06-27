@@ -4,8 +4,5 @@ import { mc, mo } from "./CodeQuestion";
 export const question = FreeQuestion({
   code: `200 < ${mo}?${mc}`,
   correct: "Correct!",
-  validators: [
-    /^200\<\-?\d+$/,
-    /^-?\d+\>200$/,
-  ]
+  validators: [/^200<-?\d+$/, /^-?\d+>200$/],
 });

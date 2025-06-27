@@ -1,5 +1,5 @@
 import type { EvalResponse } from "@components/CodeBlock/evaluate";
-import { Directory, Fd, File, PreopenDirectory, WASI, strace } from "./wasi/index";
+import { Directory, Fd, File, PreopenDirectory, strace, WASI } from "./wasi/index";
 
 export async function initInterpreter({ color } = { color: false }): Promise<Interpreter> {
   console.time("init");
@@ -102,7 +102,7 @@ class Interpreter {
 
     const output = stdout.text();
     if (output.startsWith("\u001b[0m\u001b[1m\u001b[38;5;9merror")) {
-      return { error: output }
+      return { error: output };
     } else {
       return output;
     }

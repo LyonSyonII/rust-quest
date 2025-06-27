@@ -18,10 +18,8 @@ export function parenthesisCheck(value: string): string | undefined {
   const isr = anyOf("isr", "is_slime_right").notBefore(_, "(", _, ")", _);
   const isl = anyOf("isl", "is_slime_left").notBefore(_, "(", _, ")", _);
 
-  const parens = createRegExp(
-    anyOf(up, down, left, right, isr, isl),
-  );
-  
+  const parens = createRegExp(anyOf(up, down, left, right, isr, isl));
+
   const match = value.match(parens);
   if (match?.[0]) {
     return `You need to call the function '${match[0]}' with parenthesis.\ne.g. '${match[0]}()'`;
@@ -50,15 +48,15 @@ export const basicMovement: CodeQuestion = {
   let l = left;
   let r = right;
   __VALUE__
-  `
+  `,
 };
 
 export const lookLeftRight: (
   rows: number,
   cols: number,
   start: number,
-  enemies: number[]
-  ) => CodeQuestion = (rows, cols, start, enemies) => {
+  enemies: number[],
+) => CodeQuestion = (rows, cols, start, enemies) => {
   return {
     code: "",
     setup: `
@@ -131,8 +129,8 @@ export const lookLeftRight: (
     let r = right;
 
     __VALUE__
-    `
-  }
+    `,
+  };
 };
 
 export default basicMovement;

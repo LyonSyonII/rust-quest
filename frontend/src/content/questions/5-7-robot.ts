@@ -1,7 +1,4 @@
-import {
-  Functions,
-  type RobotGameProps,
-} from "@components/RobotGame/RobotGameTypes";
+import { Functions, type RobotGameProps } from "@components/RobotGame/RobotGameTypes";
 
 export const question: RobotGameProps = {
   code: "",

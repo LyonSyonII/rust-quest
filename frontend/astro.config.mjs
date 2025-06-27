@@ -1,9 +1,9 @@
 import starlight from "@astrojs/starlight";
+import { defineConfig, sharpImageService } from "astro/config";
 import compress from "astro-compress";
 import compressor from "astro-compressor";
 import purgecss from "astro-purgecss";
 import robotsTxt from "astro-robots-txt";
-import { defineConfig, sharpImageService } from "astro/config";
 import { MagicRegExpTransformPlugin } from "magic-regexp/transform";
 
 // https://astro.build/config
@@ -19,7 +19,7 @@ export default defineConfig({
       },
       favicon: "/favicon.svg",
       social: [
-        { icon: "github", label: "Github", href: "https://github.com/lyonsyonii/rust-quest", },
+        { icon: "github", label: "Github", href: "https://github.com/lyonsyonii/rust-quest" },
       ],
       sidebar: [
         {

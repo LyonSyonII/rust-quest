@@ -9,8 +9,15 @@ type SimpleQuestion = {
   wrong: string;
   /** Regex that checks the integrity of the input. Ignores whitespace. */
   integrity: RegExp;
-}; 
-export function SimpleQuestion({ code, answer, getAnswer, correct, wrong, integrity }: SimpleQuestion): CodeQuestion {
+};
+export function SimpleQuestion({
+  code,
+  answer,
+  getAnswer,
+  correct,
+  wrong,
+  integrity,
+}: SimpleQuestion): CodeQuestion {
   const setup = `
     let a = "__VALUE__".replace(" ", "").replace("${getAnswer}", "");
     match a.as_str() {
@@ -22,9 +29,7 @@ export function SimpleQuestion({ code, answer, getAnswer, correct, wrong, integr
     code,
     setup,
     validator: (value: string, test) =>
-         value.includes("?") && replace
-      || !test(integrity, true) && codeMessQuestion
-      || undefined
+      (value.includes("?") && replace) || (!test(integrity, true) && codeMessQuestion) || undefined,
   } as const;
 }
 
@@ -35,15 +40,15 @@ export type FreeQuestion = {
   validators?: RegExp[];
 };
 export function FreeQuestion({ code, correct, validators = [] }: FreeQuestion): CodeQuestion {
-  const wrongAnswer = "Wrong answer, try again!"
+  const wrongAnswer = "Wrong answer, try again!";
   const setup = `if __VALUE__ { println!("${correct}SUCCESS\\n"); } else { println!("${wrongAnswer}"); }`;
   return {
     code,
-    setup, 
-    validator: (value: string, test) => 
-      value.includes("?") && replace
-      || !validators.some((v) => test(v, true)) && codeMessQuestion
-      || undefined 
+    setup,
+    validator: (value: string, test) =>
+      (value.includes("?") && replace) ||
+      (!validators.some((v) => test(v, true)) && codeMessQuestion) ||
+      undefined,
   } as const;
 }
 

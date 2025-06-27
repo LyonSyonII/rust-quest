@@ -2,8 +2,9 @@
 import { translation } from "@i18n/_CodeBlock";
 import type { Langs } from "@i18n/_langs";
 import { importQuestion } from "src/content/questions/CodeQuestion";
-import RunButton from "./RunButton.astro";
 import ResetButton from "./ResetButton.astro";
+import RunButton from "./RunButton.astro";
+import SkipButton from "./SkipButton.astro";
 
 /** CodeBlock */
 export type Props = {
@@ -15,6 +16,7 @@ export type Props = {
   showLineNumbers?: boolean;
   editable?: boolean;
   showOutput?: boolean;
+  skipButton?: boolean;
 };
 
 const l = translation(Astro.url.pathname.split("/")[1] as Langs);
@@ -26,6 +28,7 @@ const {
   showLineNumbers = true,
   editable = true,
   showOutput,
+  skipButton = true,
 } = Astro.props;
 
 const code = (Astro.props.code !== undefined ? Astro.props.code : (await importQuestion(id)).code)
@@ -53,28 +56,35 @@ const props = {
     <button id="reset" title="Reset code">
       <ResetButton />
     </button>
+    
+    {
+      skipButton && 
+      (<div id="extra-buttons">
+        <button id="skip" title="Skip exercise">
+          <SkipButton />
+          <SkipButton filled style="display:none" />
+        </button>
+        {
+          import.meta.env.DEV && (
+            <button id="DEV-RESET">
+              <b>RESET</b>
+            </button>
+          )
+        }
+      </div>)
+    }
   </div>
   <output />
-  {
-    import.meta.env.DEV && (
-      <button id="DEV-RESET">
-        <b>RESET</b>
-      </button>
-    )
-  }
+
 </x-code-block>
 
 {
-  import.meta.env.DEV && (
-  <style>
-      @media only screen and (min-width: 72rem) {
-      #DEV-RESET {
-        position: absolute;
-        right: -4rem;
-      }
+  import.meta.env.DEV && <style>
+    #DEV-RESET {
+      display: flex;
+      align-items: center;
     }
   </style>
-  )
 }
 
 <style>
@@ -90,6 +100,12 @@ const props = {
       font-size: 1rem;
       grid-template-columns: 90% auto;
     }
+    #extra-buttons {
+      display: flex;
+      position: absolute;
+      gap: 1rem;
+      right: -7rem;
+    }
   }
   x-code-block[showlinenumbers="true"] pre {
     padding-left: 26px;
@@ -102,7 +118,7 @@ const props = {
   }
   #buttons {
     display: flex;
-    justify-content: center;
+    align-items: center;
     gap: 0.5rem;
     margin-left: var(--card-padding);
   }
@@ -113,7 +129,7 @@ const props = {
     border: 0;
     margin: 0;
     padding: 0;
-    height: fit-content;
+    height: 24px;
     transition: opacity 0.25s ease;
   }
   button:disabled {

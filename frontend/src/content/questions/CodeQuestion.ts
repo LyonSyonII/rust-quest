@@ -63,9 +63,7 @@ export const mo = "\u200B";
 /** Modifiable closing marker. */
 export const mc = "\u200B";
 
-export function getProtectedRanges(
-  code: string,
-): [start: number, end: number][] {
+export function getProtectedRanges(code: string): [start: number, end: number][] {
   const chars = [...code];
   const ranges: [number, number][] = [];
 
@@ -109,7 +107,7 @@ export function getNearestModifiable(
   { seekLeft = true, seekRight = true, seekDifferent = false } = {},
 ): NearestModifiable {
   if (!seekLeft && !seekRight) return { nearest: Number.POSITIVE_INFINITY, index: -1 };
-  
+
   let dist = Number.POSITIVE_INFINITY;
   let index = -1;
   for (const [i, [start, end]] of modifiableRanges.entries()) {
@@ -121,11 +119,11 @@ export function getNearestModifiable(
       if (seekDifferent) continue;
       return { nearest: pos, index: i };
     }
-    if (Math.abs(distL) < Math.abs(dist)) { 
+    if (Math.abs(distL) < Math.abs(dist)) {
       dist = distL;
       index = i;
     }
-    if (Math.abs(distR) < Math.abs(dist)) { 
+    if (Math.abs(distR) < Math.abs(dist)) {
       dist = distR;
       index = i;
     }
@@ -145,11 +143,11 @@ export function getNearestModifiableInLine(
     const distL = start - pos;
     const distR = end - pos;
     if (start < lineStart || end > lineEnd) continue;
-    if (Math.abs(distL) < Math.abs(dist)) { 
+    if (Math.abs(distL) < Math.abs(dist)) {
       dist = distL;
       index = i;
     }
-    if (Math.abs(distR) < Math.abs(dist)) { 
+    if (Math.abs(distR) < Math.abs(dist)) {
       dist = distR;
       index = i;
     }
@@ -157,15 +155,18 @@ export function getNearestModifiableInLine(
   return { nearest: pos + dist, index };
 }
 
-
-export function getModifiableSelection(pos: number, [start, end]: [number, number], doc: Text): { selection: { anchor: number, head: number } } {
+export function getModifiableSelection(
+  pos: number,
+  [start, end]: [number, number],
+  doc: Text,
+): { selection: { anchor: number; head: number } } {
   // const string = doc.sliceString(start, end);
   // console.log({pos, start, end, line: doc.lineAt(pos).number});
   // TODO: Does not work as expected, first and last modifiable sections are not even selectable
   // if (false && (string.length === 0 || string.match(/^\s+$/))) {
   //   return { selection: { anchor: start, head: end } };
   // }
-  
+
   return { selection: { anchor: pos, head: pos } };
 }
 

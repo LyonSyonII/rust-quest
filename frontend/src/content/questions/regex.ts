@@ -29,11 +29,7 @@ export const bool = exactly("true").or("false");
 export const integer = exactly(maybe("-"), oneOrMore(digit));
 
 /** Matches a number (with optional decimal point). */
-export const number = exactly(
-  maybe("-"),
-  oneOrMore(digit),
-  maybe(".", oneOrMore(digit)),
-);
+export const number = exactly(maybe("-"), oneOrMore(digit), maybe(".", oneOrMore(digit)));
 
 /** Accepts a string delimited with `'` and exactly one character.
  * @example 'X'

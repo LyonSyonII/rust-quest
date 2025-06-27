@@ -1,11 +1,6 @@
-import type {
-  Compartment,
-  EditorState,
-  Extension,
-  RangeSet,
-} from "@codemirror/state";
+import type { Compartment, EditorState, Extension, RangeSet } from "@codemirror/state";
 import type { Decoration, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
-
+import type { AnsiUp } from "ansi_up";
 import {
   type CodeQuestion,
   cleanProtectedCode,
@@ -22,7 +17,6 @@ import { onThemeChange } from "src/utils/onThemeChange";
 import { $ } from "src/utils/querySelector";
 import * as persistence from "../../persistence/codeBlock";
 import { type EvalResponse, evaluate } from "./evaluate";
-import type { AnsiUp } from "ansi_up";
 
 export class CodeBlock extends HTMLElement {
   output: HTMLOutputElement;
@@ -73,6 +67,20 @@ export class CodeBlock extends HTMLElement {
       this.editor.requestMeasure();
     });
 
+    const skipButton = this.querySelector("button#skip");
+    if (skipButton) {
+      skipButton.addEventListener("click", () => {
+        const normalIcon = $("svg:not([filled])", skipButton);
+        const filledIcon = $("svg[filled]", skipButton);
+        if (filledIcon.style.display === "none") {
+          normalIcon.style.display = "none";
+          filledIcon.style.display = "block";
+        } else {
+          this.setSuccess();
+        }
+      });
+    }
+
     if (import.meta.env.DEV) {
       const reset = $("#DEV-RESET", this);
       reset.addEventListener("click", async () => {
@@ -90,7 +98,12 @@ export class CodeBlock extends HTMLElement {
     );
     const { rust } = await import("@codemirror/lang-rust");
     const { bracketMatching, foldKeymap, indentOnInput } = await import("@codemirror/language");
-    const { Compartment, EditorState: _EditorState, RangeSet, Prec } = await import("@codemirror/state");
+    const {
+      Compartment,
+      EditorState: _EditorState,
+      RangeSet,
+      Prec,
+    } = await import("@codemirror/state");
     const {
       EditorView,
       highlightActiveLine,
@@ -134,7 +147,7 @@ export class CodeBlock extends HTMLElement {
             return true;
           },
           stopPropagation: true,
-          preventDefault: true
+          preventDefault: true,
         },
         {
           key: "Mod-Enter",

@@ -8,8 +8,8 @@ export async function confetti({
     const rect = targetElement.getBoundingClientRect();
     const clientWidth = document.documentElement.clientWidth;
     const clientHeight = document.documentElement.clientHeight;
-    const centerX = rect.left + x*rect.width;
-    const centerY = rect.top + y*rect.height;
+    const centerX = rect.left + x * rect.width;
+    const centerY = rect.top + y * rect.height;
     x = centerX / clientWidth;
     y = centerY / clientHeight;
   }
@@ -19,7 +19,7 @@ export async function confetti({
       y,
     },
     particleCount: count,
-    disableForReducedMotion: true
+    disableForReducedMotion: true,
   });
 }
 

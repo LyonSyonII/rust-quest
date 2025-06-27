@@ -1,7 +1,4 @@
-export function strace<T extends object>(
-  imports: T,
-  no_trace: Array<string | symbol>,
-) {
+export function strace<T extends object>(imports: T, no_trace: Array<string | symbol>) {
   return new Proxy(imports, {
     get(target, prop, receiver) {
       const f = Reflect.get(target, prop, receiver);

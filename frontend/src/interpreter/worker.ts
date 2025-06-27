@@ -2,7 +2,7 @@ import { initInterpreter } from "./interpreter";
 
 (async () => {
   // Build main Interpreter
-  const interpreter = await initInterpreter({color: true});
+  const interpreter = await initInterpreter({ color: true });
 
   // When code is received run it
   addEventListener("message", async (event) => {

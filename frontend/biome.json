@@ -1,21 +1,27 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
+  "$schema": "https://biomejs.dev/schemas/2.0.5/schema.json",
   "files": {
-    "ignore": [
-      "./public",
-      "./src/content/docs",
-      "./src/interpreter/wasi",
-      "./src/content/questions",
-      "./dist",
-      "./build",
-      "./coverage",
-      "./node_modules",
-      "./.astro",
-      "./.direnv"
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!./public",
+      "!./src/content/docs",
+      "!./src/interpreter/wasi",
+      "!./src/content/questions",
+      "!./dist",
+      "!./build",
+      "!./coverage",
+      "!./node_modules",
+      "!./.astro",
+      "!./.direnv"
     ]
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "formatter": {
     "enabled": true,

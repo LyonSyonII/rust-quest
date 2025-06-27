@@ -7,6 +7,6 @@ We expect great things of you.
 The Adventurer's Guild`;
 
 export const question: CodeQuestion = {
-  code: "read_quest(0)", 
+  code: "read_quest(0)",
   validator: () => `${quest}SUCCESS\n`,
 };
