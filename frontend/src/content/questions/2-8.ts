@@ -2,6 +2,7 @@ import { type CodeQuestion, codeMessQuestion, mc, mo } from "./CodeQuestion";
 
 export const question: CodeQuestion = {
   code: `let name = "${mo}\$NAME${mc}";`,
+  solution: `let name = "${mo}Hero${mc}";`,
   /** Invisible part of the code.
    *
    *  All instances of `__VALUE__` will be replaced with the current editor value. */

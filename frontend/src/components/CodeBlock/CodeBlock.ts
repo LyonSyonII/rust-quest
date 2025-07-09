@@ -26,10 +26,12 @@ export class CodeBlock extends HTMLElement {
   code = "";
   rangeProtected = false;
   setup = "__VALUE__";
+  solution = "";
   validator: (value: string, test: (regex: RegExp) => boolean) => string | undefined = () =>
     undefined;
   onsuccess: (stdout: string, value: string) => void = () => {};
   errorMsg: string;
+  preprocess: (code: string) => string = (code) => code;
 
   editor!: EditorView;
   EditorState!: typeof EditorState;
@@ -76,6 +78,7 @@ export class CodeBlock extends HTMLElement {
           normalIcon.style.display = "none";
           filledIcon.style.display = "block";
         } else {
+          if (this.solution) this.setValue(this.solution);
           this.setSuccess();
         }
       });
@@ -200,17 +203,19 @@ export class CodeBlock extends HTMLElement {
     this.ansiUp = new (await import("ansi_up")).AnsiUp();
   }
 
-  public setProps({ setup, vars = [], validator, onsuccess }: CodeQuestion) {
+  public setProps({ solution: sampleSolution, setup, vars = [], validator, onsuccess, preprocess }: CodeQuestion) {
     const replaceVars = (r: string) =>
       vars.reduce(
         (acc, { v, d, c = (v) => v }) => acc.replaceAll(`$${v}`, c(localStorage.getItem(v) || d)),
         r,
       );
     this.code = replaceVars(this.getAttribute("code") || this.code);
+    this.solution = sampleSolution;
     this.rangeProtected = this.code.includes(mo) && this.code.includes(mc);
     this.setup = replaceVars(setup || this.setup);
     this.validator = validator || this.validator;
     this.onsuccess = onsuccess || this.onsuccess;
+    this.preprocess = preprocess || this.preprocess;
   }
 
   public getValue(): string {
@@ -299,7 +304,7 @@ export class CodeBlock extends HTMLElement {
       return;
     }
 
-    const response = await this.evaluateSnippet(value);
+    const response = await this.evaluateSnippet(this.preprocess(value));
     this.setResponse(typeof response === "string" ? response : response.error);
   }
 

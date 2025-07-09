@@ -3,6 +3,7 @@ import { mc, mo } from "./CodeQuestion";
 
 export const question = SimpleQuestion({
   code: `16 / 4 == 2 * ${mo}?${mc}`,
+  solution: `16 / 4 == 2 * ${mo}2${mc}`,
   answer: "2",
   getAnswer: "16/4==2*",
   correct:

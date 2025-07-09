@@ -1,6 +1,6 @@
 import type { Text } from "@codemirror/state";
 import type { RobotGameProps } from "@components/RobotGame/RobotGameTypes";
-import { createRegExp, exactly } from "magic-regexp";
+import { createRegExp, exactly, global } from "magic-regexp/further-magic";
 
 /** Generates a random number in Rust */
 export const rustRandomNum = `{
@@ -171,7 +171,8 @@ export function getModifiableSelection(
 }
 
 export function cleanProtectedCode(code: string): string {
-  return code.replaceAll(createRegExp(exactly(mo).or(mc), ["g"]), "");
+  const regex = createRegExp(exactly(mo).or(mc), [global]);
+  return code.replaceAll(regex, "");
 }
 
 export type Validator = (
@@ -182,6 +183,8 @@ export type Validator = (
 export type CodeQuestion = {
   /** Code of the question, if blank a placeholder will be shown instead. */
   readonly code: string | "";
+  /** An example of a solution for the question. Will be shown when the problem is skipped. */
+  readonly solution: string | "";
   /** Invisible part of the code.
    *
    *  All instances of `__VALUE__` will be replaced with the current editor value. */
@@ -200,4 +203,6 @@ export type CodeQuestion = {
   readonly validator?: Validator;
   /** Callback that will be called when "SUCCESS" is returned. */
   readonly onsuccess?: (stdout: string, value: string) => void;
+  /** Preprocess code before sending to interpreter. */
+  readonly preprocess?: (code: string) => string;
 };
